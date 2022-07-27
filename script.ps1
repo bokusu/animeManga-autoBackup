@@ -47,14 +47,15 @@ if ($isAction) {
     Write-Host "Script running from GitHub Actions"
 } else {
     Write-Host "Script running locally"
-    Write-Host "Checking if PS-SetEnv is installed"
-    if (-Not (Get-Module -Name "Set-PsEnv")) {
-        Write-Host "Set-PsEnv is not installed"
-        Write-Host "Installing Set-PsEnv locally"
-        Install-Module -Name "Set-PsEnv" -Scope CurrentUser
-    }
-    Write-Host "PS-SetEnv is installed"
 }
+
+Write-Host "Checking if PS-SetEnv is installed"
+if (-Not (Get-Module -Name "Set-PsEnv")) {
+    Write-Host "Set-PsEnv is not installed"
+    Write-Host "Installing Set-PsEnv locally"
+    Install-Module -Name "Set-PsEnv" -Scope CurrentUser
+}
+Write-Host "PS-SetEnv is installed"
 
 # check if PSGraphQL module is installed
 Write-Host "Checking if PSGraphQL is installed"
@@ -66,7 +67,19 @@ if (-Not (Get-Module -Name "PSGraphQL")) {
 Write-Host "PSGraphQL is installed"
 
 Write-Host "Importing dotEnv file"
-if (-Not ($isAction)) {
+if ($isAction) {
+$envData = @"
+ANILIST_USERNAME=$Env:ANILIST_USERNAME
+KITSU_USERID=$Env:KITSU_USERID
+MAL_USERNAME=$Env:MAL_USERNAME
+MANGAUPDATES_SESSION=$Env:MANGAUPDATES_SESSION
+SHIKIMORI_KAWAI_SESSION=$Env:SHIKIMORI_KAWAI_SESSION
+SHIKIMORI_USERNAME=$Env:SHIKIMORI_USERNAME
+TRAKT_USERNAME=$Env:TRAKT_USERNAME
+USER_AGENT=$Env:USER_AGENT
+"@
+$envData > ./.env
+} else {
     if (Test-Path -Path ".env") {
         Write-Host ".env file exists" -ForegroundColor Green
     } else {
@@ -75,8 +88,9 @@ if (-Not ($isAction)) {
         Write-Host "Please to edit .env from your preferred text editor first and rerun the script." -ForegroundColor Red
         exit 1 # User requires to manually configure the file
     }
-    Set-PsEnv
 }
+
+Set-PsEnv
 
 # Create directory
 Write-Host "Creating directory"
