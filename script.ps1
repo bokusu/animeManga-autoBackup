@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
 # Set variable
-$isAction = "true" -eq $Env:Run_From_Action
+$isAction = $null -ne $Env:GITHUB_WORKSPACE
 
 # Check prerequisites
 
