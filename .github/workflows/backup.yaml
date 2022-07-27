@@ -1,0 +1,25 @@
+# cSpell:disable
+name: Automatically backup the lists
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 SUN * *"
+jobs:
+  RunScript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Run PowerShell script
+        shell: pwsh
+        run: |
+          "Run_From_Action=true" >> $GITHUB_ENV
+          ./script.ps1
+      - name: Commit changes
+        shell: pwsh
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@noreply.users.github.com"
+          git config --local user.name "Natsu Tadama"
+          git add .
+          git commit -m "Backup lists, $(Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ')"
+          git push
