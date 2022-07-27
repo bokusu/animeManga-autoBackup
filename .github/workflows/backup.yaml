@@ -1,9 +1,8 @@
-# cSpell:disable
 name: Automatically backup the lists
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 SUN * *"
+    - cron: "0 0 * * SUN"
 jobs:
   RunScript:
     runs-on: ubuntu-latest
