@@ -19,7 +19,7 @@ jobs:
         shell: pwsh
         run: |
           git config --local user.email "41898282+github-actions[bot]@noreply.users.github.com"
-          git config --local user.name "Natsu Tadama"
+          git config --local user.name "GitHub Actions[bot]"
           git add .
           git commit -m "Backup lists, $(Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ')"
           git push
