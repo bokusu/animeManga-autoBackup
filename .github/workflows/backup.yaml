@@ -9,6 +9,10 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
+      - name: Load secrets to environment variables
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
       - name: Run PowerShell script
         shell: pwsh
         run: ./script.ps1
