@@ -23,23 +23,6 @@ if (Get-Command -Name "curl" -ErrorAction SilentlyContinue) {
     }
 }
 
-if (Get-Command -Name "jq" -ErrorAction SilentlyContinue) {
-    Write-Host "jq is installed"
-} else {
-    Write-Host "jq is not installed"
-    Write-Host "Installing jq"
-    if ($isWindows) {
-        choco install jq
-    } elseif ($isLinux) {
-        sudo apt install jq
-    } elseif ($isMac) {
-        brew install jq
-    } else {
-        Write-Host "Unsupported OS"
-        Exit 1
-    }
-}
-
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted 
 
 # check if the script run from GitHub Actions
@@ -67,21 +50,11 @@ if (-Not (Get-Module -Name "PSGraphQL")) {
 Write-Host "PSGraphQL is installed"
 
 Write-Host "Importing dotEnv file"
-if ($isAction) {
-$envData = @"
-ANILIST_USERNAME=$Env:ANILIST_USERNAME
-KITSU_USERID=$Env:KITSU_USERID
-MAL_USERNAME=$Env:MAL_USERNAME
-MANGAUPDATES_SESSION=$Env:MANGAUPDATES_SESSION
-SHIKIMORI_KAWAI_SESSION=$Env:SHIKIMORI_KAWAI_SESSION
-SHIKIMORI_USERNAME=$Env:SHIKIMORI_USERNAME
-TRAKT_USERNAME=$Env:TRAKT_USERNAME
-USER_AGENT=$Env:USER_AGENT
-"@
-$envData > ./.env
-} else {
+if (-Not($isAction)) {
     if (Test-Path -Path ".env") {
         Write-Host ".env file exists" -ForegroundColor Green
+        Set-PsEnv
+        Write-Host ".env file imported" -ForegroundColor Green
     } else {
         Write-Host ".env file does not exist, creating..." -ForegroundColor Red
         Copy-Item -Path ".env.example" -Destination ".env"
@@ -89,8 +62,6 @@ $envData > ./.env
         exit 1 # User requires to manually configure the file
     }
 }
-
-Set-PsEnv
 
 # Create directory
 Write-Host "Creating directory"
