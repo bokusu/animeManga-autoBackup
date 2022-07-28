@@ -3,11 +3,17 @@
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
 
+function Write-None {
+    Write-Host ""
+}
+
 # Check prerequisites
 
 if (Get-Command -Name "curl" -ErrorAction SilentlyContinue) {
+    Write-None
     Write-Host "curl is installed"
 } else {
+    Write-None
     Write-Host "curl is not installed"
     Write-Host "Installing curl"
     if ($isWindows) {
@@ -25,6 +31,7 @@ if (Get-Command -Name "curl" -ErrorAction SilentlyContinue) {
 
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted 
 
+Write-None
 # check if the script run from GitHub Actions
 if ($isAction) {
     Write-Host "Script running from GitHub Actions"
@@ -32,23 +39,26 @@ if ($isAction) {
     Write-Host "Script running locally"
 }
 
+Write-None
 Write-Host "Checking if PS-SetEnv is installed"
 if (-Not (Get-Module -Name "Set-PsEnv")) {
     Write-Host "Set-PsEnv is not installed"
     Write-Host "Installing Set-PsEnv locally"
     Install-Module -Name "Set-PsEnv" -Scope CurrentUser
 }
-Write-Host "PS-SetEnv is installed"
+Write-Host "Set-PsEnv is installed" -ForegroundColor Green
 
 # check if PSGraphQL module is installed
+Write-None
 Write-Host "Checking if PSGraphQL is installed"
 if (-Not (Get-Module -Name "PSGraphQL")) {
-    Write-Host "PSGraphQL is not installed"
+    Write-Host "PSGraphQL is not installed" -ForegroundColor Red
     Write-Host "Installing PSGraphQL"
     Install-Module -Name "PSGraphQL" -Scope CurrentUser
 }
-Write-Host "PSGraphQL is installed"
+Write-Host "PSGraphQL is installed" -ForegroundColor Green
 
+Write-None
 Write-Host "Importing dotEnv file"
 if (-Not($isAction)) {
     if (Test-Path -Path ".env") {
@@ -56,6 +66,7 @@ if (-Not($isAction)) {
         Set-PsEnv
         Write-Host ".env file imported" -ForegroundColor Green
     } else {
+        Write-None
         Write-Host ".env file does not exist, creating..." -ForegroundColor Red
         Copy-Item -Path ".env.example" -Destination ".env"
         Write-Host "Please to edit .env from your preferred text editor first and rerun the script." -ForegroundColor Red
@@ -64,6 +75,7 @@ if (-Not($isAction)) {
 }
 
 # Create directory
+Write-None
 Write-Host "Creating directory"
 New-Item -ItemType Directory -Force -Path ./aniList
 New-Item -ItemType Directory -Force -Path ./kitsu
@@ -77,23 +89,28 @@ New-Item -ItemType Directory -Force -Path ./trakt
 $malUsername = $Env:MAL_USERNAME
 $userAgent = $Env:USER_AGENT
 
+Write-None
 Write-Host "Exporting MyAnimeList anime list"
 curl -X POST -d "username=$malUsername&listtype=anime&update_on_import=on" -H "Origin: https://malscraper.azurewebsites.net" -H "Referrer: https://malscraper.azurewebsites.net/" -A "$userAgent" https://malscraper.azurewebsites.net/scrape > ./myAnimeList/animeList.xml
 
+Write-None
 Write-Host "Exporting MyAnimeList manga list"
 curl -X POST -d "username=$malUsername&listtype=manga&update_on_import=on" -H "Origin: https://malscraper.azurewebsites.net" -H "Referrer: https://malscraper.azurewebsites.net/" -A "$userAgent" https://malscraper.azurewebsites.net/scrape > ./myAnimeList/mangaList.xml
 
 $kitsuUserId = $Env:KITSU_USERID
 
+Write-None
 Write-Host "Exporting Kitsu anime list"
 curl -X POST -d "username=$kitsuUserId&listtype=kitsuanime&update_on_import=on" -H "Origin: https://malscraper.azurewebsites.net" -H "Referrer: https://malscraper.azurewebsites.net/" -A "$userAgent" https://malscraper.azurewebsites.net/scrape > ./kitsu/animeList.xml
 
+Write-None
 Write-Host "Exporting Kitsu manga list"
 curl -X POST -d "username=$kitsuUserId&listtype=kitsumanga&update_on_import=on" -H "Origin: https://malscraper.azurewebsites.net" -H "Referrer: https://malscraper.azurewebsites.net/" -A "$userAgent" https://malscraper.azurewebsites.net/scrape > ./kitsu/mangaList.xml
 
 $aniListUsername = $Env:ANILIST_USERNAME
 $aniListUri = "https://graphql.anilist.co"
 
+Write-None
 Write-Host "Exporting AniList anime list"
 $alAnimeBody = '
     query($name: String!){
@@ -208,22 +225,26 @@ $alVariableFix = $alVariableRaw -replace "anonymous", $aniListUsername
 
 Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw > ./aniList/animeList.json
 
-Wrote-Host "Exporting AniList manga list"
+Write-None
+Write-Host "Exporting AniList manga list"
 Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw > ./aniList/mangaList.json
 
 $shikiSession = $Env:SHIKIMORI_KAWAI_SESSION
 $shikiUsername = $Env:SHIKIMORI_USERNAME
 
+Write-None
 Write-Host "Exporting Shikimori anime list"
 curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shikimori.one/$($shikiUsername)/list_export/animes.json > ./shikimori/animeList.json
 curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shikimori.one/$($shikiUsername)/list_export/animes.xml > ./shikimori/animeList.xml
 
+Write-None
 Write-Host "Exporting Shikimori manga list"
 curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shikimori.one/$($shikiUsername)/list_export/mangas.json > ./shikimori/mangaList.json
 curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shikimori.one/$($shikiUsername)/list_export/mangas.xml > ./shikimori/mangaList.xml
 
 $traktUsername = $Env:TRAKT_USERNAME
 
+Write-None
 Write-Host "Exporting Trakt.tv watch history"
 Invoke-WebRequest -Uri "https://darekkay.com/service/trakt/trakt.php?username=$traktUsername" -OutFile "./trakt/trakt.zip"
 Expand-Archive -Path "./trakt/trakt.zip" -DestinationPath "./trakt/"
@@ -231,6 +252,7 @@ Remove-Item -Path "./trakt/*.json" -Force # Delete old data
 Get-ChildItem -Path "./trakt/" -Filter "*.txt" | ForEach-Object {$_ | Rename-Item -NewName $_.Name.Replace('txt', 'json')}
 Remove-Item -Path "./trakt/trakt.zip" -Force
 
+Write-None
 Write-Host "Exporting Baka-Updates' MangaUpdates list"
 
 $muSession = $Env:MANGAUPDATES_SESSION
