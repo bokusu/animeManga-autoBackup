@@ -10,10 +10,8 @@ function Write-None {
 # Check prerequisites
 
 if (Get-Command -Name "curl" -ErrorAction SilentlyContinue) {
-    Write-None
     Write-Host "curl is installed"
 } else {
-    Write-None
     Write-Host "curl is not installed"
     Write-Host "Installing curl"
     if ($isWindows) {
