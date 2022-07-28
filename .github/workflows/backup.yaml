@@ -21,6 +21,14 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@noreply.users.github.com"
           git config --local user.name "GitHub Actions[bot]"
-          git add .
+          # Tell git to add all XML file to staging, ignore if file contains "Scrape failed" inside
+          Get-ChildItem -Path "*" -Filter "*.*" -File | ForEach-Object {
+              $inside = Get-Content $_.FullName
+              if ($inside -contains "Scrape failed`n") {
+                  Write-Host "Skipping file: $_.FullName"
+              } else {
+                  git add $_.FullName
+              }
+          }
           git commit -m "Backup lists, $(Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ')"
           git push
