@@ -76,6 +76,7 @@ if (-Not($isAction)) {
 Write-None
 Write-Host "Creating directory"
 New-Item -ItemType Directory -Force -Path ./aniList
+New-Item -ItemType Directory -Force -Path ./annict
 New-Item -ItemType Directory -Force -Path ./kitsu
 New-Item -ItemType Directory -Force -Path ./mangaUpdates
 New-Item -ItemType Directory -Force -Path ./myAnimeList
@@ -260,3 +261,57 @@ curl -X GET --cookie "secure_session=$muSession" -A "$userAgent" "https://www.ma
 curl -X GET --cookie "secure_session=$muSession" -A "$userAgent" "https://www.mangaupdates.com/mylist.html?act=export&list=complete" > ./mangaUpdates/completed.csv
 curl -X GET --cookie "secure_session=$muSession" -A "$userAgent" "https://www.mangaupdates.com/mylist.html?act=export&list=unfinished" > ./mangaUpdates/dropped.csv
 curl -X GET --cookie "secure_session=$muSession" -A "$userAgent" "https://www.mangaupdates.com/mylist.html?act=export&list=hold" > ./mangaUpdates/onHold.csv
+
+Write-None
+Write-Host "Exporting Annict anime list"
+$annictUri = "https://api.annict.com/graphql"
+$annictQuery = '
+query {
+    viewer {
+        username
+        name
+        id
+        annictId
+        watchingCount
+        watchedCount
+        wannaWatchCount
+        onHoldCount
+        stopWatchingCount
+        recordsCount
+        libraryEntries {
+            edges {
+                node {
+                    id
+                    status {
+                        state
+                        createdAt
+                    }
+                    work {
+                        title
+                        titleEn
+                        titleKana
+                        titleRo
+                        malAnimeId
+                        annictId
+                        id
+                        seasonYear
+                        seasonName
+                        episodes {
+                            edges {
+                                node {
+                                    id
+                                    title
+                                    annictId
+                                    number
+                                    viewerDidTrack
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}'
+$annictHashTable = @{ "Authorization" = "Bearer $($Env:ANNICT_PERSONAL_ACCESS_TOKEN)" }
+Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTable -Raw > ./annict/animeList.json
