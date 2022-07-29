@@ -1,0 +1,155 @@
+<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST -->
+<!-- markdownlint-disable MD033 -->
+
+<!-- omit in toc -->
+# Anime Manga Auto Backup
+
+[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE) [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell)
+
+Automatically (and also manually) backup your anime and manga libraries from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, and Trakt. Made possible with PowerShell Core.
+
+<!-- omit in toc -->
+## Table of Contents
+
+* [About](#about)
+* [Features and To Do](#features-and-to-do)
+  * [Legends](#legends)
+  * [Backup from `x` site](#backup-from-x-site)
+* [Getting Started](#getting-started)
+  * [Prerequisites](#prerequisites)
+  * [Setting Environment Variables](#setting-environment-variables)
+    * [Based on where you run](#based-on-where-you-run)
+      * [For Local Machine](#for-local-machine)
+      * [For GitHub Actions](#for-github-actions)
+    * [Variables Instruction](#variables-instruction)
+* [Usage](#usage)
+  * [On Local Machine](#on-local-machine)
+  * [On GitHub Actions](#on-github-actions)
+
+## About
+
+"Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
+
+This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party. You can check table below to see the library/list you need to set as public:
+
+|      Sites      | Requires to set as public | Description                                                                          |
+| :-------------: | :-----------------------: | :----------------------------------------------------------------------------------- |
+|     AniList     |          **Yes**          | Uses limited access public scope with AniList GraphQL API                            |
+|     Annict      |            No             | User can generate Personal Access Token from account                                 |
+|  Baka-Updates   |            No             | Uses `secure_session` cookie saved browser                                           |
+|      Kitsu      |          **Yes**          | Uses MAL Exporter from Azure Website                                                 |
+| MyAnimeList.net |          **Yes**          | Uses MAL Exporter from Azure Website                                                 |
+|    Shikimori    |            No             | Uses `_kawai_session` cookie saved browser                                           |
+|      Trakt      |          **Yes**          | Uses [Darek Kay's Public Trakt Exporter](https://darekkay.com/blog/trakt-tv-backup/) |
+
+I am not responsible and liable for warranty for any damage caused by using this project.
+
+## Features and To Do
+
+### Legends
+
+* [x] : Available
+* [ ] : Not Available
+
+### Backup from `x` site
+
+* [x] AniList
+* [x] Annict
+* [x] Baka-Updates
+* [x] Kitsu
+* [x] MyAnimeList
+* [x] Shikimori
+* [x] Trakt
+* [ ] AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
+* [ ] Anime-Planet
+* [ ] Bangumi.tv
+* [ ] Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
+
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine or using GitHub Actions.
+
+### Prerequisites
+
+**NOTE**\
+If you are running this script using workers, skip the instructions, and straightly jump to next section.
+
+Before starting the script, you need to install the following packages:
+
+* `curl`
+* `pwsh` version >= 7.0.0
+* `choco` for Windows user, or `brew` for Mac user
+* `git`
+
+You also need to fork the repository before cloning the repo to your local machine OR initializing the repository with GitHub Actions.
+
+### Setting Environment Variables
+
+#### Based on where you run
+
+##### For Local Machine
+
+1. Duplicate the `.env.example` file and rename to `.env` file.
+2. Follow the instructions in [# Variables Instructions](#variables-instructions) to set the variables.
+   * If you did not registered to some site, leave the value empty.
+
+##### For GitHub Actions
+
+1. Open repo settings.
+2. On the left sidebar, find "**Secrets**" and click **Actions**.
+3. Click <kbd>New repository secret</kbd> button.
+4. Follow the instructions in [# Variables Instructions](#variables-instructions) to set the variables.
+   * The text in `this box` mean a name, and Value is the key/cookie.
+   * Repeat this step for all the variables listed in the instruction.
+   * If you did not registered to some site, leave the value empty.
+
+#### Variables Instruction
+
+* `ANILIST_USERNAME`\
+  Your AniList username.
+* `ANNICT_PERSONAL_ACCESS_TOKEN`\
+  Your Annict Personal Access Token. You can generate one from your account via [Application Settings](https://en.annict.com/settings/apps).
+* `KITSU_USERID`\
+  Your Kitsu user ID. To get it, open your Kitsu profile, right click on your display/profile picture, and click "Open in new tab".
+
+  Your ID is right after `avatar/`.
+
+  For example:
+
+  ```py
+  https://media.kitsu.io/users/avatars/000000/large.jpeg
+                                       ^^^^^^
+  ```
+
+  `000000` is the ID.
+* `MAL_USERNAME`\
+  Your MyAnimeList username.
+* `MANGAUPDATES_SESSION`\
+  Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+
+  Find a name of the cookie that starts with `secure_session` and copy the value.
+* `SHIKIMORI_KAWAI_SESSION`\
+  Your Shikimori session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+
+  Find a name of the cookie that starts with `_kawai_session` and copy the value.
+* `TRAKT_USERNAME`\
+  Your Trakt username.
+* `USER_AGENT`\
+  Your user agent.
+
+## Usage
+
+### On Local Machine
+
+1. Open Command Prompt/Terminal, type `pwsh`.
+2. Change directory to the directory where you cloned the project.
+3. Type `./script.ps1`, and let the script run by itself.
+
+### On GitHub Actions
+
+1. Open Actions tab.
+2. Opt in the feature to enable.
+3. Done.
+
+**NOTE**\
+The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
