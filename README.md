@@ -1,4 +1,4 @@
-<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST -->
+<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST traktexporter POSIX USERPROFILE -->
 <!-- markdownlint-disable MD033 -->
 
 <!-- omit in toc -->
@@ -32,15 +32,15 @@ Automatically (and also manually) backup your anime and manga libraries from MyA
 
 This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party. You can check table below to see the library/list you need to set as public:
 
-|      Sites      | Requires to set as public | Description                                                                          |
-| :-------------: | :-----------------------: | :----------------------------------------------------------------------------------- |
-|     AniList     |          **Yes**          | Uses limited access public scope with AniList GraphQL API                            |
-|     Annict      |            No             | User can generate Personal Access Token from account                                 |
-|  Baka-Updates   |            No             | Uses `secure_session` cookie saved browser                                           |
-|      Kitsu      |          **Yes**          | Uses MAL Exporter from Azure Website                                                 |
-| MyAnimeList.net |          **Yes**          | Uses MAL Exporter from Azure Website                                                 |
-|    Shikimori    |            No             | Uses `_kawai_session` cookie saved browser                                           |
-|      Trakt      |          **Yes**          | Uses [Darek Kay's Public Trakt Exporter](https://darekkay.com/blog/trakt-tv-backup/) |
+|           Sites | Requires to set as public | Description                                               |
+| --------------: | :-----------------------: | :-------------------------------------------------------- |
+|         AniList |          **Yes**          | Uses limited access public scope with AniList GraphQL API |
+|          Annict |            No             | User can generate Personal Access Token from account      |
+|    Baka-Updates |            No             | Uses `secure_session` cookie saved browser                |
+|           Kitsu |          **Yes**          | Uses MAL Exporter from Azure Website                      |
+| MyAnimeList.net |          **Yes**          | Uses MAL Exporter from Azure Website                      |
+|       Shikimori |            No             | Uses `_kawai_session` cookie saved browser                |
+|           Trakt |            No             | Uses `traktexporter` Python package/module                |
 
 I am not responsible and liable for warranty for any damage caused by using this project.
 
@@ -76,10 +76,11 @@ If you are running this script using workers, skip the instructions, and straigh
 
 Before starting the script, you need to install the following packages:
 
-* `curl`
-* `pwsh` version >= 7.0.0
 * `choco` for Windows user, or `brew` for Mac user
+* `curl`
 * `git`
+* `pwsh` version >= 7.0.0
+* `python` version >= 3.7
 
 You also need to fork the repository before cloning the repo to your local machine OR initializing the repository with GitHub Actions.
 
@@ -132,6 +133,16 @@ You also need to fork the repository before cloning the repo to your local machi
   Your Shikimori session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
   Find a name of the cookie that starts with `_kawai_session` and copy the value.
+* `TRAKT_CLIENT_ID`\
+  Your Trakt Client ID. To get it, go to [Trakt](https://trakt.tv/oauth/applications) and click "Create New Application". Set `urn:ietf:wg:oauth:2.0:oob` as `Redirect URIs`.
+* `TRAKT_CLIENT_SECRET`\
+  Your Trakt Client Secret.
+* `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`\
+  Your Trakt credential saved by `traktexporter` Python module.
+
+  To get it, run `traktexporter init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexporter` from terminal.\
+  Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.\
+  After init done, run `type .traktexporter\traktexporter.json` in `~`/`%USERPROFILE%` directory on Windows or `cat ~/.local/share/traktexporter.json` on POSIX system (Linux/macOS) to copy the credential.
 * `TRAKT_USERNAME`\
   Your Trakt username.
 * `USER_AGENT`\

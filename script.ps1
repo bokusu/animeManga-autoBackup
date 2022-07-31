@@ -3,9 +3,17 @@
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
 
+if ($isWindows -and (Get-Command -Name "choco" -ErrorAction SilentlyContinue)) {
+    choco feature enable -n allowGlobalConfirmation
+}
+
 function Write-None {
     Write-Host ""
 }
+
+# Set output encoding to UTF-8
+Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # Check prerequisites
 
@@ -15,12 +23,29 @@ if (Get-Command -Name "curl" -ErrorAction SilentlyContinue) {
     Write-Host "curl is not installed"
     Write-Host "Installing curl"
     if ($isWindows) {
-        choco feature enable -n allowGlobalConfirmation
         choco install curl
     } elseif ($isLinux) {
         sudo apt install curl
     } elseif ($isMac) {
         brew install curl
+    } else {
+        Write-Host "Unsupported OS"
+        Exit 1
+    }
+}
+
+if (Get-Command -Name "pip" -ErrorAction SilentlyContinue) {
+    Write-Host "pip is installed"
+} else {
+    Write-Host "pip is not installed"
+    Write-Host "Installing pip"
+    if ($isWindows) {
+        choco install python
+    } elseif ($isLinux) {
+        sudo apt install python3-pip
+    } elseif ($isMac) {
+        Write-Host "Please to install Python 3 manually" -ForegroundColor Red
+        Exit 1
     } else {
         Write-Host "Unsupported OS"
         Exit 1
@@ -71,6 +96,8 @@ if (-Not($isAction)) {
         exit 1 # User requires to manually configure the file
     }
 }
+
+Import-Module "./Modules/Format-Json.psm1"
 
 # Create directory
 Write-None
@@ -244,12 +271,40 @@ curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shik
 $traktUsername = $Env:TRAKT_USERNAME
 
 Write-None
-Write-Host "Exporting Trakt.tv watch history"
-Invoke-WebRequest -Uri "https://darekkay.com/service/trakt/trakt.php?username=$traktUsername" -OutFile "./trakt/trakt.zip"
-Expand-Archive -Path "./trakt/trakt.zip" -DestinationPath "./trakt/"
-Remove-Item -Path "./trakt/*.json" -Force # Delete old data
-Get-ChildItem -Path "./trakt/" -Filter "*.txt" | ForEach-Object {$_ | Rename-Item -NewName $_.Name.Replace('txt', 'json')}
-Remove-Item -Path "./trakt/trakt.zip" -Force
+Write-Host "Exporting Trakt.tv data"
+# Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
+
+if (Get-Command -Name "traktexporter" -ErrorAction SilentlyContinue) {
+    Write-Host "Trakt Exporter Python Module is installed"
+} else {
+    Write-Host "Installing Trakt Exporter Python Module"
+    pip install traktexporter
+}
+
+Write-Host "Configuring config file"
+
+$traktExporterJson = "{`"CLIENT_ID`": `"$($Env:TRAKT_CLIENT_ID)`", `"CLIENT_SECRET`": `"$($Env:TRAKT_CLIENT_SECRET)`", `"OAUTH_TOKEN`": `"$($Env:TRAKT_OAUTH_TOKEN)`", `"OAUTH_REFRESH`": `"$($Env:TRAKT_OAUTH_REFRESH)`", `"OAUTH_EXPIRES_AT`": $($Env:TRAKT_OAUTH_EXPIRY)}"
+
+# Check if linux or windows
+if ($Env:XDG_DATA_HOME) {
+    $dataDir = $Env:XDG_DATA_HOME
+} elseif ($isWindows) {
+    $dataDir = "~/.traktexport"
+} else {
+    $dataDir = "~/.local/share"
+}
+
+# Check if file exist
+if (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
+    Write-Host "Config file exists" -ForegroundColor Green
+} else {
+    Write-Host "Config file does not exist" -ForegroundColor Red
+    Write-Host "Creating config file" -ForegroundColor Yellow
+    New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExporterJson
+}
+
+traktexport export $traktUsername | Out-File "./trakt/data.json"
+
 
 Write-None
 Write-Host "Exporting Baka-Updates' MangaUpdates list"
@@ -315,3 +370,11 @@ query {
 }'
 $annictHashTable = @{ "Authorization" = "Bearer $($Env:ANNICT_PERSONAL_ACCESS_TOKEN)" }
 Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTable -Raw > ./annict/animeList.json
+
+if (-Not($isAction)) {
+    Write-None
+    Write-Host "Format JSON files"
+    Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
+        Format-Json -Json (Get-Content $_) -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $_
+    }
+}
