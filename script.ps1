@@ -107,6 +107,7 @@ New-Item -ItemType Directory -Force -Path ./annict
 New-Item -ItemType Directory -Force -Path ./kitsu
 New-Item -ItemType Directory -Force -Path ./mangaUpdates
 New-Item -ItemType Directory -Force -Path ./myAnimeList
+New-Item -ItemType Directory -Force -Path ./simkl
 New-Item -ItemType Directory -Force -Path ./shikimori
 New-Item -ItemType Directory -Force -Path ./trakt
 
@@ -304,6 +305,12 @@ if (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
 }
 
 traktexport export $traktUsername | Out-File "./trakt/data.json"
+
+Write-None
+Write-Host "Exporting SIMKL list"
+$simklClientId = $Env:SIMKL_CLIENT_ID
+$simklAccessToken = $Env:SIMKL_ACCESS_TOKEN
+curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $($simklAccessToken)" -H "simkl-api-key: $($simklClientId)" "https://api.simkl.com/sync/all-items/?episode_watched_at=yes" > ./simkl/data.json
 
 
 Write-None

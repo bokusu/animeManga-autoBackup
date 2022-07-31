@@ -1,4 +1,4 @@
-<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST traktexporter POSIX USERPROFILE -->
+<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST traktexport POSIX USERPROFILE SIMKL -->
 <!-- markdownlint-disable MD033 -->
 
 <!-- omit in toc -->
@@ -32,15 +32,16 @@ Automatically (and also manually) backup your anime and manga libraries from MyA
 
 This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party. You can check table below to see the library/list you need to set as public:
 
-|           Sites | Requires to set as public | Description                                               |
-| --------------: | :-----------------------: | :-------------------------------------------------------- |
-|         AniList |          **Yes**          | Uses limited access public scope with AniList GraphQL API |
-|          Annict |            No             | User can generate Personal Access Token from account      |
-|    Baka-Updates |            No             | Uses `secure_session` cookie saved browser                |
-|           Kitsu |          **Yes**          | Uses MAL Exporter from Azure Website                      |
-| MyAnimeList.net |          **Yes**          | Uses MAL Exporter from Azure Website                      |
-|       Shikimori |            No             | Uses `_kawai_session` cookie saved browser                |
-|           Trakt |            No             | Uses `traktexporter` Python package/module                |
+|           Sites | Requires to set as public | Description                                                                   |
+| --------------: | :-----------------------: | :---------------------------------------------------------------------------- |
+|         AniList |          **Yes**          | Uses limited access public scope with AniList GraphQL API                     |
+|          Annict |            No             | User can generate Personal Access Token from account                          |
+|    Baka-Updates |            No             | Uses `secure_session` cookie saved browser                                    |
+|           Kitsu |          **Yes**          | Uses MAL Exporter from Azure Website                                          |
+| MyAnimeList.net |          **Yes**          | Uses MAL Exporter from Azure Website                                          |
+|       Shikimori |            No             | Uses `_kawai_session` cookie saved browser                                    |
+|           SIMKL |            No             | Uses official API. However we strongly recommend you to use their VIP feature |
+|           Trakt |            No             | Uses `traktexport` Python package/module                                      |
 
 I am not responsible and liable for warranty for any damage caused by using this project.
 
@@ -59,6 +60,7 @@ I am not responsible and liable for warranty for any damage caused by using this
 * [x] Kitsu
 * [x] MyAnimeList
 * [x] Shikimori
+* [x] SIMKL
 * [x] Trakt
 * [ ] AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * [ ] Anime-Planet
@@ -129,6 +131,10 @@ You also need to fork the repository before cloning the repo to your local machi
   Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
   Find a name of the cookie that starts with `secure_session` and copy the value.
+* `SIMKL_ACCESS_TOKEN`\
+  Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](Get-SimklAuth.ps1), then follow the instructions.
+* `SIMKL_CLIENT_ID`\
+  Your SIMKL Client ID. To get it, [create new app on SIMKL](https://simkl.com/settings/developer/new/), and set for redirection URI to `urn:ietf:wg:oauth:2.0:oob`.
 * `SHIKIMORI_KAWAI_SESSION`\
   Your Shikimori session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
@@ -138,11 +144,11 @@ You also need to fork the repository before cloning the repo to your local machi
 * `TRAKT_CLIENT_SECRET`\
   Your Trakt Client Secret.
 * `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`\
-  Your Trakt credential saved by `traktexporter` Python module.
+  Your Trakt credential saved by `traktexport` Python module.
 
-  To get it, run `traktexporter init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexporter` from terminal.\
+  To get it, run `traktexport init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexport` from terminal.\
   Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.\
-  After init done, run `type .traktexporter\traktexporter.json` in `~`/`%USERPROFILE%` directory on Windows or `cat ~/.local/share/traktexporter.json` on POSIX system (Linux/macOS) to copy the credential.
+  After init done, run `type .traktexport\traktexport.json` in `~`/`%USERPROFILE%` directory on Windows or `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy the credential.
 * `TRAKT_USERNAME`\
   Your Trakt username.
 * `USER_AGENT`\
