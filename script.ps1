@@ -371,10 +371,8 @@ query {
 $annictHashTable = @{ "Authorization" = "Bearer $($Env:ANNICT_PERSONAL_ACCESS_TOKEN)" }
 Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTable -Raw > ./annict/animeList.json
 
-if (-Not($isAction)) {
-    Write-None
-    Write-Host "Format JSON files"
-    Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
-        Format-Json -Json (Get-Content $_) -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $_
-    }
+Write-None
+Write-Host "Format JSON files"
+Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
+    Format-Json -Json (Get-Content $_) -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $_
 }
