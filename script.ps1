@@ -274,16 +274,16 @@ Write-None
 Write-Host "Exporting Trakt.tv data"
 # Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
 
-if (Get-Command -Name "traktexporter" -ErrorAction SilentlyContinue) {
+if (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
     Write-Host "Trakt Exporter Python Module is installed"
 } else {
     Write-Host "Installing Trakt Exporter Python Module"
-    pip install traktexporter
+    pip install traktexport
 }
 
 Write-Host "Configuring config file"
 
-$traktExporterJson = "{`"CLIENT_ID`": `"$($Env:TRAKT_CLIENT_ID)`", `"CLIENT_SECRET`": `"$($Env:TRAKT_CLIENT_SECRET)`", `"OAUTH_TOKEN`": `"$($Env:TRAKT_OAUTH_TOKEN)`", `"OAUTH_REFRESH`": `"$($Env:TRAKT_OAUTH_REFRESH)`", `"OAUTH_EXPIRES_AT`": $($Env:TRAKT_OAUTH_EXPIRY)}"
+$traktExportJson = "{`"CLIENT_ID`": `"$($Env:TRAKT_CLIENT_ID)`", `"CLIENT_SECRET`": `"$($Env:TRAKT_CLIENT_SECRET)`", `"OAUTH_TOKEN`": `"$($Env:TRAKT_OAUTH_TOKEN)`", `"OAUTH_REFRESH`": `"$($Env:TRAKT_OAUTH_REFRESH)`", `"OAUTH_EXPIRES_AT`": $($Env:TRAKT_OAUTH_EXPIRY)}"
 
 # Check if linux or windows
 if ($Env:XDG_DATA_HOME) {
@@ -300,7 +300,7 @@ if (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
 } else {
     Write-Host "Config file does not exist" -ForegroundColor Red
     Write-Host "Creating config file" -ForegroundColor Yellow
-    New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExporterJson
+    New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExportJson
 }
 
 traktexport export $traktUsername | Out-File "./trakt/data.json"
