@@ -3,10 +3,6 @@
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
 
-if ($isWindows -and (Get-Command -Name "choco" -ErrorAction SilentlyContinue)) {
-    choco feature enable -n allowGlobalConfirmation
-}
-
 function Write-None {
     Write-Host ""
 }
@@ -397,5 +393,6 @@ Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTabl
 Write-None
 Write-Host "Format JSON files"
 Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
-    Format-Json -Json (Get-Content $_) -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $_
+    Write-Host "Formatting $($_)"
+    Format-Json -Json (Get-Content $_ -Raw).trim() -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $_
 }
