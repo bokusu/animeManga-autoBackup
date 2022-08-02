@@ -1,4 +1,4 @@
-<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST traktexport POSIX USERPROFILE SIMKL -->
+<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST NOTIFYMOE traktexport POSIX USERPROFILE SIMKL Nautiljon Otak Otaku -->
 <!-- markdownlint-disable MD033 -->
 
 <!-- omit in toc -->
@@ -6,7 +6,7 @@
 
 [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE) [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell)
 
-Automatically (and also manually) backup your anime and manga libraries from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, and Trakt. Made possible with PowerShell Core.
+Automatically (and also manually) backup your anime and manga libraries from [several anime, manga, TV shows, movies, and books tracking sites](#backup-from-x-site). Made possible with PowerShell Core.
 
 <!-- omit in toc -->
 ## Table of Contents
@@ -28,20 +28,24 @@ Automatically (and also manually) backup your anime and manga libraries from MyA
 
 ## About
 
-"Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
+"Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, SIMKL, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
 
 This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party. You can check table below to see the library/list you need to set as public:
 
-|           Sites | Requires to set as public | Description                                                                   |
-| --------------: | :-----------------------: | :---------------------------------------------------------------------------- |
-|         AniList |          **Yes**          | Uses limited access public scope with AniList GraphQL API                     |
-|          Annict |            No             | User can generate Personal Access Token from account                          |
-|    Baka-Updates |            No             | Uses `secure_session` cookie saved browser                                    |
-|           Kitsu |          **Yes**          | Uses MAL Exporter from Azure Website                                          |
-| MyAnimeList.net |          **Yes**          | Uses MAL Exporter from Azure Website                                          |
-|       Shikimori |            No             | Uses `_kawai_session` cookie saved browser                                    |
-|           SIMKL |            No             | Uses official API. However we strongly recommend you to use their VIP feature |
-|           Trakt |            No             | Uses `traktexport` Python package/module                                      |
+|           Sites | Requires to set as public |  Method  | Description                                                                   |
+| --------------: | :-----------------------: | :------: | ----------------------------------------------------------------------------- |
+|         AniList |          **Yes**          |  `API`   | Uses limited access public scope with AniList GraphQL API                     |
+|          Annict |            No             |  `API`   | User can generate Personal Access Token from account                          |
+|    Baka-Updates |            No             | `COOKIE` | Uses `secure_session` cookie saved browser                                    |
+|           Kitsu |          **Yes**          |  `3PA`   | Uses MAL Exporter from Azure Website                                          |
+| MyAnimeList.net |          **Yes**          |  `3PA`   | Uses MAL Exporter from Azure Website                                          |
+|      Notify.moe |            No             |  `API`   | Uses official API                                                             |
+|       Shikimori |            No             | `COOKIE` | Uses `_kawai_session` cookie saved browser                                    |
+|           SIMKL |            No             |  `API`   | Uses official API. However we strongly recommend you to use their VIP feature |
+|           Trakt |            No             |  `API`   | Uses `traktexport` Python package/module                                      |
+
+***Note:***\
+`API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
 
 I am not responsible and liable for warranty for any damage caused by using this project.
 
@@ -59,13 +63,20 @@ I am not responsible and liable for warranty for any damage caused by using this
 * [x] Baka-Updates
 * [x] Kitsu
 * [x] MyAnimeList
+* [x] Notify.moe
 * [x] Shikimori
 * [x] SIMKL
 * [x] Trakt
 * [ ] AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * [ ] Anime-Planet
+* [ ] AniSearch
 * [ ] Bangumi.tv
 * [ ] Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
+* [ ] IMDb &mdash; *Failed to bypass using cookie method; API paid*
+* [ ] LiveChart.me &mdash; *Doable using cookie bypass*
+* [ ] Nautiljon &mdash; *No export feature and no API access*
+* [ ] Otak Otaku &mdash; *No export feature and no API access*
+* [ ] The Movie DB
 
 ## Getting Started
 
@@ -131,6 +142,8 @@ You also need to fork the repository before cloning the repo to your local machi
   Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
   Find a name of the cookie that starts with `secure_session` and copy the value.
+* `NOTIFYMOE_NICKNAME`\
+  Your Notify.moe nickname/username, string should be `Upper-first case`. <!-- The script will automatically generate user ID from this nickname. -->
 * `SIMKL_ACCESS_TOKEN`\
   Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](Get-SimklAuth.ps1), then follow the instructions.
 * `SIMKL_CLIENT_ID`\
