@@ -107,8 +107,9 @@ New-Item -ItemType Directory -Force -Path ./annict
 New-Item -ItemType Directory -Force -Path ./kitsu
 New-Item -ItemType Directory -Force -Path ./mangaUpdates
 New-Item -ItemType Directory -Force -Path ./myAnimeList
-New-Item -ItemType Directory -Force -Path ./simkl
+New-Item -ItemType Directory -Force -Path ./notifyMoe
 New-Item -ItemType Directory -Force -Path ./shikimori
+New-Item -ItemType Directory -Force -Path ./simkl
 New-Item -ItemType Directory -Force -Path ./trakt
 
 # Download MyAnimeList Anime List with MALScraper
@@ -268,6 +269,21 @@ Write-None
 Write-Host "Exporting Shikimori manga list"
 curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shikimori.one/$($shikiUsername)/list_export/mangas.json > ./shikimori/mangaList.json
 curl -X GET --cookie "_kawai_session=$shikiSession" -A "$userAgent" https://shikimori.one/$($shikiUsername)/list_export/mangas.xml > ./shikimori/mangaList.xml
+
+Write-None
+Write-Host "Exporting Notify.moe anime list"
+$notifyNickname = $Env:NOTIFYMOE_NICKNAME 
+<#
+$notifyId = (curl -X GET -H "Content-Type: application/json" https://notify.moe/api/nicktouser/$notifyNickname | ConvertFrom-Json).userId
+curl -X GET -H "Content-Type: application/json" https://notify.moe/api/animelist/$notifyId > ./notifyMoe/animeList.json
+#>
+
+# get csv
+curl -X GET https://notify.moe/+$notifyNickname/animelist/export/csv > ./notifyMoe/animeList.csv
+# get json
+curl -X GET https://notify.moe/+$notifyNickname/animelist/export/json > ./notifyMoe/animeList.json
+# get txt
+curl -X GET https://notify.moe/+$notifyNickname/animelist/export/txt > ./notifyMoe/animeList.txt
 
 $traktUsername = $Env:TRAKT_USERNAME
 

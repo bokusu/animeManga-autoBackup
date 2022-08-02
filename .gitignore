@@ -1,3 +1,4 @@
 .env
 **.zip
 **.txt
+!notifyMoe/**
