@@ -2,7 +2,7 @@ name: Check the latest version of the repo
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 00/6 * * *"
 jobs:
   checkUpdate:
     runs-on: ubuntu-latest

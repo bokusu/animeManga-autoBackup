@@ -9,7 +9,7 @@ function Push-Git {
         git config user.email $mailAddress
         git config user.name $name
     }
-    git push
+    git push -f origin main
 }
 
 # Update Repository from Template Repository
@@ -36,14 +36,10 @@ if ($localClone -match "^git@github.com") {
     # Split the url from https://github.com/nattadasu/animeManga-autoBackup to nattadasu/animeManga-autoBackup
     $localClone = $localClone.Split("/")
     $localAuthorName = $localClone[3]
-    $localRepoName = $localClone[4]
+    $localRepoName = $localClone[4] -replace "\.git$", ""
 }
 
-$localRepo = "$localAuthorName/$localRepoName"
-$localUri = "https://api.github.com/repos/$localRepo"
-$localContent = (Invoke-WebRequest -Uri $localUri -Method Get -ContentType "application/json").Content | ConvertFrom-Json
-$localLastUpdate = Get-Date -Date $localContent.pushed_at -UFormat "%s"
-$localDefaultBranch = $localContent.default_branch
+$localLastUpdate = git log -1 --format="%ct"
 
 if ($templateRepo -eq "$localAuthorName/$localRepoName") {
     Write-Host "Repo is a template"
@@ -56,8 +52,7 @@ if ($templateRepo -eq "$localAuthorName/$localRepoName") {
         git remote add upstream "https://github.com/$templateRepo"
         git remote -v
         git fetch upstream
-        git checkout $localDefaultBranch
-        git merge upstream/$templateDefaultBranch
+        git rebase upstream/$templateDefaultBranch
         Push-Git
     } else {
         Write-Host "Local repo is newer than template repo"
