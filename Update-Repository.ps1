@@ -25,20 +25,6 @@ $templateContent = (Invoke-WebRequest -Uri $templateUri -Method Get -ContentType
 $templateDefaultBranch = $templateContent.default_branch
 $templateLastUpdate = Get-Date -Date $templateContent.pushed_at -UFormat "%s"
 
-$localClone = git config --get remote.origin.url
-# if format is git@github.com
-if ($localClone -match "^git@github.com") {
-    # Split the url into the user and repo
-    $localClone = $localClone.Split("/")
-    $localAuthorName = $localClone[0] -replace "git@github.com:", ""
-    $localRepoName = $localClone[1] -replace "\.git$", ""
-} else {
-    # Split the url from https://github.com/nattadasu/animeManga-autoBackup to nattadasu/animeManga-autoBackup
-    $localClone = $localClone.Split("/")
-    $localAuthorName = $localClone[3]
-    $localRepoName = $localClone[4] -replace "\.git$", ""
-}
-
 $localLastUpdate = git log -1 --format="%ct"
 
 if ($templateRepo -eq "$localAuthorName/$localRepoName") {
