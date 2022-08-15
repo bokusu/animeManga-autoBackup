@@ -31,7 +31,7 @@ We also automatically open your browser to the SIMKL website.
 We'll wait your response 😉
 "@
 
-Start-Process "https://simkl.com/pin/$userCode" -Wait
+Start-Process "https://simkl.com/pin/$userCode"
 
 $expiredIn = $simklRequestJson.expires_in
 $interval = $simklRequestJson.interval
