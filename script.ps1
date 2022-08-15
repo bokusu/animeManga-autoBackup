@@ -7,10 +7,6 @@ function Write-None {
     Write-Host ""
 }
 
-if (!($isAction)) {
-    ./Update-Repository.ps1
-}
-
 Write-None
 # Set output encoding to UTF-8
 Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
