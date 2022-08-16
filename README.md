@@ -1,4 +1,4 @@
-<!-- cSpell:words Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST NOTIFYMOE traktexport POSIX USERPROFILE SIMKL Nautiljon Otak Otaku -->
+<!-- cSpell:words ANIMEPLANET Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST NOTIFYMOE traktexport POSIX USERPROFILE SIMKL Nautiljon Otak Otaku -->
 <!-- markdownlint-disable MD033 -->
 
 <!-- omit in toc -->
@@ -28,21 +28,22 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 
 ## About
 
-"Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, SIMKL, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
+"Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, Anime-Planet, Notify.moe, SIMKL, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
 
-This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party. You can check table below to see the library/list you need to set as public:
+This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works. You can check table below to see the library/list you need to set as public:
 
-|           Sites | Requires to set as public |  Method  | Description                                                                   |
-| --------------: | :-----------------------: | :------: | ----------------------------------------------------------------------------- |
-|         AniList |          **Yes**          |  `API`   | Uses limited access public scope with AniList GraphQL API                     |
-|          Annict |            No             |  `API`   | User can generate Personal Access Token from account                          |
-|    Baka-Updates |            No             | `COOKIE` | Uses `secure_session` cookie saved browser                                    |
-|           Kitsu |          **Yes**          |  `3PA`   | Uses MAL Exporter from Azure Website                                          |
-| MyAnimeList.net |          **Yes**          |  `3PA`   | Uses MAL Exporter from Azure Website                                          |
-|      Notify.moe |            No             |  `API`   | Uses official API                                                             |
-|       Shikimori |            No             | `COOKIE` | Uses `_kawai_session` cookie saved browser                                    |
-|           SIMKL |            No             |  `API`   | Uses official API. However we strongly recommend you to use their VIP feature |
-|           Trakt |            No             |  `API`   | Uses `traktexport` Python package/module                                      |
+|           Sites | Requires public |  Method  | Requires User Agent | Description                                                                   |
+| --------------: | :-------------: | :------: | :-----------------: | ----------------------------------------------------------------------------- |
+|         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API                     |
+|    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                          |
+|          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account                          |
+|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved browser                                    |
+|           Kitsu |       No        |  `API`   |         No          | Uses official API                                                             |
+| MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                          |
+|      Notify.moe |       No        |  `API`   |         No          | Uses official API                                                             |
+|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved browser                                    |
+|           SIMKL |       No        |  `API`   |         No          | Uses official API. However we strongly recommend you to use their VIP feature |
+|           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                                      |
 
 ***Note:***\
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
@@ -53,30 +54,32 @@ I am not responsible and liable for warranty for any damage caused by using this
 
 ### Legends
 
-* [x] : Available
-* [ ] : Not Available
+* ✅ : Available
+* 🚫 : Not Available
+* ⌛ : In Development
+* 💻 : Technical difficulty, usually due to pagination or need to scrape XML/HTML table and does not have capability to do so.
 
 ### Backup from `x` site
 
-* [x] AniList
-* [x] Annict
-* [x] Baka-Updates
-* [x] Kitsu
-* [x] MyAnimeList
-* [x] Notify.moe
-* [x] Shikimori
-* [x] SIMKL
-* [x] Trakt
-* [ ] AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
-* [ ] Anime-Planet
-* [ ] AniSearch
-* [ ] Bangumi.tv
-* [ ] Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
-* [ ] IMDb &mdash; *Failed to bypass using cookie method; API paid*
-* [ ] LiveChart.me &mdash; *Doable using cookie bypass*
-* [ ] Nautiljon &mdash; *No export feature and no API access*
-* [ ] Otak Otaku &mdash; *No export feature and no API access*
-* [ ] The Movie DB
+* ✅ AniList
+* ✅ Anime-Planet
+* ✅ Annict
+* ✅ Baka-Updates
+* ✅ Kitsu
+* ✅ MyAnimeList
+* ✅ Notify.moe
+* ✅ Shikimori
+* ✅ SIMKL
+* ✅ Trakt
+* 💻 AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
+* ⌛ AniSearch
+* 💻 Bangumi.tv &mdash; Pagination
+* 🚫 Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
+* 🚫 IMDb &mdash; *Failed to bypass using cookie method; API paid*
+* 💻 LiveChart.me &mdash; *Doable using cookie bypass*
+* 💻 Nautiljon &mdash; *No export feature and no API access*
+* 💻 Otak Otaku &mdash; *No export feature and no API access*
+* ⌛ The Movie DB
 
 ## Getting Started
 
@@ -85,14 +88,12 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 **NOTE**\
-If you are running this script using workers, skip the instructions, and straightly jump to next section.
+If you are running this script using workers (GitHub Actions, etc), skip the instructions, and straightly jump to next section.
 
 Before starting the script, you need to install the following packages:
 
-* `choco` for Windows user, or `brew` for Mac user
-* `curl`
 * `git`
-* `pwsh` version >= 7.0.0
+* PowerShell Core (`pwsh`) version >= 7.0.0
 * `python` version >= 3.7
 
 You also need to fork the repository before cloning the repo to your local machine OR initializing the repository with GitHub Actions.
@@ -113,7 +114,7 @@ You also need to fork the repository before cloning the repo to your local machi
 2. On the left sidebar, find "**Secrets**" and click **Actions**.
 3. Click <kbd>New repository secret</kbd> button.
 4. Follow the instructions in [# Variables Instructions](#variables-instructions) to set the variables.
-   * The text in `this box` mean a name, and Value is the key/cookie.
+   * The text on `code block` in the instruction mean a name, and Value is the key/cookie.
    * Repeat this step for all the variables listed in the instruction.
    * If you did not registered to some site, leave the value empty.
 
@@ -121,12 +122,18 @@ You also need to fork the repository before cloning the repo to your local machi
 
 * `ANILIST_USERNAME`\
   Your AniList username.
+* `ANIMEPLANET_USERNAME`\
+  Your Anime-Planet username.
 * `ANNICT_PERSONAL_ACCESS_TOKEN`\
   Your Annict Personal Access Token. You can generate one from your account via [Application Settings](https://en.annict.com/settings/apps).
-* `KITSU_USERID`\
+* `KITSU_EMAIL`\
+  Your Kitsu email used to login.
+* `KITSU_PASSWORD`\
+  Your Kitsu password used to login.
+<!-- * `KITSU_USERID`\
   Your Kitsu user ID. To get it, open your Kitsu profile, right click on your display/profile picture, and click "Open in new tab".
 
-  Your ID is right after `avatar/`.
+  In some cases, your ID is right after `avatar/` or after `user/`
 
   For example:
 
@@ -135,7 +142,14 @@ You also need to fork the repository before cloning the repo to your local machi
                                        ^^^^^^
   ```
 
-  `000000` is the ID.
+  If the url uses `users/avatars/` path, `000000` is the ID. However, if the path is:
+
+  ```py
+  https://media.kitsu.io/user/000000/avatar/[FILENAME]
+                              ^^^^^^
+  ```
+
+  then `000000` is the ID. -->
 * `MAL_USERNAME`\
   Your MyAnimeList username.
 * `MANGAUPDATES_SESSION`\
@@ -165,7 +179,7 @@ You also need to fork the repository before cloning the repo to your local machi
 * `TRAKT_USERNAME`\
   Your Trakt username.
 * `USER_AGENT`\
-  Your user agent.
+  Your user agent. This field is required for some sites. You can get your current user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/)
 
 ## Usage
 
@@ -177,9 +191,15 @@ You also need to fork the repository before cloning the repo to your local machi
 
 ### On GitHub Actions
 
+#### If the repo is forked
+
 1. Open Actions tab.
 2. Opt in the feature to enable.
 3. Done.
+
+#### If the repo is generated from template
+
+* Done. Basically, the Action is enabled by default.
 
 **NOTE**\
 The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
