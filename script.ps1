@@ -491,6 +491,21 @@ Function Get-TraktBackup {
     traktexport export $traktUsername | Out-File "./trakt/data.json"
 }
 
+Function Get-VNDBBackup {
+    Write-None
+    Write-Host "Creating directory for VNDB"
+    New-Item -ItemType Directory -Force -Path ./vndb
+
+    Write-None
+    Write-Host "Exporting VNDB game list"
+    $vndbUid = $Env:VNDB_UID
+    $vndbSession = New-WebSession -Cookies @{
+        "vndb_auth" = $Env:VNDB_AUTH
+        "vndb_samesite" = "1"
+    } -For "https://vndb.org"
+    Invoke-WebRequest -Uri "https://vndb.org/$($vndbUid)/ulist?vnlist=1" =Method Get -UserAgent $userAgent -Session $vndbSession -OutFile ./vndb/gameList.xml
+}
+
 # Check each Environment Variable if filled, if not skip
 if ($Env:ANILIST_USERNAME) { Get-AniListBackup }
 if ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }

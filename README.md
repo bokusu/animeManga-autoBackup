@@ -37,13 +37,14 @@ This project **requires you to set the library/list as public** as most API used
 |         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API                     |
 |    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                          |
 |          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account                          |
-|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved browser                                    |
+|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser                                 |
 |           Kitsu |       No        |  `API`   |         No          | Uses official API                                                             |
 | MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                          |
 |      Notify.moe |       No        |  `API`   |         No          | Uses official API                                                             |
-|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved browser                                    |
+|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser                                 |
 |           SIMKL |       No        |  `API`   |         No          | Uses official API. However we strongly recommend you to use their VIP feature |
 |           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                                      |
+|            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                                      |
 
 ***Note:***\
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
@@ -71,6 +72,7 @@ I am not responsible and liable for warranty for any damage caused by using this
 * ✅ Shikimori
 * ✅ SIMKL
 * ✅ Trakt
+* ✅ Visual Novel Database (VNDB)
 * 💻 AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * ⌛ AniSearch
 * 💻 Bangumi.tv &mdash; Pagination
@@ -87,8 +89,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-**NOTE**\
-If you are running this script using workers (GitHub Actions, etc), skip the instructions, and straightly jump to next section.
+#### Required softwares/packages for locally run the script
 
 Before starting the script, you need to install the following packages:
 
@@ -96,7 +97,16 @@ Before starting the script, you need to install the following packages:
 * PowerShell Core (`pwsh`) version >= 7.0.0
 * `python` version >= 3.7
 
-You also need to fork the repository before cloning the repo to your local machine OR initializing the repository with GitHub Actions.
+You also need to fork the repository before cloning the repo to your local machine.
+
+#### Run the script by service worker (GitHub Actions)
+
+* [Fork the repository](https://github.com/nattadasu/animeManga-autoBackup/fork) OR [generate new repository using this repository](https://github.com/nattadasu/animeManga-autoBackup/generate)
+* Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
+
+  **NOTE**\
+  Do not ever modify [`.env.example`](.env.example) if you did not want your credential revealed by public.
+* Follow instruction on [# On GitHub Actions](#on-github-actions) to initialize/run GitHub Actions.
 
 ### Setting Environment Variables
 
@@ -180,6 +190,21 @@ You also need to fork the repository before cloning the repo to your local machi
   Your Trakt username.
 * `USER_AGENT`\
   Your user agent. This field is required for some sites. You can get your current user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/)
+* `VNDB_AUTH`\
+  Your VNDB session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+
+  Find a name of the cookie that starts with `vndb_auth` and copy the value.
+* `VNDB_UID`\
+  Your VNDB user ID. To get it, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
+
+  For example:
+
+  ```py
+  https://vndb.org/u123456/ulist?vnlist=1
+                   ^^^^^^^
+  ```
+
+  `u12345` is your UID.
 
 ## Usage
 
