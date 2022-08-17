@@ -503,7 +503,7 @@ Function Get-VNDBBackup {
         "vndb_auth" = $Env:VNDB_AUTH
         "vndb_samesite" = "1"
     } -For "https://vndb.org"
-    Invoke-WebRequest -Uri "https://vndb.org/$($vndbUid)/ulist?vnlist=1" =Method Get -UserAgent $userAgent -Session $vndbSession -OutFile ./vndb/gameList.xml
+    Invoke-WebRequest -Uri "https://vndb.org/$($vndbUid)/list-export/xml" =Method Get -UserAgent $userAgent -Session $vndbSession -OutFile ./vndb/gameList.xml
 }
 
 # Check each Environment Variable if filled, if not skip
@@ -517,6 +517,7 @@ if ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
 if ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
 if ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
 if ($Env:TRAKT_USERNAME) { Get-TraktBackup }
+if ($Env:VNDB_UID) { Get-VNDBBackup }
 
 Write-None
 Write-Host "Format JSON files"
