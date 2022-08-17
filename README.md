@@ -93,6 +93,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 Before starting the script, you need to install the following packages:
 
+* `curl` as fallback for several sites that requires cookies. Native method using `Invoke-WebRequest` sometime failed to append cookies on requests.
 * `git`
 * PowerShell Core (`pwsh`) version >= 7.0.0
 * `python` version >= 3.7
