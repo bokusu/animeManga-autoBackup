@@ -361,6 +361,7 @@ Function Get-MangaUpdatesBackup {
 
     $readmeValue = @"
 This is a backup of your MangaUpdates list.
+By default, files were saved as `.tsv` files rather `.csv` to explicitly state to the program if the file uses tabs as a delimiter.
 File naming on this folder is following MyAnimeList's naming convention:
 | File Name            | On MangaUpdates |
 | -------------------- | --------------- |
