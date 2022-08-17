@@ -4,11 +4,9 @@
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
 $userAgent = $Env:USER_AGENT
 
-Function Write-None {
-    Write-Host ""
-}
+Function Write-None { Write-Host "" }
 
-function New-WebSession {
+Function New-WebSession {
     param(
         [hashtable]$Cookies,
         [Uri]$For
@@ -29,22 +27,22 @@ function New-WebSession {
     return $newSession
 }
 
-function Test-Binary {
+Function Test-Binary {
     param(
         [string]$Binary,
         [Switch]$isModule
     )
     
-    if ($isModule) {
+    If ($isModule) {
         Write-Host "Checking if $Binary module installed"
-        if (-Not (Get-Module -Name "$Binary")) {
+        If (-Not (Get-Module -Name "$Binary")) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
             Install-Module -Name "$Binary" -Scope CurrentUser
         }
-    } else {
+    } Else {
         Write-Host "Checking if $Binary is installed"
-        if (-Not (Get-Command -Name "$Binary" -ErrorAction SilentlyContinue)) {
+        If (-Not (Get-Command -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Please to install latest version of $Binary"
             Exit 1
@@ -58,6 +56,18 @@ function Test-Binary {
     #>
 }
 
+Function Add-Directory {
+    param(
+        [string]$Path,
+        [string]$Name
+    )
+    Write-None
+    Write-Host "Creating directory for $Name"
+    If (-Not (Test-Path $Path)) {
+        New-Item -ItemType Directory -Path $Path -Force
+    }
+}
+
 Write-None
 # Set output encoding to UTF-8
 Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
@@ -68,9 +78,9 @@ Test-Binary -Binary pip
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
 # check if the script run from GitHub Actions
-if ($isAction) {
+If ($isAction) {
     Write-Host "Script running from GitHub Actions"
-} else {
+} Else {
     Write-Host "Script running locally"
 }
 
@@ -84,17 +94,17 @@ Test-Binary -Binary PSGraphQL -isModule
 
 Write-None
 Write-Host "Importing dotEnv file"
-if (-Not($isAction)) {
-    if (Test-Path -Path ".env") {
+If (-Not($isAction)) {
+    If (Test-Path -Path ".env") {
         Write-Host ".env file exists" -ForegroundColor Green
         Set-PsEnv
         Write-Host ".env file imported" -ForegroundColor Green
-    } else {
+    } Else {
         Write-None
         Write-Host ".env file does not exist, creating..." -ForegroundColor Red
         Copy-Item -Path ".env.example" -Destination ".env"
         Write-Host "Please to edit .env from your preferred text editor first and rerun the script." -ForegroundColor Red
-        exit 1 # User requires to manually configure the file
+        Exit 1 # User requires to manually configure the file
     }
 }
 
@@ -105,9 +115,7 @@ Import-Module "./Modules/Format-Json.psm1"
 ############################
 
 Function Get-AniListBackup {
-    Write-None
-    Write-Host "Creating directory for AniList"
-    New-Item -ItemType Directory -Force -Path ./aniList
+    Add-Directory -Path ./aniList -Name AniList
 
     Write-None
     Write-Host "Exporting AniList anime list"
@@ -232,9 +240,7 @@ Function Get-AniListBackup {
 }
 
 Function Get-AnimePlanetBackup {
-    Write-None
-    Write-Host "Creating directory for Anime-Planet"
-    New-Item -ItemType Directory -Force -Path ./animePlanet
+    Add-Directory -Path ./animePlanet -Name Anime-Planet
 
     Write-None
     Write-Host "Exporting Anime-Planet anime list"
@@ -251,9 +257,7 @@ Function Get-AnimePlanetBackup {
 }
 
 Function Get-AnnictBackup {
-    Write-None
-    Write-Host "Creating directory for Annict"
-    New-Item -ItemType Directory -Force -Path ./annict
+    Add-Directory -Path ./annict -Name Annict
 
     Write-None
     Write-Host "Exporting Annict anime list"
@@ -313,9 +317,7 @@ Function Get-AnnictBackup {
 }
 
 Function Get-KitsuBackup {
-    Write-None
-    Write-Host "Creating directory for Kitsu"
-    New-Item -ItemType Directory -Force -Path ./kitsu
+    Add-Directory -Path ./kitsu -Name Kitsu
 
     Write-None
     Write-Host "Exporting Kitsu anime list"
@@ -337,9 +339,7 @@ Function Get-KitsuBackup {
 }
 
 Function Get-MangaUpdatesBackup {
-    Write-None
-    Write-Host "Creating directory for Baka-Updates' MangaUpdates"
-    New-Item -ItemType Directory -Force -Path ./mangaUpdates
+    Add-Directory -Path ./mangaUpdates -Name "Baka Updates' Manga-Updates"
 
     Write-None
     Write-Host "Configuring session cookie"
@@ -375,9 +375,7 @@ File naming on this folder is following MyAnimeList's naming convention:
 }
 
 Function Get-MyAnimeListBackup {
-    Write-None
-    Write-Host "Creating directory for MyAnimeList"
-    New-Item -ItemType Directory -Force -Path ./myAnimeList
+    Add-Directory -Path ./myAnimeList -Name MyAnimeList
 
     Write-None
     Write-Host "Exporting MyAnimeList anime list"
@@ -395,9 +393,7 @@ Function Get-MyAnimeListBackup {
 }
 
 Function Get-NotifyMoeBackup {
-    Write-None
-    Write-Host "Creating directory for Notify.moe"
-    New-Item -ItemType Directory -Force -Path ./notifyMoe
+    Add-Directory -Path ./notifyMoe -Name "Notify.moe"
 
     Write-None
     Write-Host "Exporting Notify.moe anime list"
@@ -412,9 +408,7 @@ Function Get-NotifyMoeBackup {
 }
 
 Function Get-ShikimoriBackup {
-    Write-None
-    Write-Host "Creating directory for Shikimori"
-    New-Item -ItemType Directory -Force -Path ./shikimori
+    Add-Directory -Path ./shikimori -Name Shikimori
     
     Write-None
     Write-Host "Exporting Shikimori anime list"
@@ -433,10 +427,8 @@ Function Get-ShikimoriBackup {
 }
 
 Function Get-SimklBackup {
-    Write-None
-    Write-Host "Creating directory for Simkl"
-    New-Item -ItemType Directory -Force -Path ./simkl
-    
+    Add-Directory -Path ./simkl -Name SIMKL
+
     Write-None
     Write-Host "Exporting SIMKL list"
     $simklClientId = $Env:SIMKL_CLIENT_ID
@@ -449,19 +441,17 @@ Function Get-SimklBackup {
 }
 
 Function Get-TraktBackup {
-    Write-None
-    Write-Host "Creating directory for Trakt"
-    New-Item -ItemType Directory -Force -Path ./trakt
-    
+    Add-Directory -Path ./trakt -Name Trakt
+
     $traktUsername = $Env:TRAKT_USERNAME
 
     Write-None
     Write-Host "Exporting Trakt.tv data"
     # Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
     
-    if (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
+    If (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
         Write-Host "Trakt Exporter Python Module is installed"
-    } else {
+    } Else {
         Write-Host "Installing Trakt Exporter Python Module"
         pip install traktexport
     }
@@ -471,18 +461,18 @@ Function Get-TraktBackup {
     $traktExportJson = "{`"CLIENT_ID`": `"$($Env:TRAKT_CLIENT_ID)`", `"CLIENT_SECRET`": `"$($Env:TRAKT_CLIENT_SECRET)`", `"OAUTH_TOKEN`": `"$($Env:TRAKT_OAUTH_TOKEN)`", `"OAUTH_REFRESH`": `"$($Env:TRAKT_OAUTH_REFRESH)`", `"OAUTH_EXPIRES_AT`": $($Env:TRAKT_OAUTH_EXPIRY)}"
     
     # Check if linux or windows
-    if ($Env:XDG_DATA_HOME) {
+    If ($Env:XDG_DATA_HOME) {
         $dataDir = $Env:XDG_DATA_HOME
-    } elseif ($isWindows) {
+    } elseIf ($isWindows) {
         $dataDir = "~/.traktexport"
-    } else {
+    } Else {
         $dataDir = "~/.local/share"
     }
     
     # Check if file exist
-    if (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
+    If (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
         Write-Host "Config file exists" -ForegroundColor Green
-    } else {
+    } Else {
         Write-Host "Config file does not exist" -ForegroundColor Red
         Write-Host "Creating config file" -ForegroundColor Yellow
         New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExportJson
@@ -493,31 +483,32 @@ Function Get-TraktBackup {
 
 Function Get-VNDBBackup {
     Write-None
-    Write-Host "Creating directory for VNDB"
-    New-Item -ItemType Directory -Force -Path ./vndb
+    Write-Host "Checking if curl is installed as fallback due to Invoke-WebRequest not working properly in handling cookies"
+    Test-Binary -Binary curl
+
+    Add-Directory -Path ./vndb -Name VNDB
 
     Write-None
     Write-Host "Exporting VNDB game list"
     $vndbUid = $Env:VNDB_UID
-    $vndbSession = New-WebSession -Cookies @{
-        "vndb_auth" = $Env:VNDB_AUTH
-        "vndb_samesite" = "1"
-    } -For "https://vndb.org"
-    Invoke-WebRequest -Uri "https://vndb.org/$($vndbUid)/list-export/xml" =Method Get -UserAgent $userAgent -Session $vndbSession -OutFile ./vndb/gameList.xml
+    $vndbAuth = $Env:VNDB_AUTH
+    $vndbUrl = "https://vndb.org/$($vndbUid)/list-export/xml"
+
+    curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
 }
 
 # Check each Environment Variable if filled, if not skip
-if ($Env:ANILIST_USERNAME) { Get-AniListBackup }
-if ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
-if ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
-if ($Env:KITSU_EMAIL) { Get-KitsuBackup }
-if ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
-if ($Env:MAL_USERNAME){ Get-MyAnimeListBackup }
-if ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
-if ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
-if ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
-if ($Env:TRAKT_USERNAME) { Get-TraktBackup }
-if ($Env:VNDB_UID) { Get-VNDBBackup }
+If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
+If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
+If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
+If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
+If ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
+If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup }
+If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
+If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
+If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
+If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
+If ($Env:VNDB_UID) { Get-VNDBBackup }
 
 Write-None
 Write-Host "Format JSON files"
