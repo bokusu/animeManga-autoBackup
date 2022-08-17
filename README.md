@@ -103,6 +103,14 @@ You also need to fork the repository before cloning the repo to your local machi
 #### Run the script by service worker (GitHub Actions)
 
 * [Fork the repository](https://github.com/nattadasu/animeManga-autoBackup/fork) OR [generate new repository using this repository](https://github.com/nattadasu/animeManga-autoBackup/generate)
+  * Basically the differences are such:
+    |                | Forked                     | Generated from Template                                    |
+    | -------------- | :------------------------- | :--------------------------------------------------------- |
+    | Commit History | Follows upstream (dirty)   | No previous commit history (clean)                         |
+    | GitHub Actions | Disabled by default        | Enabled by default                                         |
+    | Stability      | No, upstream               | Yes, because the snapshot basically is stable              | 
+    | Update         | Yes                        | No, needs manually update by cloning repo to local machine |
+    | Visibility     | You can not set to Private | You can set to Private                                     |
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
 
   **NOTE**\
