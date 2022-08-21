@@ -371,10 +371,7 @@ File naming on this folder is following MyAnimeList's naming convention:
 | onHold.tsv           | Hold            |
 | planToRead.tsv       | Wish            |
 "@
-    If (Test-Path -Path ./mangaUpdates/README) {
-        Remove-Item -Path ./mangaUpdates/README -Force
-    }
-    New-Item -ItemType File -Path "./mangaUpdates/README" -Value $readmeValue
+    $readmeValue | Out-File -FilePath ./mangaUpdates/README.txt
 }
 
 Function Get-MyAnimeListBackup {
