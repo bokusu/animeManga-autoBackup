@@ -1,4 +1,4 @@
-<!-- cSpell:words ANIMEPLANET Kitsu Shikimori Trakt Annict Bangumi kawai Darek Goodreads USERID pwsh choco MANGAUPDATES ANILIST NOTIFYMOE traktexport POSIX USERPROFILE SIMKL Nautiljon Otak Otaku -->
+<!-- cSpell:words ANILIST ANIMEPLANET Annict Automail Bangumi choco Darek Goodreads Importability kawai Kitsu MANGAUPDATES Nautiljon NOTIFYMOE Otak Otaku POSIX pwsh Shikimori SIMKL Trakt traktexport USERID USERPROFILE VNDB -->
 <!-- markdownlint-disable MD033 -->
 
 <!-- omit in toc -->
@@ -15,8 +15,11 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 * [Features and To Do](#features-and-to-do)
   * [Legends](#legends)
   * [Backup from `x` site](#backup-from-x-site)
+* [Files Generated and Importability](#files-generated-and-importability)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
+    * [Required softwares/packages for locally run the script](#required-softwarespackages-for-locally-run-the-script)
+    * [Run the script by service worker (GitHub Actions)](#run-the-script-by-service-worker-github-actions)
   * [Setting Environment Variables](#setting-environment-variables)
     * [Based on where you run](#based-on-where-you-run)
       * [For Local Machine](#for-local-machine)
@@ -25,6 +28,8 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 * [Usage](#usage)
   * [On Local Machine](#on-local-machine)
   * [On GitHub Actions](#on-github-actions)
+    * [If the repo is forked](#if-the-repo-is-forked)
+    * [If the repo is generated from template](#if-the-repo-is-generated-from-template)
 
 ## About
 
@@ -83,6 +88,22 @@ I am not responsible and liable for warranty for any damage caused by using this
 * 💻 Otak Otaku &mdash; *No export feature and no API access*
 * ⌛ The Movie DB
 
+## Files Generated and Importability
+
+| Sites Name   | File Saved As           | Can Be Imported Back? | Description                                                                     |
+| ------------ | ----------------------- | --------------------- | ------------------------------------------------------------------------------- |
+| AniList      | `.json`                 | Yes                   | You need to use [Automail] to import back to AniList                            |
+| Anime-Planet | `.xml`                  | Limited               | Backup file is formatted as MyAnimeList XML, can not reimported to Anime-Planet |
+| Annict       | `.json`                 | No                    | There is no official import/export feature                                      |
+| Baka-Updates | `.tsv`                  | No                    | There is no official import/export feature                                      |
+| Kitsu        | `.xml`                  | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                         |
+| MyAnimeList  | `.xml`                  | Yes                   | You can reimport back to MyAnimeList                                            |
+| Notify.moe   | `.json`, `.csv`, `.txt` | No                    | There is no official import/export feature                                      |
+| Shikimori    | `.json`, `.xml`         | Yes                   | You can reimport back to Shikimori or import to MyAnimeList using XML           |
+| SIMKL        | `.json`                 | No                    | There is no official import/export feature                                      |
+| Trakt        | `.json`                 | No                    | There is no official import/export feature                                      |
+| VNDB         | `.xml`                  | No                    | There is no official import/export feature                                      |
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine or using GitHub Actions.
@@ -108,7 +129,7 @@ You also need to fork the repository before cloning the repo to your local machi
     | -------------- | :------------------------- | :--------------------------------------------------------- |
     | Commit History | Follows upstream (dirty)   | No previous commit history (clean)                         |
     | GitHub Actions | Disabled by default        | Enabled by default                                         |
-    | Stability      | No, upstream               | Yes, because the snapshot basically is stable              | 
+    | Stability      | No, upstream               | Yes, because the snapshot basically is stable              |
     | Update         | Yes                        | No, needs manually update by cloning repo to local machine |
     | Visibility     | You can not set to Private | You can set to Private                                     |
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
@@ -237,3 +258,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **NOTE**\
 The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
+
+
+<!-- Links -->
+[Automail]: https://greasyfork.org/en/scripts/370473-automail
