@@ -68,6 +68,16 @@ Function Add-Directory {
     }
 }
 
+Function Confirm-UserAgent {
+    Write-Host "Checking if $UserAgent is set"
+    If ($null -eq $userAgent) {
+        Write-Host "User agent is not set" -ForegroundColor Red
+        Write-Host "Please set user agent variable to continue"
+        Exit 1
+    }
+    Write-Host "User agent is set" -ForegroundColor Green
+}
+
 Write-None
 # Set output encoding to UTF-8
 Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
@@ -495,6 +505,11 @@ Function Get-VNDBBackup {
     $vndbUrl = "https://vndb.org/$($vndbUid)/list-export/xml"
 
     curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
+}
+
+# Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
+If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
+    Confirm-UserAgent
 }
 
 # Check each Environment Variable if filled, if not skip
