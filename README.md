@@ -78,12 +78,14 @@ I am not responsible and liable for warranty for any damage caused by using this
 * ✅ SIMKL
 * ✅ Trakt
 * ✅ Visual Novel Database (VNDB)
+* ⌛ 9Anime
 * 💻 AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
-* ⌛ AniSearch
+* 🚫 AniSearch &mdash; *Failed to bypass cookies, API access limited, requests only*
 * 💻 Bangumi.tv &mdash; Pagination
 * 🚫 Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
 * 🚫 IMDb &mdash; *Failed to bypass using cookie method; API paid*
-* 💻 LiveChart.me &mdash; *Doable using cookie bypass*
+* 💻 LiveChart.me &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
+* ⌛ MangaDex
 * 💻 Nautiljon &mdash; *No export feature and no API access*
 * 💻 Otak Otaku &mdash; *No export feature and no API access*
 * ⌛ The Movie DB
