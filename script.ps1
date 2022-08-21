@@ -2,7 +2,6 @@
 
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
-$userAgent = $Env:USER_AGENT
 
 Function Write-None { Write-Host "" }
 
@@ -69,13 +68,17 @@ Function Add-Directory {
 }
 
 Function Confirm-UserAgent {
-    Write-Host "Checking if $UserAgent is set"
-    If ($null -eq $userAgent) {
+    Param (
+        [string]$UserAgent
+    )
+    Write-None
+    Write-Host "Checking if user agent is set"
+    If ($null -eq $UserAgent) {
         Write-Host "User agent is not set" -ForegroundColor Red
         Write-Host "Please set user agent variable to continue"
         Exit 1
     }
-    Write-Host "User agent is set" -ForegroundColor Green
+    Write-Host "User agent is set to $UserAgent" -ForegroundColor Green
 }
 
 Write-None
@@ -509,8 +512,10 @@ Function Get-VNDBBackup {
 
 # Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
 If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
-    Confirm-UserAgent
+    Confirm-UserAgent -UserAgent $Env:USER_AGENT
 }
+
+$userAgent = $Env:USER_AGENT
 
 # Check each Environment Variable if filled, if not skip
 If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
