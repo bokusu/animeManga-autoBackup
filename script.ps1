@@ -470,7 +470,7 @@ Function Get-SimklBackup {
     Write-None
     Write-Host "Creating SIMKL zip file"
     Copy-Item -Path ./simkl/data.json -Destination ./simkl/SimklBackup.json
-    Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal
+    Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal -Force
     Remove-Item -Path ./simkl/SimklBackup.json
 }
 
