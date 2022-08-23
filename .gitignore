@@ -1,4 +1,5 @@
 .env
 **.zip
 **.txt
+**.py
 !notifyMoe/**

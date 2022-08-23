@@ -1,5 +1,5 @@
 <!-- cSpell:words ANILIST ANIMEPLANET Annict Automail Bangumi choco Darek Goodreads Importability kawai Kitsu MANGAUPDATES Nautiljon NOTIFYMOE Otak Otaku POSIX pwsh Shikimori SIMKL Trakt traktexport USERID USERPROFILE VNDB -->
-<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD033 MD034 -->
 
 <!-- omit in toc -->
 # Anime Manga Auto Backup
@@ -78,7 +78,7 @@ I am not responsible and liable for warranty for any damage caused by using this
 * ✅ SIMKL
 * ✅ Trakt
 * ✅ Visual Novel Database (VNDB)
-* ⌛ 9Anime
+* 🚫 9Anime
 * 💻 AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * 🚫 AniSearch &mdash; *Failed to bypass cookies, API access limited, requests only*
 * 💻 Bangumi.tv &mdash; Pagination
@@ -92,19 +92,19 @@ I am not responsible and liable for warranty for any damage caused by using this
 
 ## Files Generated and Importability
 
-| Sites Name   | File Saved As           | Can Be Imported Back? | Description                                                                     |
-| ------------ | ----------------------- | --------------------- | ------------------------------------------------------------------------------- |
-| AniList      | `.json`                 | Yes                   | You need to use [Automail] to import back to AniList                            |
-| Anime-Planet | `.xml`                  | Limited               | Backup file is formatted as MyAnimeList XML, can not reimported to Anime-Planet |
-| Annict       | `.json`                 | No                    | There is no official import/export feature                                      |
-| Baka-Updates | `.tsv`                  | No                    | There is no official import/export feature                                      |
-| Kitsu        | `.xml`                  | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                         |
-| MyAnimeList  | `.xml`                  | Yes                   | You can reimport back to MyAnimeList                                            |
-| Notify.moe   | `.json`, `.csv`, `.txt` | No                    | There is no official import/export feature                                      |
-| Shikimori    | `.json`, `.xml`         | Yes                   | You can reimport back to Shikimori or import to MyAnimeList using XML           |
-| SIMKL        | `.json`                 | No                    | There is no official import/export feature                                      |
-| Trakt        | `.json`                 | No                    | There is no official import/export feature                                      |
-| VNDB         | `.xml`                  | No                    | There is no official import/export feature                                      |
+| Sites Name   | File Saved As           | Can Be Imported Back? | Description                                                                                       |
+| ------------ | ----------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
+| AniList      | `.json`, `.xml`         | Yes                   | You need to use [Automail] to import back to AniList in JSON, or  import to MyAnimeList using XML |
+| Anime-Planet | `.xml`                  | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it |
+| Annict       | `.json`                 | No                    | There is no official import/export feature                                                        |
+| Baka-Updates | `.tsv`                  | No                    | There is no official import/export feature                                                        |
+| Kitsu        | `.xml`                  | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                                           |
+| MyAnimeList  | `.xml`                  | Yes                   | You can reimport back to MyAnimeList                                                              |
+| Notify.moe   | `.json`, `.csv`, `.txt` | No                    | There is no official import/export feature                                                        |
+| Shikimori    | `.json`, `.xml`         | Yes                   | You can reimport back to Shikimori or import to MyAnimeList using XML                             |
+| SIMKL        | `.json`, `.zip`         | Yes                   | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back                        |
+| Trakt        | `.json`                 | No                    | There is no official import/export feature                                                        |
+| VNDB         | `.xml`                  | No                    | There is no official import/export feature                                                        |
 
 ## Getting Started
 

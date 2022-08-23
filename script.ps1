@@ -68,17 +68,12 @@ Function Add-Directory {
 }
 
 Function Confirm-UserAgent {
-    Param (
-        [string]$UserAgent
-    )
-    Write-None
-    Write-Host "Checking if user agent is set"
-    If ($null -eq $UserAgent) {
+    If ($null -eq $Env:USER_AGENT) {
         Write-Host "User agent is not set" -ForegroundColor Red
         Write-Host "Please set user agent variable to continue"
         Exit 1
     }
-    Write-Host "User agent is set to $UserAgent" -ForegroundColor Green
+    Write-Host "User agent is set to $Env:USER_AGENT" -ForegroundColor Green
 }
 
 Write-None
@@ -131,7 +126,7 @@ Function Get-AniListBackup {
     Add-Directory -Path ./aniList -Name AniList
 
     Write-None
-    Write-Host "Exporting AniList anime list"
+    Write-Host "Exporting AniList anime list in JSON"
     $aniListUsername = $Env:ANILIST_USERNAME
     $aniListUri = "https://graphql.anilist.co"
     $alAnimeBody = '
@@ -248,8 +243,27 @@ Function Get-AniListBackup {
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw > ./aniList/animeList.json
 
     Write-None
-    Write-Host "Exporting AniList manga list"
+    Write-Host "Exporting AniList manga list in JSON"
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw > ./aniList/mangaList.json
+
+    Write-None
+    Write-Host "Exporting AniList anime list in XML"
+
+    If (!(pip show requests)) {
+        Write-Host "Requests module is not installed" -ForegroundColor Red
+        Write-Host "Installing requests module"
+        pip install requests
+    }
+    Write-Host "Requests module is installed" -ForegroundColor Green
+
+    # Download a py script
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nattadasu/anilist-to-mal/master/main.py" -OutFile "./aniList.py" 
+
+    python ./aniList.py --username $aniListUsername --type anime -o "./aniList/animeList"
+
+    Write-None
+    Write-Host "Exporting AniList manga list in XML"
+    python ./aniList.py --username $aniListUsername --type manga -o "./aniList/mangaList"
 }
 
 Function Get-AnimePlanetBackup {
@@ -451,6 +465,13 @@ Function Get-SimklBackup {
         "Authorization" = "Bearer $($simklAccessToken)";
         "simkl-api-key" = $($simklClientId);
     } -Uri "https://api.simkl.com/sync/all-items/?episode_watched_at=yes" -OutFile "./simkl/data.json"
+
+    # Create a zip file for SIMKL allows importing it back
+    Write-None
+    Write-Host "Creating SIMKL zip file"
+    Copy-Item -Path ./simkl/data.json -Destination ./simkl/SimklBackup.json
+    Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal
+    Remove-Item -Path ./simkl/SimklBackup.json
 }
 
 Function Get-TraktBackup {
@@ -512,7 +533,7 @@ Function Get-VNDBBackup {
 
 # Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
 If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
-    Confirm-UserAgent -UserAgent $Env:USER_AGENT
+    Confirm-UserAgent
 }
 
 $userAgent = $Env:USER_AGENT
