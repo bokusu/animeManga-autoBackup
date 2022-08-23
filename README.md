@@ -261,6 +261,5 @@ You also need to fork the repository before cloning the repo to your local machi
 **NOTE**\
 The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
 
-
 <!-- Links -->
 [Automail]: https://greasyfork.org/en/scripts/370473-automail
