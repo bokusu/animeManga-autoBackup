@@ -54,7 +54,9 @@ This project **requires you to set the library/list as public** as most API used
 ***Note:***\
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
 
-I am not responsible and liable for warranty for any damage caused by using this project.
+> **Warning**
+> 
+> I am not responsible and liable for warranty for any damage caused by using this project.
 
 ## Features and To Do
 
@@ -136,8 +138,9 @@ You also need to fork the repository before cloning the repo to your local machi
     | Visibility     | You can not set to Private | You can set to Private                                     |
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
 
-  **NOTE**\
-  Do not ever modify [`.env.example`](.env.example) if you did not want your credential revealed by public.
+  > **Warning**
+  > 
+  > Do not ever modify [`.env.example`](.env.example) if you did not want your credential revealed by public.
 * Follow instruction on [# On GitHub Actions](#on-github-actions) to initialize/run GitHub Actions.
 
 ### Setting Environment Variables
@@ -258,8 +261,9 @@ You also need to fork the repository before cloning the repo to your local machi
 
 * Done. Basically, the Action is enabled by default.
 
-**NOTE**\
-The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
+> **Note**
+> 
+> The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
 
 <!-- Links -->
 [Automail]: https://greasyfork.org/en/scripts/370473-automail
