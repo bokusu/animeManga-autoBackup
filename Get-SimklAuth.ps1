@@ -44,6 +44,6 @@ for ($i = 0; $i -lt $loopMax; $i++) {
         Write-Host "Your Access Token is $($simklAuth.access_token)"
         break
     }
-    Write-Host "Waiting for SIMKL authentication..."
+    Write-Host "`rWaiting for SIMKL authentication, try $i/$loopMax..." -NoNewline
     Start-Sleep -Seconds $interval
 }
