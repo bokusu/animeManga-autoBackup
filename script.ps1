@@ -499,7 +499,7 @@ Function Get-TraktBackup {
     # Check if linux or windows
     If ($Env:XDG_DATA_HOME) {
         $dataDir = $Env:XDG_DATA_HOME
-    } elseIf ($isWindows) {
+    } ElseIf ($isWindows) {
         $dataDir = "~/.traktexport"
     } Else {
         $dataDir = "~/.local/share"
