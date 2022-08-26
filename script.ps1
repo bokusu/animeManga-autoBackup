@@ -264,6 +264,8 @@ Function Get-AniListBackup {
     Write-None
     Write-Host "Exporting AniList manga list in XML"
     python ./aniList.py --username $aniListUsername --type manga -o "./aniList/mangaList"
+
+    Remove-Item -Path ./aniList.py -Force
 }
 
 Function Get-AnimePlanetBackup {
