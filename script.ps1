@@ -436,6 +436,29 @@ Function Get-NotifyMoeBackup {
     Invoke-WebRequest -Method Get -Uri "https://notify.moe/+$($notifyNickname)/animelist/export/txt" -OutFile ./notifyMoe/animeList.txt
 }
 
+Function Get-OtakOtakuBackup {
+    Add-Directory -Path ./otakOtaku -Name "Otak Otaku"
+
+    $otakUsername = $Env:OTAKOTAKU_USERNAME
+    $otakUid = $Env:OTAKOTAKU_UID
+    $otakStats = ((Invoke-WebRequest -Method Post -Body "username=$otakUsername" -UserAgent $userAgent -ContentType "application/x-www-form-urlencoded" -Uri "https://otakotaku.com/user/act/statistik_tonton").Content | ConvertFrom-Json).data
+
+    $otakTotalAnime = $otakStats.polar_data[0] + $otakStats.polar_data[1] + $otakStats.polar_data[2] + $otakStats.polar_data[3] + $otakStats.polar_data[4]
+
+    Write-Host $otakTotalAnime
+
+    $otakTotalPages = [math]::Floor($otakTotalAnime / 10)
+    $otakIndex = $otakTotalPages * 10
+
+    ForEach ($page in $otakTotalPages) {
+        If ($page -ge $otakTotalPages) { 
+            Break
+        }
+        Invoke-WebRequest -Method Post -Body "id_user=$otakUid&order=judul_anime+asc&limit=10&index=$otakIndex" -UserAgent $userAgent -ContentType "application/x-www-form-urlencoded" -Uri "https://otakotaku.com/internal/score/anime_skor" -OutFile "./otakOtaku/page$page.json"
+        $page++
+    }
+}
+
 Function Get-ShikimoriBackup {
     Add-Directory -Path ./shikimori -Name Shikimori
     
