@@ -1,17 +1,6 @@
 $version = "0.0.1"
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
 
-function Push-Git {
-    If ($isAction) {
-        $mailAddress = "$($Env:GITHUB_ACTOR)@noreply.users.github.com"
-        $name = "$($Env:GITHUB_ACTOR)"
-
-        git config user.email $mailAddress
-        git config user.name $name
-    }
-    git push
-}
-
 # Update Repository from Template Repository
 Write-Host "Update repo from template"
 Write-Host "Version $version"
