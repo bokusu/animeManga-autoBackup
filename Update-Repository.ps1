@@ -11,7 +11,6 @@ $templateRepoName = "animeManga-autoBackup"
 $templateRepo = "$templateAuthorName/$templateRepoName"
 $templateUri = "https://api.github.com/repos/$templateRepo"
 $templateContent = (Invoke-WebRequest -Uri $templateUri -Method Get -ContentType "application/json").Content | ConvertFrom-Json
-$templateDefaultBranch = $templateContent.default_branch
 $templateLastUpdate = Get-Date -Date $templateContent.pushed_at -UFormat "%s"
 
 $localClone = git config --get remote.origin.url
