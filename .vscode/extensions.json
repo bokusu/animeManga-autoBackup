@@ -6,6 +6,7 @@
         "redhat.vscode-yaml",
         "ms-python.python",
         "matangover.mypy",
+        "Tyriar.sort-lines",
         // "ms-azuretools.vscode-docker"
     ]
 }
