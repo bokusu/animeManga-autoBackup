@@ -55,7 +55,7 @@ This project **requires you to set the library/list as public** as most API used
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
 
 > **Warning**
-> 
+>
 > I am not responsible and liable for warranty for any damage caused by using this project.
 
 ## Features and To Do
@@ -80,7 +80,7 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ SIMKL
 * ✅ Trakt
 * ✅ Visual Novel Database (VNDB)
-* 🚫 9Anime
+* 🚫 9Anime &mdash; *Can not bypass security*
 * 💻 AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * 🚫 AniSearch &mdash; *Failed to bypass cookies, API access limited, requests only*
 * 💻 Bangumi.tv &mdash; Pagination
@@ -89,7 +89,7 @@ This project **requires you to set the library/list as public** as most API used
 * 💻 LiveChart.me &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
 * ⌛ MangaDex
 * 💻 Nautiljon &mdash; *No export feature and no API access*
-* 💻 Otak Otaku &mdash; *No export feature and no API access*
+* 🚫 Otak Otaku &mdash; *Using `POST` requests throw encrypted responses. Requires reverse engineering website*
 * ⌛ The Movie DB
 
 ## Files Generated and Importability
@@ -139,7 +139,7 @@ You also need to fork the repository before cloning the repo to your local machi
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
 
   > **Warning**
-  > 
+  >
   > Do not ever modify [`.env.example`](.env.example) if you did not want your credential revealed by public.
 * Follow instruction on [# On GitHub Actions](#on-github-actions) to initialize/run GitHub Actions.
 
@@ -150,7 +150,7 @@ You also need to fork the repository before cloning the repo to your local machi
 ##### For Local Machine
 
 1. Duplicate the `.env.example` file and rename to `.env` file.
-2. Follow the instructions in [# Variables Instructions](#variables-instructions) to set the variables.
+2. Follow the instructions in [# Variables Instructions](#variables-instruction) to set the variables.
    * If you did not registered to some site, leave the value empty.
 
 ##### For GitHub Actions
@@ -158,7 +158,7 @@ You also need to fork the repository before cloning the repo to your local machi
 1. Open repo settings.
 2. On the left sidebar, find "**Secrets**" and click **Actions**.
 3. Click <kbd>New repository secret</kbd> button.
-4. Follow the instructions in [# Variables Instructions](#variables-instructions) to set the variables.
+4. Follow the instructions in [# Variables Instructions](#variables-instruction) to set the variables.
    * The text on `code block` in the instruction mean a name, and Value is the key/cookie.
    * Repeat this step for all the variables listed in the instruction.
    * If you did not registered to some site, leave the value empty.
@@ -262,7 +262,7 @@ You also need to fork the repository before cloning the repo to your local machi
 * Done. Basically, the Action is enabled by default.
 
 > **Note**
-> 
+>
 > The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
 
 <!-- Links -->
