@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "mikestead.dotenv",
+        "ms-vscode.powershell",
+        "streetsidesoftware.code-spell-checker",
+        "redhat.vscode-yaml",
+        "ms-python.python",
+        "matangover.mypy",
+        // "ms-azuretools.vscode-docker"
+    ]
+}
