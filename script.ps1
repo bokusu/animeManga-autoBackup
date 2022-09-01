@@ -367,6 +367,27 @@ Function Get-KitsuBackup {
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
 }
 
+Function Get-MangaDexBackup {
+    Add-Directory -Path ./mangaDex -Name "MangaDex"
+    $mdUsername = $Env:MANGADEX_USERNAME
+    $mdPassword = $Env:MANGADEX_PASSWORD
+    $mdBody = @{
+        "username" = $mdUsername
+        "password" = $mdPassword
+    } | ConvertTo-Json
+
+    $mdAuth = (Invoke-WebRequest -Uri "https://api.mangadex.org/auth/login" -Headers @{ "Accept" = "application/json" } -Method POST -Body $mdBody -ContentType "application/json" -UseBasicParsing).Content | ConvertFrom-Json
+    $mdSession = $mdAuth.token.session
+
+    $mdHeaders = @{
+        "Accept" = "application/json"
+        "Authorization" = "Bearer $mdSession"
+    }
+    # Grab User UUID
+    $mdUserQuery = "https://api.mangadex.org/user?limit=1&username=$($mdUsername)&order%5Busername%5D=asc"
+    $mdUser = ((Invoke-WebRequest -Uri $mdUserQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).data[0].id
+}
+
 Function Get-MangaUpdatesBackup {
     Add-Directory -Path ./mangaUpdates -Name "Baka Updates' Manga-Updates"
 
