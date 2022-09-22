@@ -44,6 +44,7 @@ This project **requires you to set the library/list as public** as most API used
 |          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account                          |
 |    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser                                 |
 |           Kitsu |       No        |  `API`   |         No          | Uses official API                                                             |
+|        MangaDex |       No        |  `API`   |         No          | Uses official API                                                             |
 | MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                          |
 |      Notify.moe |       No        |  `API`   |         No          | Uses official API                                                             |
 |       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser                                 |
