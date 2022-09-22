@@ -198,6 +198,10 @@ You also need to fork the repository before cloning the repo to your local machi
   then `000000` is the ID. -->
 * `MAL_USERNAME`\
   Your MyAnimeList username.
+* `MANGADEX_USERNAME`\
+  Your MangaDex username.
+* `MANGADEX_PASSWORD`\
+  Your MangaDex password.
 * `MANGAUPDATES_SESSION`\
   Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
