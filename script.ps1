@@ -34,7 +34,7 @@ Function Test-Binary {
     
     If ($isModule) {
         Write-Host "Checking if $Binary module installed"
-        If (-Not (Get-Package -Name "$Binary")) {
+        If (-Not (Get-Package -Name "$Binary -ErrorAction SilentlyContinue")) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
             Install-Module -Name "$Binary" -Scope CurrentUser
