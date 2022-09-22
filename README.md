@@ -74,6 +74,7 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ Annict
 * ✅ Baka-Updates
 * ✅ Kitsu
+* ✅ MangaDex
 * ✅ MyAnimeList
 * ✅ Notify.moe
 * ✅ Shikimori
@@ -87,7 +88,6 @@ This project **requires you to set the library/list as public** as most API used
 * 🚫 Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
 * 🚫 IMDb &mdash; *Failed to bypass using cookie method; API paid*
 * 💻 LiveChart.me &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
-* ⌛ MangaDex
 * 💻 Nautiljon &mdash; *No export feature and no API access*
 * 🚫 Otak Otaku &mdash; *Using `POST` requests throw encrypted responses. Requires reverse engineering website*
 * ⌛ The Movie DB
