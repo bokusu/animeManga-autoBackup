@@ -101,6 +101,7 @@ This project **requires you to set the library/list as public** as most API used
 | Annict       | `.json`                 | No                    | There is no official import/export feature                                                        |
 | Baka-Updates | `.tsv`                  | No                    | There is no official import/export feature                                                        |
 | Kitsu        | `.xml`                  | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                                           |
+| MangaDex     | `.json`, `.yaml`, `.xml` | Limited | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML. `.json` and `.yaml` are for internal use only |
 | MyAnimeList  | `.xml`                  | Yes                   | You can reimport back to MyAnimeList                                                              |
 | Notify.moe   | `.json`, `.csv`, `.txt` | No                    | There is no official import/export feature                                                        |
 | Shikimori    | `.json`, `.xml`         | Yes                   | You can reimport back to Shikimori or import to MyAnimeList using XML                             |

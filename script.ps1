@@ -92,13 +92,16 @@ If ($isAction) {
     Write-Host "Script running locally"
 }
 
-# check if Set-PSEnv is installed
-Write-None
-Test-Binary -Binary Set-PSEnv -isModule
+$PSRequiredPkgs = @(
+    'Set-PSEnv'
+    'PSGraphQL'
+    'powershell-yaml'
+)
 
-# check if PSGraphQL module is installed
-Write-None
-Test-Binary -Binary PSGraphQL -isModule
+ForEach ($pkg in $PSRequiredPkgs) {
+    Write-None
+    Test-Binary -Binary $pkg -isModule
+}
 
 Write-None
 Write-Host "Importing dotEnv file"
@@ -383,9 +386,131 @@ Function Get-MangaDexBackup {
         "Accept" = "application/json"
         "Authorization" = "Bearer $mdSession"
     }
-    # Grab User UUID
-    $mdUserQuery = "https://api.mangadex.org/user?limit=1&username=$($mdUsername)&order%5Busername%5D=asc"
-    $mdUser = ((Invoke-WebRequest -Uri $mdUserQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).data[0].id
+
+    # Grab User Follows
+    $mdFollowsQuery = "https://api.mangadex.org/user/follows/manga?limit=100&offset=0"
+    $mdFollows = ((Invoke-WebRequest -Uri $mdFollowsQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json)
+
+    $mdFollowsData = @()
+    For ($i = 0; $i -lt $mdFollows.total; $i++) {
+        $mdFollowsQuery = "https://api.mangadex.org/user/follows/manga?limit=100&offset=$($i)"
+        $mdFollows = ((Invoke-WebRequest -Uri $mdFollowsQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json)
+        $mdFollowsData += $mdFollows.data
+        $i += 100
+    }
+
+    # Grab User Manga Status
+    $mdMangaStatusQuery = "https://api.mangadex.org/manga/status"
+    $mdMangaStatus = ((Invoke-WebRequest -Uri $mdMangaStatusQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).statuses
+
+    # Grab User Rating
+    $mangaData = "---"
+    $malReading = 0; $malCompleted = 0; $malOnHold = 0; $malDropped = 0; $malPlanToRead = 0
+    
+    ForEach ($manga in $mdFollowsData) {
+        $mangaId = $manga.id
+        # $mdRatingQuery = "https://api.mangadex.org/rating&manga=$($mangaId)"
+        # $mdRating = ((Invoke-WebRequest -Uri $mdRatingQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).ratings
+        $mangaData += @"
+`n- id: $($mangaId)
+  title: "$($manga.attributes.title.en -Replace "`"", "\`"")"
+  status: $($mdMangaStatus.$mangaId)
+  upstream:
+    volume: $(If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) {"0"} Else {$manga.attributes.lastVolume})
+    chapter: $(If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) {"0"} Else {$manga.attributes.lastChapter})
+  current: 
+    volume: 0
+    chapter: 0
+"@
+        # Count MyAnimeList stats
+        If ($Null -ne $manga.attributes.links.mal) {
+            Switch ($mdMangaStatus.$mangaId) {
+                "reading" {
+                    $malReading += 1
+                    $malStatus = "Reading"
+                }
+                "completed" {
+                    $malCompleted += 1
+                    $malStatus = "Completed"
+                }
+                "on_hold" {
+                    $malOnHold += 1
+                    $malStatus = "On-Hold"
+                }
+                "dropped" {
+                    $malDropped += 1
+                    $malStatus = "Dropped"
+                }
+                "plan_to_read" {
+                    $malPlanToRead += 1
+                    $malStatus = "Plan to Read"
+                }
+            }
+            # Exporting Manga as MyAnimeList format
+        $mdToMal += @"
+`n    <manga>
+        <manga_mangadb_id>$($manga.attributes.links.mal)</manga_mangadb_id>
+        <manga_title><![CDATA[$($manga.attributes.title.en)]]></manga_title>
+        <manga_volumes_read>$(If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) {"0"} Else {$manga.attributes.lastVolume})</manga_volumes_read>
+        <manga_chapters_read>$(If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) {"0"} Else {$manga.attributes.lastChapter})</manga_chapters_read>
+        <my_status>$malStatus</manga_status>
+        <my_score>0</manga_score>
+        <my_read_volumes>0</my_read_volumes>
+        <my_read_chapters>0</my_read_chapters>
+        <update_on_import>1</update_on_import>
+    </manga>
+"@
+        } Else {
+            $noEntry += @"
+`n        MAL entry not found for "$($manga.attributes.title.en)" ($($mangaId))
+"@
+        }
+    }
+
+    $ReadMe = @"
+This is a backup of your MangaDex account.
+It contains your follows and your reading status.
+
+However, due to MangaDex nature, we unable to determine the last chapter you read.
+
+In this folder, you will get:
+* mangaList.json: A list of all your follows, can not be used to import to other services.
+* mangaList.yaml: YAML version of the above, can not be used to import to other services.
+* mangaList-MALFormat.xml: A list of all your follows in MyAnimeList format, can be used to import to MyAnimeList or other services that support MyAnimeList format.
+"@
+    $ReadMe | Out-File -FilePath "./mangaDex/README.txt" -Encoding UTF8 -Force
+
+    $mangaData | Out-File -FilePath "./mangaDex/mangaList.yaml" -Encoding UTF8 -Force
+    $mangaData | ConvertFrom-Yaml | ConvertTo-Json | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
+
+    $mdToMalXML = @"
+<?xml version="1.0" encoding="UTF-8" ?>
+<myanimelist>
+    <myinfo>
+        <user_id></user_id>
+        <user_name>$($mdUsername)</user_name>
+        <user_export_type>1</user_export_type>
+        <user_total_manga>$($mdFollowsData.Count)</user_total_manga>
+        <user_total_reading>$($malReading)</user_total_reading>
+        <user_total_completed>$($malCompleted)</user_total_completed>
+        <user_total_onhold>$($malOnHold)</user_total_onhold>
+        <user_total_dropped>$($malDropped)</user_total_dropped>
+        <user_total_plantoread>$($malPlanToRead)</user_total_plantoread>
+    </myinfo>
+
+    <!--
+        Created by GitHub:nattadasu/animeManga-autoBackup
+        Exported at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") $((Get-TimeZone).Id)
+    -->
+
+    <!--$($noEntry)
+    -->
+
+"@
+    $mdToMalXML += $mdToMal
+    $mdToMalXML += "`n</myanimelist>"
+
+    $mdToMalXML | Out-File -FilePath "./mangaDex/mangaList-MALFormat.xml" -Encoding UTF8 -Force
 }
 
 Function Get-MangaUpdatesBackup {
@@ -567,6 +692,7 @@ If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
 If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
 If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
 If ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
+If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }
 If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup }
 If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
 If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
