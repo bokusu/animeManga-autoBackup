@@ -34,7 +34,7 @@ Function Convert-AniListXML {
                 $note = If ($Null -eq $entry.notes) { "" } Else { $entry.notes }
 
                 $commonXml = @"
-`n<my_start_date>$($startedDate)</my_start_date>
+<my_start_date>$($startedDate)</my_start_date>
         <my_finish_date>$($completedDate)</my_finish_date>
         <my_score>$($score)</my_score>
         <my_status>$($status)</my_status>
