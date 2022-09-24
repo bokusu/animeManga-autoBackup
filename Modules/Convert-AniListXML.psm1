@@ -33,6 +33,16 @@ Function Convert-AniListXML {
                 $repeat = $entry.repeat
                 $note = If ($Null -eq $entry.notes) { "" } Else { $entry.notes }
 
+                $commonXml = @"
+`n<my_start_date>$($startedDate)</my_start_date>
+        <my_finish_date>$($completedDate)</my_finish_date>
+        <my_score>$($score)</my_score>
+        <my_status>$($status)</my_status>
+        <my_tags><![CDATA[$($note)]]></my_tags>
+        <my_comments><![CDATA[$($note)]]></my_comments>
+        <update_on_import>1</update_on_import>
+"@
+
                 If ($malID -ne 0) {
                     Switch ($entry.status) {
                         "CURRENT" { If ($True -eq $isManga) { $status = "Reading"; $malReading++ } Else { $status = "Watching"; $malWatching++ } }
@@ -50,15 +60,9 @@ Function Convert-AniListXML {
         <series_title><![CDATA[$($title)]]></series_title>
         <series_episodes>$($episodes)</series_episodes>
         <my_watched_episodes>$($progress)</my_watched_episodes>
-        <my_start_date>$($startedDate)</my_start_date>
-        <my_finish_date>$($completedDate)</my_finish_date>
-        <my_score>$($score)</my_score>
-        <my_status>$($status)</my_status>
         <my_rewatching>$($repeat)</my_rewatching>
         <my_rewatching_ep>0</my_rewatching_ep>
-        <my_tags><![CDATA[$($note)]]></my_tags>
-        <my_comments><![CDATA[$($note)]]></my_comments>
-        <update_on_import>1</update_on_import>
+        $($commonXml)
     </anime>
 "@
                     }
@@ -72,14 +76,9 @@ Function Convert-AniListXML {
         <manga_volumes>$($volumes)</manga_volumes>
         <my_read_chapters>$($progress)</my_read_chapters>
         <my_read_volumes>$($progressVolumes)</my_read_volumes>
-        <my_start_date>$($startedDate)</my_start_date>
-        <my_finish_date>$($completedDate)</my_finish_date>
-        <my_score>$($score)</my_score>
         <my_status>$($status)</my_status>
         <my_times_read>$($repeat)</my_times_read>
-        <my_tags><![CDATA[$($note)]]></my_tags>
-        <my_comments><![CDATA[$($note)]]></my_comments>
-        <update_on_import>1</update_on_import>
+        $($commonXml)
     </manga>
 "@
                     }
@@ -97,15 +96,9 @@ Function Convert-AniListXML {
         <series_title><![CDATA[$($title)]]></series_title>
         <series_episodes>$($episodes)</series_episodes>
         <my_watched_episodes>$($progress)</my_watched_episodes>
-        <my_start_date>$($startedDate)</my_start_date>
-        <my_finish_date>$($completedDate)</my_finish_date>
-        <my_score>$($score)</my_score>
-        <my_status>$($status)</my_status>
         <my_rewatching>$($repeat)</my_rewatching>
         <my_rewatching_ep>0</my_rewatching_ep>
-        <my_tags><![CDATA[$($note)]]></my_tags>
-        <my_comments><![CDATA[$($note)]]></my_comments>
-        <update_on_import>1</update_on_import>
+        $($commonXml)
     </anime-->
 "@
                     }
@@ -118,14 +111,9 @@ Function Convert-AniListXML {
         <manga_volumes>$($volumes)</manga_volumes>
         <my_read_chapters>$($progress)</my_read_chapters>
         <my_read_volumes>$($progressVolumes)</my_read_volumes>
-        <my_start_date>$($startedDate)</my_start_date>
-        <my_finish_date>$($completedDate)</my_finish_date>
-        <my_score>$($score)</my_score>
         <my_status>$($status)</my_status>
         <my_times_read>$($repeat)</my_times_read>
-        <my_tags><![CDATA[$($note)]]></my_tags>
-        <my_comments><![CDATA[$($note)]]></my_comments>
-        <update_on_import>1</update_on_import-->
+        $($commonXml)
     </manga-->
 "@
                     }
