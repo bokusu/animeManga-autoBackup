@@ -76,7 +76,6 @@ Function Convert-AniListXML {
         <manga_volumes>$($volumes)</manga_volumes>
         <my_read_chapters>$($progress)</my_read_chapters>
         <my_read_volumes>$($progressVolumes)</my_read_volumes>
-        <my_status>$($status)</my_status>
         <my_times_read>$($repeat)</my_times_read>
         $($commonXml)
     </manga>
@@ -111,7 +110,6 @@ Function Convert-AniListXML {
         <manga_volumes>$($volumes)</manga_volumes>
         <my_read_chapters>$($progress)</my_read_chapters>
         <my_read_volumes>$($progressVolumes)</my_read_volumes>
-        <my_status>$($status)</my_status>
         <my_times_read>$($repeat)</my_times_read>
         $($commonXml)
     </manga-->
