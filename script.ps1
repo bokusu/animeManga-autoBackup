@@ -34,7 +34,7 @@ Function Test-Binary {
     
     If ($isModule) {
         Write-Host "Checking if $Binary module installed"
-        If (-Not (Get-Package -Name "$Binary -ErrorAction SilentlyContinue")) {
+        If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
             Install-Module -Name "$Binary" -Scope CurrentUser
@@ -120,6 +120,7 @@ If (-Not($isAction)) {
 }
 
 Import-Module "./Modules/Format-Json.psm1"
+Import-Module "./Modules/Convert-AniListXML.psm1"
 
 ############################
 # FUNCTIONS FOR EACH SITES #
@@ -178,6 +179,7 @@ Function Get-AniListBackup {
         media{
             idMal
             title{romaji native english}
+            episodes
         }
         score
     }
@@ -230,6 +232,8 @@ Function Get-AniListBackup {
         media{
             idMal
             title{romaji native english}
+            volumes
+            chapters
         }
         score
     }
@@ -252,21 +256,11 @@ Function Get-AniListBackup {
     Write-None
     Write-Host "Exporting AniList anime list in XML"
 
-    If (!(pip show requests)) {
-        Write-Host "Requests module is not installed" -ForegroundColor Red
-        Write-Host "Installing requests module"
-        pip install requests
-    }
-    Write-Host "Requests module is installed" -ForegroundColor Green
-
-    # Download a py script
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nattadasu/anilist-to-mal/master/main.py" -OutFile "./aniList.py" 
-
-    python ./aniList.py --username $aniListUsername --type anime -o "./aniList/animeList"
+    Convert-AniListXML -ErrorAction SilentlyContinue
 
     Write-None
     Write-Host "Exporting AniList manga list in XML"
-    python ./aniList.py --username $aniListUsername --type manga -o "./aniList/mangaList"
+    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue
 
     Remove-Item -Path ./aniList.py -Force
 }
