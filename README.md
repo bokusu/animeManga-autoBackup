@@ -131,13 +131,13 @@ You also need to fork the repository before cloning the repo to your local machi
 
 * [Fork the repository](https://github.com/nattadasu/animeManga-autoBackup/fork) OR [generate new repository using this repository](https://github.com/nattadasu/animeManga-autoBackup/generate)
   * Basically the differences are such:
-    |                | Forked                     | Generated from Template                                    |
-    | -------------- | :------------------------- | :--------------------------------------------------------- |
-    | Commit History | Follows upstream (dirty)   | No previous commit history (clean)                         |
-    | GitHub Actions | Disabled by default        | Enabled by default                                         |
-    | Stability      | No, upstream               | Yes, because the snapshot basically is stable              |
-    | Update         | Yes                        | No, needs manually update by cloning repo to local machine |
-    | Visibility     | You can not set to Private | You can set to Private                                     |
+    |                | Forked                     | Generated from Template                                      |
+    | -------------- | :------------------------- | :----------------------------------------------------------- |
+    | Commit History | Follows upstream (dirty)   | No previous commit history (clean)                           |
+    | GitHub Actions | Disabled by default        | Enabled by default                                           |
+    | Stability      | No, upstream               | Yes, because the snapshot basically is stable                |
+    | Update         | Yes                        | Yes, however user requires to generate personal access token |
+    | Visibility     | You can not set to Private | You can set to Private                                       |
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
 
   > **Warning**
@@ -209,6 +209,10 @@ You also need to fork the repository before cloning the repo to your local machi
   Find a name of the cookie that starts with `secure_session` and copy the value.
 * `NOTIFYMOE_NICKNAME`\
   Your Notify.moe nickname/username, string should be `Upper-first case`. <!-- The script will automatically generate user ID from this nickname. -->
+* `REPO_PAT`\
+  **Required for GitHub Actions**, your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new). Enable `workflow` option and set expiration date more than a month.
+
+  However, you are not needed to add `REPO_PAT` in your Environment File if you run the script locally.
 * `SIMKL_ACCESS_TOKEN`\
   Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](Get-SimklAuth.ps1), then follow the instructions.
 * `SIMKL_CLIENT_ID`\
