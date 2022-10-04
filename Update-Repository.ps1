@@ -34,23 +34,25 @@ If ($templateRepo -eq "$localAuthorName/$localRepoName") {
     Exit
 } Else {
     Write-Host "Checking if template repo is newer than local repo"
-    If ($templateLastUpdate -lt $localLastUpdate) {
+    If ($templateLastUpdate -gt $localLastUpdate) {
         Write-Host "Template repo is newer than local repo"
         Write-Host "Updating local repo"
         $gitUrl = "https://github.com/$templateRepo"
         git clone $gitUrl update
 
-        Remove-Item -Path "./update/.git" -Recurse -Force
+        Remove-Item -Path "./update/.git" -Recurse -Force -Verbose
+        Remove-Item -Path "./update/Update-Repository.ps1" -Force
 
-        Copy-Item -Path "./update" -Destination "./" -Recurse -Force
+        Copy-Item -Path "./update/*" -Destination "./" -Recurse -Force -Verbose
 
-        Remove-Item -Path "./update"
+        Remove-Item -Path "./update" -Recurse -Verbose -Force
     } Else {
         Write-Host "Local repo is newer than template repo"
         Exit
     }
 }
 
+<#
 if ($isAction) {
     $mailAddress = "$($Env:GITHUB_ACTOR)@noreply.users.github.com"
     $name = "$($Env:GITHUB_ACTOR)"
@@ -58,10 +60,13 @@ if ($isAction) {
     git config user.email $mailAddress
     git config user.name $name
 }
+#>
 
-git add .
+If (!($isAction)) {
+    git add .
 
-$templateCommits = (Invoke-WebRequest -Uri "$templateUri/commits" -Method Get -ContentType "application/json").Content | ConvertFrom-Json
-$latestCommit = $templateCommits[0].sha
-git commit -m "Update script based on $latestCommit"
-git push
+    $templateCommits = (Invoke-WebRequest -Uri "$templateUri/commits" -Method Get -ContentType "application/json").Content | ConvertFrom-Json
+    $latestCommit = $templateCommits[0].sha
+    git commit -m "Update script based on $latestCommit"
+    git push
+}
