@@ -256,11 +256,11 @@ Function Get-AniListBackup {
     Write-None
     Write-Host "Exporting AniList anime list in XML"
 
-    Convert-AniListXML -ErrorAction SilentlyContinue
+    Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
 
     Write-None
     Write-Host "Exporting AniList manga list in XML"
-    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue
+    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force 
 
     Remove-Item -Path ./aniList.py -Force
 }
