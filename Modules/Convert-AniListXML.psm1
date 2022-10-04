@@ -49,7 +49,7 @@ Function Convert-AniListXML {
                         "PLANNING" { If ($True -eq $isManga) { $status = "Plan to Read"; $malPlanToRead++ } Else { $status = "Plan to Watch"; $malPlanToWatch++ } }
                         "COMPLETED" { $status = "Completed"; $malCompleted++ }
                         "PAUSED" { $status = "On-Hold"; $malOnHold++ }
-                        "DROPPED" { $status = "dropped"; $malDropped++ }
+                        "DROPPED" { $status = "Dropped"; $malDropped++ }
                     }
 
                     If ($False -eq $isManga) {
@@ -169,14 +169,7 @@ Function Convert-AniListXML {
     $xml += $aniListToMAL
     $xml += "`n</myanimelist>"
 
-    If ($True -eq $isManga) {
-        $outputFile = "./aniList/mangaList.xml"
-    }
-    Else {
-        $outputFile = "./aniList/animeList.xml"
-    }
-
-    $xml | Out-File -FilePath $outputFile -Encoding UTF8 -Force
+    Write-Output $xml
 }
 
 Export-ModuleMember -Function Convert-AniListXML
