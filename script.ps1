@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
@@ -27,17 +27,26 @@ Function New-WebSession {
 }
 
 Function Test-Binary {
+    [CmdletBinding()]
     param(
         [string]$Binary,
-        [Switch]$isModule
+        [Switch]$isModule,
+        [Switch]$isNuGet
     )
-    
+
     If ($isModule) {
         Write-Host "Checking if $Binary module installed"
         If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
             Install-Module -Name "$Binary" -Scope CurrentUser
+        }
+    } ElseIf ($isNuGet) {
+        Write-Host "Checking if $Binary package is installed"
+        If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
+            Write-Host "$Binary is not installed"
+            Write-Host "Installing $Binary locally"
+            Install-Package "$Binary" -Scope CurrentUser -Source 'nuget.org'
         }
     } Else {
         Write-Host "Checking if $Binary is installed"
@@ -76,12 +85,13 @@ Function Confirm-UserAgent {
     Write-Host "User agent is set to $Env:USER_AGENT" -ForegroundColor Green
 }
 
-Write-None
 # Set output encoding to UTF-8
 Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-Test-Binary -Binary pip
+Test-Binary -Binary pip -ErrorAction Break
+Write-Host "Installing required Python packages"
+pip install -r ./requirements.txt
 
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
@@ -102,6 +112,23 @@ ForEach ($pkg in $PSRequiredPkgs) {
     Write-None
     Test-Binary -Binary $pkg -isModule
 }
+
+Function Install-NuGetPackages {
+    If (!((Get-PackageSource).Name -eq 'nuget.org')) {
+        Register-PackageSource -Name nuget.org -ProviderName NuGet -Location 'https://api.nuget.org/v3/index.json' -Force
+    }
+
+    $ngPkgs = @(
+        'AngleSharp'
+    )
+
+    ForEach ($pkg in $ngPkgs) {
+        Write-None
+        Test-Binary -Binary $pkg -isNuGet
+    }
+}
+
+Install-NuGetPackages
 
 Write-None
 Write-Host "Importing dotEnv file"
@@ -260,7 +287,7 @@ Function Get-AniListBackup {
 
     Write-None
     Write-Host "Exporting AniList manga list in XML"
-    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force 
+    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
 }
 
 Function Get-AnimePlanetBackup {
@@ -417,6 +444,7 @@ Function Get-MangaDexBackup {
         Write-Host "`r[$($n)/$($mdFollowsData.Count)] Grabbing rating for $($mangaTitle) ($($mangaId))" -NoNewline
         $mdRatingQuery = "https://api.mangadex.org/rating?manga%5B%5D=$($mangaId)"
         $mdRating = ((Invoke-WebRequest -Uri $mdRatingQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).ratings
+        $mdScore = If (($Null -eq $mdRating.$mangaId.rating) -Or ($mdRating.$mangaId.rating -eq '')) { "0" } Else { $mdRating.$mangaId.rating }
         $mangaData += @"
 `n- id: $($mangaId)
   title: "$($mangaTitle -Replace "`"", "\`"")"
@@ -424,10 +452,20 @@ Function Get-MangaDexBackup {
   upstream:
     volume: $($mangaVolumes)
     chapter: $($mangaChaptersLogic)
-  current: 
+  current:
     volume: 0
     chapter: 0
-  rating: $(If (($Null -eq $mdRating.$mangaId.rating) -Or ($mdRating.$mangaId.rating -eq ''))  { "0" } Else { $mdRating.$mangaId.rating })
+  rating: $($mdScore)
+"@
+        $malCommons = @"
+        <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
+        <manga_volumes_read>$($mangaVolumes)</manga_volumes_read>
+        <manga_chapters_read>$($mangaChapters)</manga_chapters_read>
+        <my_status>$($malStatus)</manga_status>
+        <my_score>$($mdScore)</manga_score>
+        <my_read_volumes>0</my_read_volumes>
+        <my_read_chapters>0</my_read_chapters>
+        <update_on_import>1</update_on_import>
 "@
         # Count MyAnimeList stats
         If ($Null -ne $manga.attributes.links.mal) {
@@ -457,15 +495,8 @@ Function Get-MangaDexBackup {
         $mdToMal += @"
 `n    <manga>
         <manga_mangadb_id>$($manga.attributes.links.mal)</manga_mangadb_id>
-        <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
-        <manga_volumes_read>$($mangaVolumes)</manga_volumes_read>
-        <manga_chapters_read>$($mangaChapters)</manga_chapters_read>
         <!--mangadex_chapters_read>$($mangaChaptersLogic)</mangadex_chapters_read-->
-        <my_status>$malStatus</manga_status>
-        <my_score>$(If (($Null -eq $mdRating.$mangaId.rating) -Or ($mdRating.$mangaId.rating -eq ''))  { "0" } Else { $mdRating.$mangaId.rating })</manga_score>
-        <my_read_volumes>0</my_read_volumes>
-        <my_read_chapters>0</my_read_chapters>
-        <update_on_import>1</update_on_import>
+$($malCommons)
     </manga>
 "@
         } Else {
@@ -475,15 +506,8 @@ Function Get-MangaDexBackup {
             $mdToMal += @"
 `n    <!--manga>
         <manga_mangadexdb_id>$($mangaId)</manga_mangadexdb_id>
-        <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
-        <manga_volumes_read>$($mangaVolumes)</manga_volumes_read>
-        <manga_chapters_read>$($mangaChapters)</manga_chapters_read>
-        <!--mangadex_chapters_read>$($mangaChaptersLogic)</mangadex_chapters_read-->
-        <my_status>$malStatus</manga_status>
-        <my_score>$(If (($Null -eq $mdRating.$mangaId.rating) -Or ($mdRating.$mangaId.rating -eq ''))  { "0" } Else { $mdRating.$mangaId.rating })</manga_score>
-        <my_read_volumes>0</my_read_volumes>
-        <my_read_chapters>0</my_read_chapters>
-        <update_on_import>1</update_on_import>
+        <mangadex_chapters_read>$($mangaChaptersLogic)</mangadex_chapters_read>
+$($malCommons)
     </manga-->
 "@
         }
@@ -602,7 +626,7 @@ Function Get-NotifyMoeBackup {
 
     Write-None
     Write-Host "Exporting Notify.moe anime list"
-    $notifyNickname = $Env:NOTIFYMOE_NICKNAME 
+    $notifyNickname = $Env:NOTIFYMOE_NICKNAME
 
     # get csv
     Invoke-WebRequest -Method Get -Uri "https://notify.moe/+$($notifyNickname)/animelist/export/csv" -OutFile ./notifyMoe/animeList.csv
@@ -614,7 +638,7 @@ Function Get-NotifyMoeBackup {
 
 Function Get-ShikimoriBackup {
     Add-Directory -Path ./shikimori -Name Shikimori
-    
+
     Write-None
     Write-Host "Exporting Shikimori anime list"
     $shikiKawaiSession = $Env:SHIKIMORI_KAWAI_SESSION
@@ -660,18 +684,18 @@ Function Get-TraktBackup {
     Write-None
     Write-Host "Exporting Trakt.tv data"
     # Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
-    
-    If (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
+
+    <# If (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
         Write-Host "Trakt Exporter Python Module is installed"
     } Else {
         Write-Host "Installing Trakt Exporter Python Module"
         pip install traktexport
-    }
-    
+    } #>
+
     Write-Host "Configuring config file"
-    
+
     $traktExportJson = "{`"CLIENT_ID`": `"$($Env:TRAKT_CLIENT_ID)`", `"CLIENT_SECRET`": `"$($Env:TRAKT_CLIENT_SECRET)`", `"OAUTH_TOKEN`": `"$($Env:TRAKT_OAUTH_TOKEN)`", `"OAUTH_REFRESH`": `"$($Env:TRAKT_OAUTH_REFRESH)`", `"OAUTH_EXPIRES_AT`": $($Env:TRAKT_OAUTH_EXPIRY)}"
-    
+
     # Check if linux or windows
     If ($Env:XDG_DATA_HOME) {
         $dataDir = $Env:XDG_DATA_HOME
@@ -680,7 +704,7 @@ Function Get-TraktBackup {
     } Else {
         $dataDir = "~/.local/share"
     }
-    
+
     # Check if file exist
     If (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
         Write-Host "Config file exists" -ForegroundColor Green
@@ -689,7 +713,7 @@ Function Get-TraktBackup {
         Write-Host "Creating config file" -ForegroundColor Yellow
         New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExportJson
     }
-    
+
     traktexport export $traktUsername | Out-File "./trakt/data.json"
 }
 
