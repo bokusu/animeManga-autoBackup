@@ -40,8 +40,8 @@ If ($templateRepo -eq "$localAuthorName/$localRepoName") {
         $gitUrl = "https://github.com/$templateRepo"
         git clone $gitUrl update
 
-        If (!($Env:REPO_PAT)) {
-            Remove-Item -Path "./Update/.github/workflows" -Recurse -Force
+        If (($Null -eq $Env:REPO_PAT) -or ($Env:REPO_PAT -eq '')) {
+            Remove-Item -Path "./Update/.github/workflows" -Recurse -Force -ErrorAction SilentlyContinue
         }
         Remove-Item -Path "./update/.git" -Recurse -Force
         # Remove-Item -Path "./update/Update-Repository.ps1" -Force
