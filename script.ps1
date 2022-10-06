@@ -47,7 +47,7 @@ Function Test-Binary {
         If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
-            Install-Package "$Binary" -Scope CurrentUser -Source 'nuget.org'
+            Install-Package "$Binary" -Scope CurrentUser -Source 'NuGet'
         }
     }
     Else {
@@ -116,8 +116,8 @@ ForEach ($pkg in $PSRequiredPkgs) {
 }
 
 Function Install-NuGetPackages {
-    If (!((Get-PackageSource).Name -eq 'nuget.org')) {
-        Register-PackageSource -Name nuget.org -ProviderName NuGet -Location 'https://api.nuget.org/v3/index.json' -Force
+    If (!((Get-PackageSource).Name -eq 'NuGet')) {
+        Register-PackageSource -Name NuGet -ProviderName NuGet -Location 'https://api.NuGet/v3/index.json' -Force -Trusted
     }
 
     $ngPkgs = @(
@@ -486,8 +486,8 @@ Function Get-MangaDexBackup {
         <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
         <manga_volumes>$($mangaVolumes)</manga_volumes>
         <manga_chapters>$($mangaChapters)</manga_chapters>
-        <my_status>$($malStatus)</manga_status>
-        <my_score>$($mdScore)</manga_score>
+        <my_status>$($malStatus)</my_status>
+        <my_score>$($mdScore)</my_score>
         <my_read_volumes>0</my_read_volumes>
         <my_read_chapters>0</my_read_chapters>
         <my_times_read>0</my_times_read>
