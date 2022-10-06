@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * SUN"
+  push:
+    paths:
+      - './script.ps1'
 jobs:
   RunScript:
     runs-on: ubuntu-latest
@@ -22,7 +25,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           # Tell git to add all XML file to staging, ignore if file contains "Scrape failed" inside
-          Get-ChildItem -Path "*" -Filter "*.*" -File  -Recurse | ForEach-Object {
+          Get-ChildItem -Path "*" -Filter "*.xml" -File  -Recurse | ForEach-Object {
             $inside = Get-Content $_.FullName
             if ($inside -contains "Scrape failed") {
               Write-Host "Skipping file: $_"
