@@ -47,7 +47,7 @@ Function Test-Binary {
         If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
-            Install-Package "$Binary" -Scope CurrentUser -Source 'NuGet'
+            Install-Package "$Binary" -Scope CurrentUser -Source 'nuget.org'
         }
     }
     Else {
@@ -116,8 +116,8 @@ ForEach ($pkg in $PSRequiredPkgs) {
 }
 
 Function Install-NuGetPackages {
-    If (!((Get-PackageSource).Name -eq 'NuGet')) {
-        Register-PackageSource -Name NuGet -ProviderName NuGet -Location 'https://api.nuget.org/v3/index.json' -Force -Trusted
+    If (!((Get-PackageSource).Name -eq 'nuget.org')) {
+        Register-PackageSource -Name 'nuget.org' -ProviderName NuGet -Location 'https://api.nuget.org/v3/index.json' -Force -Trusted
     }
 
     $ngPkgs = @(
