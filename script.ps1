@@ -130,7 +130,7 @@ Function Install-NuGetPackages {
     }
 }
 
-Install-NuGetPackages
+# Install-NuGetPackages
 
 Write-None
 Write-Host "Importing dotEnv file"
