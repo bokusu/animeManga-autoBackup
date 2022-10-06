@@ -117,7 +117,7 @@ ForEach ($pkg in $PSRequiredPkgs) {
 
 Function Install-NuGetPackages {
     If (!((Get-PackageSource).Name -eq 'NuGet')) {
-        Register-PackageSource -Name NuGet -ProviderName NuGet -Location 'https://api.NuGet/v3/index.json' -Force -Trusted
+        Register-PackageSource -Name NuGet -ProviderName NuGet -Location 'https://api.nuget.org/v3/index.json' -Force -Trusted
     }
 
     $ngPkgs = @(
