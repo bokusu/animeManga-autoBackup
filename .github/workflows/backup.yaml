@@ -33,5 +33,8 @@ jobs:
               git add $_.FullName
             }
           }
+          Get-ChildItem -Path "*" -Exclude "*.xml" -File -Recurse | ForEach-Object {
+            git add $_.FullName
+          }
           git commit -m "Backup lists, $(Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ')"
           git push
