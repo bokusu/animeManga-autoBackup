@@ -13,12 +13,12 @@ Function New-WebSession {
 
     $newSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
 
-    foreach($entry in $Cookies.GetEnumerator()){
+    foreach ($entry in $Cookies.GetEnumerator()) {
         $cookie = [System.Net.Cookie]::new($entry.Name, $entry.Value)
-        if($For){
+        if ($For) {
             $newSession.Cookies.Add([uri]::new($For, '/'), $cookie)
         }
-        else{
+        else {
             $newSession.Cookies.Add($cookie)
         }
     }
@@ -41,14 +41,16 @@ Function Test-Binary {
             Write-Host "Installing $Binary locally"
             Install-Module -Name "$Binary" -Scope CurrentUser
         }
-    } ElseIf ($isNuGet) {
+    }
+    ElseIf ($isNuGet) {
         Write-Host "Checking if $Binary package is installed"
         If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
             Install-Package "$Binary" -Scope CurrentUser -Source 'nuget.org'
         }
-    } Else {
+    }
+    Else {
         Write-Host "Checking if $Binary is installed"
         If (-Not (Get-Command -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
@@ -297,7 +299,7 @@ Function Get-AnimePlanetBackup {
     Write-Host "Exporting Anime-Planet anime list"
     $apUsername = $Env:ANIMEPLANET_USERNAME
     $headers = @{
-        Origin = "https://malscraper.azurewebsites.net";
+        Origin  = "https://malscraper.azurewebsites.net";
         Referer = "https://malscraper.azurewebsites.net/";
     }
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$apUsername&listtype=animeplanetanime&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./animePlanet/animeList.xml"
@@ -376,8 +378,8 @@ Function Get-KitsuBackup {
     $kitsuPassword = [uri]::EscapeDataString("$Env:KITSU_PASSWORD")
     $kitsuParameters = @{
         grant_type = "password";
-        username = $kitsuEmail;
-        password = $kitsuPassword;
+        username   = $kitsuEmail;
+        password   = $kitsuPassword;
     }
 
     $kitsuAccessToken = (Invoke-WebRequest -Method Post -Body $kitsuParameters -Uri https://kitsu.io/api/oauth/token).Content | ConvertFrom-Json
@@ -402,7 +404,7 @@ Function Get-MangaDexBackup {
     $mdSession = $mdAuth.token.session
 
     $mdHeaders = @{
-        "Accept" = "application/json"
+        "Accept"        = "application/json"
         "Authorization" = "Bearer $mdSession"
     }
 
@@ -437,9 +439,9 @@ Function Get-MangaDexBackup {
     $n = 1
     ForEach ($manga in $mdFollowsData) {
         $mangaId = $manga.id
-        $mangaTitle = If (($Null -eq $manga.attributes.title.en) -Or ($manga.attributes.title.en -eq '')) { If (($Null -eq $manga.attributes.title.ja) -Or ($manga.attributes.title.ja -eq '')) {$manga.attributes.title.'ja-ro'} Else {$manga.attributes.title.ja} } Else { $manga.attributes.title.en }
-        $mangaVolumes = If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) {"0"} Else {$manga.attributes.lastVolume}
-        $mangaChaptersLogic = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) {"0"} Else {$manga.attributes.lastChapter}
+        $mangaTitle = If (($Null -eq $manga.attributes.title.en) -Or ($manga.attributes.title.en -eq '')) { If (($Null -eq $manga.attributes.title.ja) -Or ($manga.attributes.title.ja -eq '')) { $manga.attributes.title.'ja-ro' } Else { $manga.attributes.title.ja } } Else { $manga.attributes.title.en }
+        $mangaVolumes = If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) { "0" } Else { $manga.attributes.lastVolume }
+        $mangaChaptersLogic = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) { "0" } Else { $manga.attributes.lastChapter }
         $mangaChapters = [Math]::ceiling($mangaChaptersLogic)
         Write-Host "`r[$($n)/$($mdFollowsData.Count)] Grabbing rating for $($mangaTitle) ($($mangaId))" -NoNewline
         $mdRatingQuery = "https://api.mangadex.org/rating?manga%5B%5D=$($mangaId)"
@@ -457,42 +459,47 @@ Function Get-MangaDexBackup {
     chapter: 0
   rating: $($mdScore)
 "@
+        Switch ($mdMangaStatus.$mangaId) {
+            "reading" {
+                $malReading += 1
+                $malStatus = "Reading"
+            }
+            "completed" {
+                $malCompleted += 1
+                $malStatus = "Completed"
+            }
+            "on_hold" {
+                $malOnHold += 1
+                $malStatus = "On-Hold"
+            }
+            "dropped" {
+                $malDropped += 1
+                $malStatus = "Dropped"
+            }
+            "plan_to_read" {
+                $malPlanToRead += 1
+                $malStatus = "Plan to Read"
+            }
+        }
+
         $malCommons = @"
         <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
-        <manga_volumes_read>$($mangaVolumes)</manga_volumes_read>
-        <manga_chapters_read>$($mangaChapters)</manga_chapters_read>
+        <manga_volumes>$($mangaVolumes)</manga_volumes>
+        <manga_chapters>$($mangaChapters)</manga_chapters>
         <my_status>$($malStatus)</manga_status>
         <my_score>$($mdScore)</manga_score>
         <my_read_volumes>0</my_read_volumes>
         <my_read_chapters>0</my_read_chapters>
+        <my_times_read>0</my_times_read>
+        <my_reread_value>Low</my_reread_value>
+        <my_start_date>0000-00-00</my_start_date>
+        <my_finish_date>0000-00-00</my_finish_date>
         <update_on_import>1</update_on_import>
 "@
         # Count MyAnimeList stats
         If ($Null -ne $manga.attributes.links.mal) {
-            Switch ($mdMangaStatus.$mangaId) {
-                "reading" {
-                    $malReading += 1
-                    $malStatus = "Reading"
-                }
-                "completed" {
-                    $malCompleted += 1
-                    $malStatus = "Completed"
-                }
-                "on_hold" {
-                    $malOnHold += 1
-                    $malStatus = "On-Hold"
-                }
-                "dropped" {
-                    $malDropped += 1
-                    $malStatus = "Dropped"
-                }
-                "plan_to_read" {
-                    $malPlanToRead += 1
-                    $malStatus = "Plan to Read"
-                }
-            }
             # Exporting Manga as MyAnimeList format
-        $mdToMal += @"
+            $mdToMal += @"
 `n    <manga>
         <manga_mangadb_id>$($manga.attributes.links.mal)</manga_mangadb_id>
         <!--mangadex_chapters_read>$($mangaChaptersLogic)</mangadex_chapters_read-->
@@ -527,7 +534,7 @@ In this folder, you will get:
 "@
     $ReadMe | Out-File -FilePath "./mangaDex/README.txt" -Encoding UTF8 -Force
 
-    Write-None;Write-None
+    Write-None; Write-None
     Write-Host "Exporting MangaDex Follow List"
     $mangaData | Out-File -FilePath "./mangaDex/mangaList.yaml" -Encoding UTF8 -Force
     $mangaData | ConvertFrom-Yaml | ConvertTo-Json | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
@@ -537,9 +544,9 @@ In this folder, you will get:
 <?xml version="1.0" encoding="UTF-8" ?>
 <myanimelist>
     <myinfo>
-        <user_id></user_id>
+        <user_id>123456</user_id>
         <user_name>$($mdUsername)</user_name>
-        <user_export_type>1</user_export_type>
+        <user_export_type>2</user_export_type>
         <user_total_manga>$($malReading + $malCompleted + $malOnHold + $malDropped + $malPlanToRead)</user_total_manga>
         <!--user_total_mangadex_manga>$($mdFollowsData.Count)</user_total_mangadex_manga-->
         <user_total_reading>$($malReading)</user_total_reading>
@@ -610,7 +617,7 @@ Function Get-MyAnimeListBackup {
     Write-Host "Exporting MyAnimeList anime list"
     $malUsername = $Env:MAL_USERNAME
     $headers = @{
-        Origin = "https://malscraper.azurewebsites.net";
+        Origin  = "https://malscraper.azurewebsites.net";
         Referer = "https://malscraper.azurewebsites.net/";
     }
 
