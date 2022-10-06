@@ -28,10 +28,19 @@ Function Convert-AniListXML {
                 $volumes = If ($Null -eq $entry.media.volumes) { 0 } Else { $entry.media.volumes }
                 $progress = $entry.progress
                 $progressVolumes = $entry.progressVolumes
-                $startedDate = If ($Null -eq $entry.startedAt.year) { "0000-00-00" } Else { "$($entry.startedAt.year)-$(($entry.startedAt.month).ToString('00'))-$(($entry.startedAt.day).ToString('00'))" }
-                $completedDate = If ($Null -eq $entry.completedAt.year) { "0000-00-00" } Else { "$($entry.startedAt.year)-$(($entry.startedAt.month).ToString('00'))-$(($entry.startedAt.day).ToString('00'))"}
+                $startedDateRaw = If ($Null -eq $entry.startedAt.year) { "0000-00-00" } Else { "$($entry.startedAt.year)-$(($entry.startedAt.month).ToString('00'))-$(($entry.startedAt.day).ToString('00'))" }
+                $startedDate = If (($startedDateRaw -eq "--") -or ($startedDateRaw -eq "")) { "0000-00-00" } Else { $startedDateRaw }
+                $completedDateRaw = If ($Null -eq $entry.completedAt.year) { "0000-00-00" } Else { "$($entry.startedAt.year)-$(($entry.startedAt.month).ToString('00'))-$(($entry.startedAt.day).ToString('00'))" }
+                $completedDate = If (($completedDateRaw -eq "--") -or ($completedDateRaw -eq "")) { "0000-00-00 " } Else { $completedDateRaw }
                 $repeat = $entry.repeat
                 $note = If ($Null -eq $entry.notes) { "" } Else { $entry.notes }
+                Switch ($entry.status) {
+                    "CURRENT" { If ($True -eq $isManga) { $status = "Reading"; $malReading++ } Else { $status = "Watching"; $malWatching++ } }
+                    "PLANNING" { If ($True -eq $isManga) { $status = "Plan to Read"; $malPlanToRead++ } Else { $status = "Plan to Watch"; $malPlanToWatch++ } }
+                    "COMPLETED" { $status = "Completed"; $malCompleted++ }
+                    "PAUSED" { $status = "On-Hold"; $malOnHold++ }
+                    "DROPPED" { $status = "Dropped"; $malDropped++ }
+                }
 
                 $commonXml = @"
 <my_start_date>$($startedDate)</my_start_date>
@@ -42,26 +51,29 @@ Function Convert-AniListXML {
         <my_comments><![CDATA[$($note)]]></my_comments>
         <update_on_import>1</update_on_import>
 "@
+                $commonAnime = @"
+<series_title><![CDATA[$($title)]]></series_title>
+        <series_episodes>$($episodes)</series_episodes>
+        <my_watched_episodes>$($progress)</my_watched_episodes>
+        <my_rewatching>$($repeat)</my_rewatching>
+        <my_rewatching_ep>0</my_rewatching_ep>
+"@
+                $commonManga = @"
+<manga_title><![CDATA[$($title)]]></manga_title>
+        <manga_chapters>$($chapters)</manga_chapters>
+        <manga_volumes>$($volumes)</manga_volumes>
+        <my_read_chapters>$($progress)</my_read_chapters>
+        <my_read_volumes>$($progressVolumes)</my_read_volumes>
+        <my_times_read>$($repeat)</my_times_read>
+"@
 
                 If ($malID -ne 0) {
-                    Switch ($entry.status) {
-                        "CURRENT" { If ($True -eq $isManga) { $status = "Reading"; $malReading++ } Else { $status = "Watching"; $malWatching++ } }
-                        "PLANNING" { If ($True -eq $isManga) { $status = "Plan to Read"; $malPlanToRead++ } Else { $status = "Plan to Watch"; $malPlanToWatch++ } }
-                        "COMPLETED" { $status = "Completed"; $malCompleted++ }
-                        "PAUSED" { $status = "On-Hold"; $malOnHold++ }
-                        "DROPPED" { $status = "Dropped"; $malDropped++ }
-                    }
-
                     If ($False -eq $isManga) {
                         $aniListToMAL += @"
 `n    <anime>
         <series_animedb_id>$($malID)</series_animedb_id>
         <!--series_anilist_id>$($entryId)</series_anilist_id-->
-        <series_title><![CDATA[$($title)]]></series_title>
-        <series_episodes>$($episodes)</series_episodes>
-        <my_watched_episodes>$($progress)</my_watched_episodes>
-        <my_rewatching>$($repeat)</my_rewatching>
-        <my_rewatching_ep>0</my_rewatching_ep>
+        $($commonAnime)
         $($commonXml)
     </anime>
 "@
@@ -70,13 +82,8 @@ Function Convert-AniListXML {
                         $aniListToMAL += @"
 `n    <manga>
         <mangadb_id>$($malID)</mangadb_id>
-        <!--series_anilist_id>$($entryId)</manga_anilist_id-->
-        <manga_title><![CDATA[$($title)]]></manga_title>
-        <manga_chapters>$($chapters)</manga_chapters>
-        <manga_volumes>$($volumes)</manga_volumes>
-        <my_read_chapters>$($progress)</my_read_chapters>
-        <my_read_volumes>$($progressVolumes)</my_read_volumes>
-        <my_times_read>$($repeat)</my_times_read>
+        <!--manga_anilist_id>$($entryId)</manga_anilist_id-->
+        $($commonManga)
         $($commonXml)
     </manga>
 "@
@@ -92,11 +99,7 @@ Function Convert-AniListXML {
                         $aniListToMAL += @"
 `n    <!--anime>
         <series_anilist_id>$($entryId)</series_anilist_id>
-        <series_title><![CDATA[$($title)]]></series_title>
-        <series_episodes>$($episodes)</series_episodes>
-        <my_watched_episodes>$($progress)</my_watched_episodes>
-        <my_rewatching>$($repeat)</my_rewatching>
-        <my_rewatching_ep>0</my_rewatching_ep>
+        $($commonAnime)
         $($commonXml)
     </anime-->
 "@
@@ -104,13 +107,8 @@ Function Convert-AniListXML {
                     Else {
                         $aniListToMAL += @"
 `n    <!--manga>
-        <series_anilist_id>$($entryId)</manga_anilist_id>
-        <manga_title><![CDATA[$($title)]]></manga_title>
-        <manga_chapters>$($chapters)</manga_chapters>
-        <manga_volumes>$($volumes)</manga_volumes>
-        <my_read_chapters>$($progress)</my_read_chapters>
-        <my_read_volumes>$($progressVolumes)</my_read_volumes>
-        <my_times_read>$($repeat)</my_times_read>
+        <manga_anilist_id>$($entryId)</manga_anilist_id>
+        $($commonManga)
         $($commonXml)
     </manga-->
 "@
@@ -124,7 +122,7 @@ Function Convert-AniListXML {
     If ($True -eq $isManga) {
         $xml += @"
 `n    <myinfo>
-        <user_id>0</user_id>
+        <user_id></user_id>
         <user_export_type>2</user_export_type>
         <user_total_manga>$($malReading + $malPlanToRead + $malCompleted + $malOnHold + $malDropped)</user_total_manga>
         <!--user_total_anilist_manga>$($n)</user_total_anilist_manga-->
@@ -140,7 +138,7 @@ Function Convert-AniListXML {
     Else {
         $xml += @"
 `n    <myinfo>
-        <user_id>0</user_id>
+        <user_id></user_id>
         <user_export_type>1</user_export_type>
         <user_total_anime>$($malWatching + $malPlanToWatch + $malCompleted + $malOnHold + $malDropped)</user_total_anime>
         <!--user_total_anilist_anime>$($n)</user_total_anilist_anime-->
