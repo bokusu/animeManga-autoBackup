@@ -105,10 +105,18 @@ If ($isAction) {
 }
 
 $PSRequiredPkgs = @(
-    'Set-PSEnv'
     'PSGraphQL'
     'powershell-yaml'
 )
+
+If (!($isAction)) {
+    $PSLocalPkgs = @(
+        'Set-PSEnv'
+    )
+    ForEach ($pkg in $PSLocalPkgs) {
+        $PSRequiredPkgs += $pkg
+    }
+}
 
 ForEach ($pkg in $PSRequiredPkgs) {
     Write-None
@@ -681,6 +689,193 @@ Function Get-SimklBackup {
     Copy-Item -Path ./simkl/data.json -Destination ./simkl/SimklBackup.json
     Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal -Force
     Remove-Item -Path ./simkl/SimklBackup.json
+
+    # Create another export format
+    $simklJson = Get-Content -Path ./simkl/data.json -Raw | ConvertFrom-Json
+
+    Write-None
+    Write-Host "Preparing to convert SIMKL watchlist to CSV format"
+    [array]$entries = @()
+    # Convert to CSV format
+    ForEach ($mov in $simklJson.movies) {
+        Write-Host "Converting movie: [$($mov.movie.ids.simkl)] $($mov.movie.title)"
+        $movStatus = Switch ($mov.status) {
+            'completed' { 'completed' }
+            'hold' { 'on hold' }
+            'watching' { 'watching' }
+            'plantowatch' { 'plan to watch' }
+            'notinteresting' { 'dropped' }
+        }
+        $entries += @{
+            SIMKL_ID = $mov.movie.ids.simkl
+            Title = $mov.movie.title
+            Type = 'movie'
+            Year = If (!($mov.movie.year)) { "0" } Else { $mov.movie.year }
+            Watchlist = $movStatus
+            LastEpWatched = ''
+            WatchedDate = $mov.last_watched_at
+            Rating = If (!($mov.user_rating)) { "" } Else { $mov.user_rating }
+            Memo = ''
+            TVDB = If (!($mov.movie.ids.tvdb)) { "" } Else { $mov.movie.ids.tvdb }
+            TMDB = If (!($mov.movie.ids.tmdb)) { "" } Else { $mov.movie.ids.tmdb }
+            IMDB = If (!($mov.movie.ids.imdb)) { "" } Else { $mov.movie.ids.imdb }
+        }
+    }
+
+    ForEach ($show in $simklJson.shows) {
+        Write-Host "Converting show: [$($show.show.ids.simkl)] $($show.show.title)"
+        $tvStatus = Switch ($show.status) {
+            'completed' { 'completed' }
+            'hold' { 'on hold' }
+            'watching' { 'watching' }
+            'plantowatch' { 'plan to watch' }
+            'notinteresting' { 'dropped' }
+        }
+        $entries += @{
+            SIMKL_ID = $show.show.ids.simkl
+            Title = $show.show.title
+            Type = 'tv show'
+            Year = If (!($show.show.year)) { "0" } Else  { $show.show.year }
+            Watchlist = $tvStatus
+            LastEpWatched = If (!($show.last_watched)) { "" } Else { $show.last_watched.ToLower() }
+            WatchedDate = $show.last_watched_at
+            Rating = If (!($show.user_rating)) { "" } Else { $show.user_rating }
+            Memo = ''
+            TVDB = If (!($show.show.ids.tvdb)) { "" } Else { $show.show.ids.tvdb }
+            TMDB = If (!($show.show.ids.tmdb)) { "" } Else { $show.show.ids.tmdb }
+            IMDB = If (!($show.show.ids.imdb)) { "" } Else { $show.show.ids.imdb }
+        }
+    }
+
+    $malCurrent = 0; $malPtw = 0; $malPause = 0; $malDrop = 0; $malFinish = 0; $unlistedEntries = ""; $aniCount = 0
+    ForEach ($anime in $simklJson.anime) {
+        Write-Host "Converting anime: [$($anime.show.ids.simkl)] $($anime.show.title)"
+        $aniCount++
+        Switch ($anime.status) {
+            'completed' {
+                $malStatus = 'Completed'
+                $aniStatus = $malStatus.ToLower()
+                $malFinish++
+            }
+            'hold' {
+                $malStatus = 'On-Hold'
+                $aniStatus = 'on hold'
+                $malPause++
+            }
+            'watching' {
+                $malStatus = 'Watching'
+                $aniStatus = $malStatus.ToLower()
+                $malCurrent++
+            }
+            'plantowatch' {
+                $malStatus = 'Plan to Watch'
+                $aniStatus = $malStatus.ToLower()
+                $malPtw++
+            }
+            'notinteresting' {
+                $malStatus = 'Dropped'
+                $aniStatus = $malStatus.ToLower()
+                $malDrop++
+            }
+        }
+        $entries += @{
+            SIMKL_ID = $anime.show.ids.simkl
+            Title = $anime.show.title
+            Type = 'anime'
+            Year = If (!($anime.show.year)) {"0"} Else { $anime.show.year }
+            Watchlist = $aniStatus
+            LastEpWatched = If (!($anime.last_watched)) {""} Else { "s1" + $anime.last_watched.ToLower() }
+            WatchedDate = If (!($anime.last_watched_at)) {""} Else { $anime.last_watched_at }
+            Rating = If (!($anime.user_rating)) {""} Else { $anime.user_rating }
+            Memo = ''
+            TVDB = If (!($anime.show.ids.tvdb)) {""} Else { $anime.show.ids.tvdb }
+            TMDB = If (!($anime.show.ids.tmdb)) {""} Else { $anime.show.ids.tmdb }
+            IMDB = If (!($anime.show.ids.imdb)) {""} Else { $anime.show.ids.imdb }
+        }
+
+        $xmlCommonEntry = @"
+<series_title><![CDATA[$($anime.show.title)]]></series_title>
+        <series_episodes>$($anime.total_episodes_count)</series_episodes>
+        <my_watched_episodes>$(If (!($anime.last_watched)) { "0" } Else{$anime.last_watched.Replace('E','')})</my_watched_episodes>
+        <my_score>$(If (!($anime.user_rating)) {"0"} Else { $anime.user_rating })</my_score>
+        <my_status>$($malStatus)</my_status>
+        <my_start_date>0000-00-00</my_start_date>
+        <my_finish_date>0000-00-00</my_finish_date>
+        <update_on_import>1</update_on_import>
+"@
+
+        If ($Null -ne $anime.show.ids.mal) {
+            $xmlEntries += @"
+`n    <anime>
+        <series_animedb_id>$($anime.show.ids.mal)</series_animedb_id>
+        <!--simkl_animedb_id>$($anime.show.ids.simkl)</simkl_animedb_id-->
+        $($xmlCommonEntry)
+    </anime>
+"@
+        } Else {
+            $unlistedEntries += @"
+`n        - [$($anime.show.ids.simkl)] $($anime.show.title)
+"@
+            $xmlEntries += @"
+`n    <!--anime>
+        <simkl_animedb_id>$($anime.show.ids.simkl)</simkl_animedb_id>
+        $($xmlCommonEntry)
+    </anime-->
+"@
+        }
+    }
+
+    # Convert to CSV
+    # Utilize ConvertTo-Json | ConvertFrom-Json to sanitize unwanted errors...
+    #    when converting directly from hashtable to CSV
+    Write-None
+    Write-Host "Exporting SIMKL watchlist to CSV"
+    $entries | ConvertTo-Json | ConvertFrom-Json | Export-Csv -Path ./simkl/SimklBackup.csv -Encoding utf8 -Force -NoTypeInformation -UseQuotes AsNeeded
+
+    Write-None
+    Write-Host "Exporting SIMKL watchlist to MAL-XML"
+    $xmlData = @"
+<?xml version="1.0" encoding="UTF-8" ?>
+<myanimelist>
+    <myinfo>
+        <user_id></user_id>
+        <user_export_type>1</user_export_type>
+        <user_total_anime>$($malCurrent + $malPtw + $malFinish + $malPause + $malDrop)</user_total_anime>
+        <!--user_total_simkl_anime>$($aniCount)</user_total_simkl_anime-->
+        <user_total_plantowatch>$($malPtw)</user_total_plantowatch>
+        <user_total_watching>$($malCurrent)</user_total_watching>
+        <user_total_completed>$($malFinish)</user_total_completed>
+        <user_total_onhold>$($malPause)</user_total_onhold>
+        <user_total_dropped>$($malDrop)</user_total_dropped>
+    </myinfo>
+
+    <!--
+        Created by GitHub:nattadasu/animeManga-autoBackup
+        Exported at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") $((Get-TimeZone).Id)
+    -->
+
+    <!--Unindexed Entry on MAL
+        Format:
+        - [SIMKL ID] Title
+        ========================================$($unlistedEntries)
+    -->
+
+"@
+    $xmlData += $xmlEntries
+    $xmlData += "`n</myanimelist>"
+
+    $xmlData | Out-File -Path ./simkl/animeList.xml -Encoding utf8 -Force
+
+    $readMe = @"
+This folder contains your SIMKL backup in various formats.
+
+* data.json         : JSON file fetched directly from SIMKL server.
+* SimklBackup.zip   : contains JSON file od data.json. This format is expected to be used for reimporting list to SIMKL only.
+* SimklBackup.csv   : CSV file format, suitable for importing the list to 3rd party.
+* animeList.xml     : MAL-compatible XML format. Use this if you want strictly import only anime list.
+"@
+
+    $readMe | Out-File -Path ./simkl/README -Encoding utf8 -Force
 }
 
 Function Get-TraktBackup {
