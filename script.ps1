@@ -726,6 +726,7 @@ Function Get-SimklBackup {
             TVDB = If (!($mov.movie.ids.tvdb)) { "" } Else { $mov.movie.ids.tvdb }
             TMDB = If (!($mov.movie.ids.tmdb)) { "" } Else { $mov.movie.ids.tmdb }
             IMDB = If (!($mov.movie.ids.imdb)) { "" } Else { $mov.movie.ids.imdb }
+            MAL_ID = ''
         }
     }
 
@@ -751,6 +752,7 @@ Function Get-SimklBackup {
             TVDB = If (!($show.show.ids.tvdb)) { "" } Else { $show.show.ids.tvdb }
             TMDB = If (!($show.show.ids.tmdb)) { "" } Else { $show.show.ids.tmdb }
             IMDB = If (!($show.show.ids.imdb)) { "" } Else { $show.show.ids.imdb }
+            MAL_ID = ''
         }
     }
 
@@ -798,6 +800,7 @@ Function Get-SimklBackup {
             TVDB = If (!($anime.show.ids.tvdb)) {""} Else { $anime.show.ids.tvdb }
             TMDB = If (!($anime.show.ids.tmdb)) {""} Else { $anime.show.ids.tmdb }
             IMDB = If (!($anime.show.ids.imdb)) {""} Else { $anime.show.ids.imdb }
+            MAL_ID = If (!($anime.show.ids.mal)) {""} Else { $anime.show.ids.mal }
         }
 
         $xmlCommonEntry = @"
