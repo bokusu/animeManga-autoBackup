@@ -455,6 +455,13 @@ Function Get-MangaDexBackup {
         $mdRatingQuery = "https://api.mangadex.org/rating?manga%5B%5D=$($mangaId)"
         $mdRating = ((Invoke-WebRequest -Uri $mdRatingQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).ratings
         $mdScore = If (($Null -eq $mdRating.$mangaId.rating) -Or ($mdRating.$mangaId.rating -eq '')) { "0" } Else { $mdRating.$mangaId.rating }
+        If ($mdMangaStatus.$mangaId -eq 'completed') {
+            $mdReadVol = $mangaVolumes
+            $mdReadCh = $mangaChapters
+        } Else {
+            $mdReadVol = "0"
+            $mdReadCh = "0"
+        }
         $mangaData += @"
 `n- id: $($mangaId)
   title: "$($mangaTitle -Replace "`"", "\`"")"
@@ -463,29 +470,29 @@ Function Get-MangaDexBackup {
     volume: $($mangaVolumes)
     chapter: $($mangaChaptersLogic)
   current:
-    volume: 0
-    chapter: 0
+    volume: $($mdReadVol)
+    chapter: $($mdReadCh)
   rating: $($mdScore)
 "@
         Switch ($mdMangaStatus.$mangaId) {
             "reading" {
-                $malReading += 1
+                $malReading++
                 $malStatus = "Reading"
             }
             "completed" {
-                $malCompleted += 1
+                $malCompleted++
                 $malStatus = "Completed"
             }
             "on_hold" {
-                $malOnHold += 1
+                $malOnHold++
                 $malStatus = "On-Hold"
             }
             "dropped" {
-                $malDropped += 1
+                $malDropped++
                 $malStatus = "Dropped"
             }
             "plan_to_read" {
-                $malPlanToRead += 1
+                $malPlanToRead++
                 $malStatus = "Plan to Read"
             }
         }
@@ -496,8 +503,8 @@ Function Get-MangaDexBackup {
         <manga_chapters>$($mangaChapters)</manga_chapters>
         <my_status>$($malStatus)</my_status>
         <my_score>$($mdScore)</my_score>
-        <my_read_volumes>0</my_read_volumes>
-        <my_read_chapters>0</my_read_chapters>
+        <my_read_volumes>$($mdReadVol)</my_read_volumes>
+        <my_read_chapters>$($mdReadCh)</my_read_chapters>
         <my_times_read>0</my_times_read>
         <my_reread_value>Low</my_reread_value>
         <my_start_date>0000-00-00</my_start_date>
@@ -552,8 +559,7 @@ In this folder, you will get:
 <?xml version="1.0" encoding="UTF-8" ?>
 <myanimelist>
     <myinfo>
-        <user_id>123456</user_id>
-        <user_name>$($mdUsername)</user_name>
+        <user_id></user_id>
         <user_export_type>2</user_export_type>
         <user_total_manga>$($malReading + $malCompleted + $malOnHold + $malDropped + $malPlanToRead)</user_total_manga>
         <!--user_total_mangadex_manga>$($mdFollowsData.Count)</user_total_mangadex_manga-->
@@ -570,6 +576,7 @@ In this folder, you will get:
     -->
 
     <!--Unindexed Manga on MAL
+        Please to check thoroughly as MangaDex is not always link MAL ID on their manga entry
         Format:
         - [MANGADEX MANGA UUID] Manga Title
         ========================================$($noEntry)
