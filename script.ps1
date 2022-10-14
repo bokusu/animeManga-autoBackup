@@ -686,7 +686,7 @@ Function Get-SimklBackup {
     # Create a zip file for SIMKL allows importing it back
     Write-None
     Write-Host "Creating SIMKL zip file"
-    Copy-Item -Path ./simkl/data.json -Destination ./simkl/SimklBackup.json
+    [System.IO.File]::ReadAllText("./simkl/data.json").Replace('/','\/') | Out-File -FilePath ./simkl/SimklBackup.json -Encoding utf8 -Force
     Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal -Force
     Remove-Item -Path ./simkl/SimklBackup.json
 
@@ -875,7 +875,11 @@ This folder contains your SIMKL backup in various formats.
 * animeList.xml     : MAL-compatible XML format. Use this if you want strictly import only anime list.
 "@
 
-    $readMe | Out-File -Path ./simkl/README -Encoding utf8 -Force
+    #Remove legacy README file name
+    If (Test-Path -Path ./simkl/README -ErrorAction SilentlyContinue) {
+        Remove-Item -Path ./simkl/README
+    }
+    $readMe | Out-File -Path ./simkl/README.txt -Encoding utf8 -Force
 }
 
 Function Get-TraktBackup {
