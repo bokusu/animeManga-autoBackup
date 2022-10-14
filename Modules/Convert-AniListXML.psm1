@@ -35,11 +35,11 @@ Function Convert-AniListXML {
                 $repeat = $entry.repeat
                 $note = If ($Null -eq $entry.notes) { "" } Else { $entry.notes }
                 Switch ($entry.status) {
-                    "CURRENT" { If ($True -eq $isManga) { $status = "Reading"; $malReading++ } Else { $status = "Watching"; $malWatching++ } }
-                    "PLANNING" { If ($True -eq $isManga) { $status = "Plan to Read"; $malPlanToRead++ } Else { $status = "Plan to Watch"; $malPlanToWatch++ } }
-                    "COMPLETED" { $status = "Completed"; $malCompleted++ }
-                    "PAUSED" { $status = "On-Hold"; $malOnHold++ }
-                    "DROPPED" { $status = "Dropped"; $malDropped++ }
+                    "CURRENT" { If ($True -eq $isManga) { $status = "Reading" } Else { $status = "Watching" } }
+                    "PLANNING" { If ($True -eq $isManga) { $status = "Plan to Read" } Else { $status = "Plan to Watch" } }
+                    "COMPLETED" { $status = "Completed" }
+                    "PAUSED" { $status = "On-Hold" }
+                    "DROPPED" { $status = "Dropped" }
                 }
 
                 $commonXml = @"
@@ -68,6 +68,13 @@ Function Convert-AniListXML {
 "@
 
                 If ($malID -ne 0) {
+                    Switch ($entry.status) {
+                        "CURRENT" { If ($True -eq $isManga) { $malReading++ } Else { $malWatching++ } }
+                        "PLANNING" { If ($True -eq $isManga) { $malPlanToRead++ } Else { $malPlanToWatch++ } }
+                        "COMPLETED" { $malCompleted++ }
+                        "PAUSED" { $malOnHold++ }
+                        "DROPPED" { $malDropped++ }
+                    }
                     If ($False -eq $isManga) {
                         $aniListToMAL += @"
 `n    <anime>
