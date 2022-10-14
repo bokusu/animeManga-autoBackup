@@ -536,9 +536,9 @@ It contains your follows and your reading status.
 However, due to MangaDex nature, we unable to determine the last chapter you read.
 
 In this folder, you will get:
+* mangaList-MALFormat.xml: A list of all your follows in MyAnimeList format, can be used to import to MyAnimeList or other services that support MyAnimeList format.
 * mangaList.json: A list of all your follows, can not be used to import to other services.
 * mangaList.yaml: YAML version of the above, can not be used to import to other services.
-* mangaList-MALFormat.xml: A list of all your follows in MyAnimeList format, can be used to import to MyAnimeList or other services that support MyAnimeList format.
 "@
     $ReadMe | Out-File -FilePath "./mangaDex/README.txt" -Encoding UTF8 -Force
 
@@ -869,10 +869,10 @@ Function Get-SimklBackup {
     $readMe = @"
 This folder contains your SIMKL backup in various formats.
 
-* data.json         : JSON file fetched directly from SIMKL server.
-* SimklBackup.zip   : contains JSON file od data.json. This format is expected to be used for reimporting list to SIMKL only.
-* SimklBackup.csv   : CSV file format, suitable for importing the list to 3rd party.
 * animeList.xml     : MAL-compatible XML format. Use this if you want strictly import only anime list.
+* data.json         : JSON file fetched directly from SIMKL server.
+* SimklBackup.csv   : CSV file format, suitable for importing the list to 3rd party.
+* SimklBackup.zip   : contains JSON file od data.json. This format is expected to be used for reimporting list to SIMKL only.
 "@
 
     #Remove legacy README file name
