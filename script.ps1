@@ -1,4 +1,5 @@
 ﻿#!/usr/bin/env pwsh
+#Requires -Version 7
 
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
@@ -650,12 +651,139 @@ Function Get-NotifyMoeBackup {
     Write-Host "Exporting Notify.moe anime list"
     $notifyNickname = $Env:NOTIFYMOE_NICKNAME
 
-    # get csv
-    Invoke-WebRequest -Method Get -Uri "https://notify.moe/+$($notifyNickname)/animelist/export/csv" -OutFile ./notifyMoe/animeList.csv
     # get json
     Invoke-WebRequest -Method Get -Uri "https://notify.moe/+$($notifyNickname)/animelist/export/json" -OutFile ./notifyMoe/animeList.json
-    # get txt
-    Invoke-WebRequest -Method Get -Uri "https://notify.moe/+$($notifyNickname)/animelist/export/txt" -OutFile ./notifyMoe/animeList.txt
+
+    $animeData = Get-Content -Path ./notifyMoe/animeList.json -Raw | ConvertFrom-Json
+
+    [array]$animeCsv = @(); $animeTxt = ""; $noEntry = ""; $animeIndex = ""
+    $finished = 0; $dropped = 0; $current = 0; $planned = 0; $paused = 0; $n = 0
+    ForEach ($entry in $animeData.items) {
+       $n++
+        Write-Host "`r[$($n)/$($animeData.items.Count)] Retrieveing Data for [https://notify.moe/anime/$($entry.animeId)]" -NoNewline
+        $dbEntry = (Invoke-WebRequest -Method Get -Uri "https://notify.moe/api/anime/$($entry.animeId)").Content | ConvertFrom-Json
+        ForEach ($service in $dbEntry.mappings) {
+            If ($service.service -eq 'myanimelist/anime') {
+                $malId = $service.serviceId
+            }
+        }
+        $aniTitle = $dbEntry.title.canonical
+        $overall = If (!($entry.rating.overall)) { 0 } Else { $entry.rating.overall }
+        $story = If (!($entry.rating.story)) { 0 } Else { $entry.rating.story }
+        $visual = If (!($entry.rating.visuals)) { 0 } Else { $entry.rating.visual }
+        $soundtrack = If (!($entry.rating.soundtrack)) { 0 } Else { $entry.rating.soundtrack }
+        $animeCsv += @{
+            Id = $entry.animeId
+            Title = $aniTitle
+            Status = $entry.status
+            Episodes = $entry.episodes
+            Overall = $overall
+            Story = $story
+            Visual = $visual
+            Soundtrack = $soundtrack
+            Rewatched = $entry.rewatchCount
+        }
+
+        $animeTxt += @"
+1. Title: $($aniTitle)\
+   ID: ``$($entry.animeId)``\
+   Status: $($entry.status)\
+   Episodes: $($entry.episodes)\
+   Overall: $($overall)\
+   Story: $($story)\
+   Visual: $($visual)\
+   Soundtrack: $($soundtrack)\
+   Rewatched: $($entry.rewatchCount)\
+   Notes: $($entry.notes)`n`n
+"@
+
+        $status = Switch ($entry.status) {
+            "completed" { "Completed" }
+            "planned" { "Plan to Watch" }
+            "watching" { "Watching" }
+            "dropped" { "Dropped" }
+            "hold" { "On-Hold" }
+        }
+
+        $commonXml = @"
+<series_title><![CDATA[$($aniTitle)]]></series_title>
+        <series_episodes>$($db.episodeCount)</series_episodes>
+        <my_watched_episodes>$(If (!($anime.last_watched)) { "0" } Else{$anime.last_watched.Replace('E','')})</my_watched_episodes>
+        <my_score>$([Math]::Floor($entry.rating.overall))</my_score>
+        <my_status>$($status)</my_status>
+        <my_start_date>0000-00-00</my_start_date>
+        <my_finish_date>0000-00-00</my_finish_date>
+        <my_tags><![CDATA[$($entry.notes)]]></my_tags>
+        <my_comments><![CDATA[$($entry.notes)]]></my_comments>
+        <update_on_import>1</update_on_import>
+"@
+        If (!($malId)) {
+            $noEntry += @"
+`n        - [$($entry.animeId)] $($aniTitle)
+"@
+            $animeIndex += @"
+`n    <!--anime>
+        <series_notify_id>$($entry.animeId)</series_notify_id>
+        $($commonXml)
+    </anime-->
+"@
+        } Else {
+            Switch ($entry.status) {
+                "completed" { $finished++ }
+                "planned" { $planned++ }
+                "watching" { $current++ }
+                "dropped" { $dropped++ }
+                "hold" { $paused++ }
+            }
+            $animeIndex += @"
+`n    <anime>
+        <series_animedb_id>$($malId)</series_animedb_id>
+        <!--series_notify_id>$($entry.animeId)</series_notify_id-->
+        $($commonXml)
+    </anime>
+"@
+        }
+    }
+
+    $animeCsv | ConvertTo-Json | ConvertFrom-Json | ConvertTo-Csv -UseQuotes AsNeeded | Out-File ./notifyMoe/animeList.csv -Encoding utf8 -Force
+    "# Notify.moe Watchlist`n`n" + $animeTxt | Out-File ./notifyMoe/animeList.md -Encoding utf8 -Force
+    $animeTxt -Replace '\\\n', "`n" -Replace '1. Title','Title' -Replace '   ',''| Out-File ./notifyMoe/animeList.txt -Encoding utf8 -Force
+
+    Write-None
+    Write-Host "Exporting Notify.moe watchlist to MAL-XML"
+    $xmlData = @"
+<?xml version="1.0" encoding="UTF-8" ?>
+<myanimelist>
+    <myinfo>
+        <user_id></user_id>
+        <user_export_type>1</user_export_type>
+        <user_total_anime>$($current + $planned + $finished + $paused + $dropped)</user_total_anime>
+        <!--user_total_notify_anime>$($n)</user_total_notify_anime-->
+        <user_total_plantowatch>$($planned)</user_total_plantowatch>
+        <user_total_watching>$($current)</user_total_watching>
+        <user_total_completed>$($finished)</user_total_completed>
+        <user_total_onhold>$($paused)</user_total_onhold>
+        <user_total_dropped>$($dropped)</user_total_dropped>
+    </myinfo>
+
+    <!--
+        Created by GitHub:nattadasu/animeManga-autoBackup
+        Exported at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") $((Get-TimeZone).Id)
+    -->
+
+    <!--Unindexed Entry on MAL
+        Format:
+        - [Notify.moe ID] Title
+        ========================================$($noEntry)
+    -->
+
+"@
+
+    $xmlData += $animeIndex
+    $xmlData += "`n</myanimelist>"
+
+    $xmlData | Out-File ./notifyMoe/animeList.xml -Encoding utf8 -Force
+
 }
 
 Function Get-ShikimoriBackup {
@@ -947,6 +1075,15 @@ Function Get-VNDBBackup {
     $vndbUrl = "https://vndb.org/$($vndbUid)/list-export/xml"
 
     curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
+}
+
+##########################
+#       MAIN SCRIPT      #
+##########################
+
+If (!($isAction) -and $IsWindows -and (Get-Alias -Name curl -ErrorAction SilentlyContinue)) {
+    Remove-Item Alias:curl
+    Set-Alias curl "${env:SystemRoot}\System32\curl.exe"
 }
 
 # Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
