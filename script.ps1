@@ -101,7 +101,8 @@ Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 # check if the script run from GitHub Actions
 If ($isAction) {
     Write-Host "Script running from GitHub Actions"
-} Else {
+}
+Else {
     Write-Host "Script running locally"
 }
 
@@ -148,7 +149,8 @@ If (-Not($isAction)) {
         Write-Host ".env file exists" -ForegroundColor Green
         Set-PsEnv
         Write-Host ".env file imported" -ForegroundColor Green
-    } Else {
+    }
+    Else {
         Write-None
         Write-Host ".env file does not exist, creating..." -ForegroundColor Red
         Copy-Item -Path ".env.example" -Destination ".env"
@@ -459,7 +461,8 @@ Function Get-MangaDexBackup {
         If ($mdMangaStatus.$mangaId -eq 'completed') {
             $mdReadVol = $mangaVolumes
             $mdReadCh = $mangaChapters
-        } Else {
+        }
+        Else {
             $mdReadVol = "0"
             $mdReadCh = "0"
         }
@@ -522,7 +525,8 @@ Function Get-MangaDexBackup {
 $($malCommons)
     </manga>
 "@
-        } Else {
+        }
+        Else {
             $noEntry += @"
 `n        - [$($mangaId)] $($mangaTitle)
 "@
@@ -659,7 +663,7 @@ Function Get-NotifyMoeBackup {
     [array]$animeCsv = @(); $animeTxt = ""; $noEntry = ""; $animeIndex = ""
     $finished = 0; $dropped = 0; $current = 0; $planned = 0; $paused = 0; $n = 0
     ForEach ($entry in $animeData.items) {
-       $n++
+        $n++
         Write-Host "`r[$($n)/$($animeData.items.Count)] Retrieveing Data for [https://notify.moe/anime/$($entry.animeId)]" -NoNewline
         $dbEntry = (Invoke-WebRequest -Method Get -Uri "https://notify.moe/api/anime/$($entry.animeId)").Content | ConvertFrom-Json
         ForEach ($service in $dbEntry.mappings) {
@@ -673,15 +677,15 @@ Function Get-NotifyMoeBackup {
         $visual = If (!($entry.rating.visuals)) { 0 } Else { $entry.rating.visual }
         $soundtrack = If (!($entry.rating.soundtrack)) { 0 } Else { $entry.rating.soundtrack }
         $animeCsv += @{
-            Id = $entry.animeId
-            Title = $aniTitle
-            Status = $entry.status
-            Episodes = $entry.episodes
-            Overall = $overall
-            Story = $story
-            Visual = $visual
+            Id         = $entry.animeId
+            Title      = $aniTitle
+            Status     = $entry.status
+            Episodes   = $entry.episodes
+            Overall    = $overall
+            Story      = $story
+            Visual     = $visual
             Soundtrack = $soundtrack
-            Rewatched = $entry.rewatchCount
+            Rewatched  = $entry.rewatchCount
         }
 
         $animeTxt += @"
@@ -727,7 +731,8 @@ Function Get-NotifyMoeBackup {
         $($commonXml)
     </anime-->
 "@
-        } Else {
+        }
+        Else {
             Switch ($entry.status) {
                 "completed" { $finished++ }
                 "planned" { $planned++ }
@@ -747,7 +752,7 @@ Function Get-NotifyMoeBackup {
 
     $animeCsv | ConvertTo-Json | ConvertFrom-Json | ConvertTo-Csv -UseQuotes AsNeeded | Out-File ./notifyMoe/animeList.csv -Encoding utf8 -Force
     "# Notify.moe Watchlist`n`n" + $animeTxt | Out-File ./notifyMoe/animeList.md -Encoding utf8 -Force
-    $animeTxt -Replace '\\\n', "`n" -Replace '1. Title','Title' -Replace '   ',''| Out-File ./notifyMoe/animeList.txt -Encoding utf8 -Force
+    $animeTxt -Replace '\\\n', "`n" -Replace '1. Title', 'Title' -Replace '   ', '' | Out-File ./notifyMoe/animeList.txt -Encoding utf8 -Force
 
     Write-None
     Write-Host "Exporting Notify.moe watchlist to MAL-XML"
@@ -821,7 +826,7 @@ Function Get-SimklBackup {
     # Create a zip file for SIMKL allows importing it back
     Write-None
     Write-Host "Creating SIMKL zip file"
-    [System.IO.File]::ReadAllText("./simkl/data.json").Replace('/','\/') | Out-File -FilePath ./simkl/SimklBackup.json -Encoding utf8 -Force
+    [System.IO.File]::ReadAllText("./simkl/data.json").Replace('/', '\/') | Out-File -FilePath ./simkl/SimklBackup.json -Encoding utf8 -Force
     Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal -Force
     Remove-Item -Path ./simkl/SimklBackup.json
 
@@ -842,19 +847,19 @@ Function Get-SimklBackup {
             'notinteresting' { 'dropped' }
         }
         $entries += @{
-            SIMKL_ID = $mov.movie.ids.simkl
-            Title = $mov.movie.title
-            Type = 'movie'
-            Year = If (!($mov.movie.year)) { "0" } Else { $mov.movie.year }
-            Watchlist = $movStatus
+            SIMKL_ID      = $mov.movie.ids.simkl
+            Title         = $mov.movie.title
+            Type          = 'movie'
+            Year          = If (!($mov.movie.year)) { "0" } Else { $mov.movie.year }
+            Watchlist     = $movStatus
             LastEpWatched = ''
-            WatchedDate = $mov.last_watched_at
-            Rating = If (!($mov.user_rating)) { "" } Else { $mov.user_rating }
-            Memo = ''
-            TVDB = If (!($mov.movie.ids.tvdb)) { "" } Else { $mov.movie.ids.tvdb }
-            TMDB = If (!($mov.movie.ids.tmdb)) { "" } Else { $mov.movie.ids.tmdb }
-            IMDB = If (!($mov.movie.ids.imdb)) { "" } Else { $mov.movie.ids.imdb }
-            MAL_ID = ''
+            WatchedDate   = $mov.last_watched_at
+            Rating        = If (!($mov.user_rating)) { "" } Else { $mov.user_rating }
+            Memo          = ''
+            TVDB          = If (!($mov.movie.ids.tvdb)) { "" } Else { $mov.movie.ids.tvdb }
+            TMDB          = If (!($mov.movie.ids.tmdb)) { "" } Else { $mov.movie.ids.tmdb }
+            IMDB          = If (!($mov.movie.ids.imdb)) { "" } Else { $mov.movie.ids.imdb }
+            MAL_ID        = ''
         }
     }
 
@@ -868,19 +873,19 @@ Function Get-SimklBackup {
             'notinteresting' { 'dropped' }
         }
         $entries += @{
-            SIMKL_ID = $show.show.ids.simkl
-            Title = $show.show.title
-            Type = 'tv show'
-            Year = If (!($show.show.year)) { "0" } Else  { $show.show.year }
-            Watchlist = $tvStatus
+            SIMKL_ID      = $show.show.ids.simkl
+            Title         = $show.show.title
+            Type          = 'tv show'
+            Year          = If (!($show.show.year)) { "0" } Else { $show.show.year }
+            Watchlist     = $tvStatus
             LastEpWatched = If (!($show.last_watched)) { "" } Else { $show.last_watched.ToLower() }
-            WatchedDate = $show.last_watched_at
-            Rating = If (!($show.user_rating)) { "" } Else { $show.user_rating }
-            Memo = ''
-            TVDB = If (!($show.show.ids.tvdb)) { "" } Else { $show.show.ids.tvdb }
-            TMDB = If (!($show.show.ids.tmdb)) { "" } Else { $show.show.ids.tmdb }
-            IMDB = If (!($show.show.ids.imdb)) { "" } Else { $show.show.ids.imdb }
-            MAL_ID = ''
+            WatchedDate   = $show.last_watched_at
+            Rating        = If (!($show.user_rating)) { "" } Else { $show.user_rating }
+            Memo          = ''
+            TVDB          = If (!($show.show.ids.tvdb)) { "" } Else { $show.show.ids.tvdb }
+            TMDB          = If (!($show.show.ids.tmdb)) { "" } Else { $show.show.ids.tmdb }
+            IMDB          = If (!($show.show.ids.imdb)) { "" } Else { $show.show.ids.imdb }
+            MAL_ID        = ''
         }
     }
 
@@ -916,19 +921,19 @@ Function Get-SimklBackup {
             }
         }
         $entries += @{
-            SIMKL_ID = $anime.show.ids.simkl
-            Title = $anime.show.title
-            Type = 'anime'
-            Year = If (!($anime.show.year)) {"0"} Else { $anime.show.year }
-            Watchlist = $aniStatus
-            LastEpWatched = If (!($anime.last_watched)) {""} Else { "s1" + $anime.last_watched.ToLower() }
-            WatchedDate = If (!($anime.last_watched_at)) {""} Else { $anime.last_watched_at }
-            Rating = If (!($anime.user_rating)) {""} Else { $anime.user_rating }
-            Memo = ''
-            TVDB = If (!($anime.show.ids.tvdb)) {""} Else { $anime.show.ids.tvdb }
-            TMDB = If (!($anime.show.ids.tmdb)) {""} Else { $anime.show.ids.tmdb }
-            IMDB = If (!($anime.show.ids.imdb)) {""} Else { $anime.show.ids.imdb }
-            MAL_ID = If (!($anime.show.ids.mal)) {""} Else { $anime.show.ids.mal }
+            SIMKL_ID      = $anime.show.ids.simkl
+            Title         = $anime.show.title
+            Type          = 'anime'
+            Year          = If (!($anime.show.year)) { "0" } Else { $anime.show.year }
+            Watchlist     = $aniStatus
+            LastEpWatched = If (!($anime.last_watched)) { "" } Else { "s1" + $anime.last_watched.ToLower() }
+            WatchedDate   = If (!($anime.last_watched_at)) { "" } Else { $anime.last_watched_at }
+            Rating        = If (!($anime.user_rating)) { "" } Else { $anime.user_rating }
+            Memo          = ''
+            TVDB          = If (!($anime.show.ids.tvdb)) { "" } Else { $anime.show.ids.tvdb }
+            TMDB          = If (!($anime.show.ids.tmdb)) { "" } Else { $anime.show.ids.tmdb }
+            IMDB          = If (!($anime.show.ids.imdb)) { "" } Else { $anime.show.ids.imdb }
+            MAL_ID        = If (!($anime.show.ids.mal)) { "" } Else { $anime.show.ids.mal }
         }
 
         $xmlCommonEntry = @"
@@ -950,7 +955,8 @@ Function Get-SimklBackup {
         $($xmlCommonEntry)
     </anime>
 "@
-        } Else {
+        }
+        Else {
             $unlistedEntries += @"
 `n        - [$($anime.show.ids.simkl)] $($anime.show.title)
 "@
@@ -1043,16 +1049,19 @@ Function Get-TraktBackup {
     # Check if linux or windows
     If ($Env:XDG_DATA_HOME) {
         $dataDir = $Env:XDG_DATA_HOME
-    } ElseIf ($isWindows) {
+    }
+    ElseIf ($isWindows) {
         $dataDir = "~/.traktexport"
-    } Else {
+    }
+    Else {
         $dataDir = "~/.local/share"
     }
 
     # Check if file exist
     If (Test-Path -Path "$dataDir/traktexport.json" -PathType Leaf) {
         Write-Host "Config file exists" -ForegroundColor Green
-    } Else {
+    }
+    Else {
         Write-Host "Config file does not exist" -ForegroundColor Red
         Write-Host "Creating config file" -ForegroundColor Yellow
         New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExportJson
