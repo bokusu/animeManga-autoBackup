@@ -78,28 +78,28 @@ This project **requires you to set the library/list as public** as most API used
 
 ### Backup from `x` site
 
-* ✅ AniList
-* ✅ Anime-Planet
-* ✅ Annict
-* ✅ Baka-Updates
-* ✅ Kitsu
-* ✅ MangaDex
-* ✅ MyAnimeList
-* ✅ Notify.moe
-* ✅ Otak Otaku
-* ✅ Shikimori
-* ✅ SIMKL
-* ✅ Trakt
-* ✅ Visual Novel Database (VNDB)
+* ✅ [AniList](https://anilist.co)
+* ✅ [Anime-Planet](https://anime-planet.com)
+* ✅ [Annict](https://en.annict.com)
+* ✅ [Baka-Updates Manga (MangaUpdates)](https://www.mangaupdates.com/)
+* ✅ [Kitsu](https://kitsu.io)
+* ✅ [MangaDex](https://mangadex.org)
+* ✅ [MyAnimeList](https://myanimelist.net)
+* ✅ [Notify.moe](https://notify.moe)
+* ✅ [Otak Otaku](https://otakotaku.com)
+* ✅ [Shikimori](https://shikimori.one)
+* ✅ [SIMKL](https://simkl.com)
+* ✅ [Trakt](https://trakt.tv)
+* ✅ [Visual Novel Database (VNDB)](https://vndb.org)
 * 🚫 9Anime &mdash; *Can not bypass security*
-* 💻 AniDB &mdash; *Probably won't integrated as they uses different API method, and very niche site*
-* 🚫 AniSearch &mdash; *Failed to bypass cookies, API access limited, requests only*
-* 💻 Bangumi.tv &mdash; Pagination
-* 🚫 Goodreads &mdash; *Export feature is not instantaneous, and yet they closed Public API*
-* 🚫 IMDb &mdash; *Failed to bypass using cookie method; API paid*
-* 💻 LiveChart.me &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
-* 💻 Nautiljon &mdash; *No export feature and no API access*
-* ⌛ The Movie DB
+* 💻 [AniDB](https://anidb.net) &mdash; *Probably won't integrated as they uses different API method, and very niche site*
+* 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
+* 💻 [Bangumi.tv](https://bgm.tv) &mdash; Pagination
+* 🚫 [Goodreads](https://goodreads.com) &mdash; *Export feature is not instantaneous, and yet they closed Public API*
+* 🚫 [IMDb](https://imdb.com) &mdash; *Failed to bypass using cookie method; API paid*
+* 💻 [LiveChart.me](https://livechart.me) &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
+* 💻 [Nautiljon](https://nautiljon.com) &mdash; *No export feature and no API access*
+* ⌛ [The Movie Database (TMDB)](https://themoviedb.org)
 
 ## Files Generated and Importability
 
