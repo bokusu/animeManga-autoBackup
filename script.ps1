@@ -790,6 +790,102 @@ Function Get-NotifyMoeBackup {
 
 }
 
+Function Get-OtakOtakuBackup {
+    Add-Directory -Path ./otakOtaku -Name "Otak Otaku"
+    $otakUsername = $Env:OTAKOTAKU_USERNAME
+
+    # Grabbing UID
+    $getUserContent = (Invoke-WebRequest -Uri "https://otakotaku.com/user/$($otakUsername)").Content
+    $findIdUser = [Regex]::Match($getUserContent, "var ID_USER = '[\d]+'").Value
+    [int]$otakUid = [Regex]::Match($findIdUser, '[\d]+').Value
+
+    # Checking total anime
+    $totalAnimeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H 'referer: https://otakotaku.com/user/nattadasu'  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=1&index=0" --compressed --silent
+    [int]$totalAnime = ($totalAnimeJson | ConvertFrom-Json).meta.total
+
+    $animeData = @()
+    For ($n = 0; $n -le $totalAnime; $n += 10) {
+        Write-Host "`rGrabbing anime data from Otak Otaku [$([Math]::Floor(($n + 10) / 10))/$([Math]::Ceiling($totalAnime / 10))]" -NoNewline
+        $animeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H 'referer: https://otakotaku.com/user/nattadasu'  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=10&index=$($n)" --compressed --silent
+        $animeJson = ($animeJson | ConvertFrom-Json).data
+        $animeData += $animeJson
+    }
+    Write-None; Write-None
+    $animeRaw = @{
+        data = $animeData
+        meta = @{
+            total = [string]$totalAnime
+        }
+    }
+    $animeRaw | ConvertTo-Json -Depth 10 | Out-File -FilePath "./otakOtaku/animeList.json" -Encoding UTF8 -Force
+
+    # Create MAL compatible XML backup file
+    $current = 0; $paused = 0; $dropped = 0; $completed = 0; $planned = 0; $arrItems = ""
+    ForEach ($anime in $animeData) {
+        $animeTitle = $anime.judul_anime
+        $userProgress = $anime.progres
+        [int]$userScore = If ($anime.skor -eq '-1') { 0 } Else { $anime.skor }
+        $userStatus = Switch ($anime.slug_status_tonton) {
+            'akan-ditonton' { 'Plan to Watch'; $planned++ }
+            'ditunda' { 'On-Hold'; $paused++ }
+            'sedang-ditonton' { 'Watching'; $current++ }
+            'selesai-ditonton' { 'Completed'; $completed++ }
+            'tidak-diselesaikan' { 'Dropped'; $dropped++ }
+        }
+        $userNotes = If ($Null -eq $anime.catatan) { '' } Else { $anime.catatan }
+        $userTags = If ($Null -eq $anime.tag) { '' } Else { $anime.tag }
+        $userStartedDate = If ($Null -eq $anime.tgl_mulai) { '0000-00-00' } Else { $anime.tanggal_mulai }
+        $userEndedDate = If ($Null -eq $anime.tgl_selesai) { '0000-00-00' } Else { $anime.tanggal_selesai }
+        $malId = $anime.mal_id_anime
+        $otakuId = $anime.id_anime
+
+        # Building array item
+        $arrItems += @"
+`n    <anime>
+        <series_animedb_id>$($malId)</series_animedb_id>
+        <!--series_otakotaku_id>$($otakuId)</series_otakotaku_id-->
+        <series_title><![CDATA[$($animeTitle)]]></series_title>
+        <my_watched_episodes>$($userProgress)</my_watched_episodes>
+        <my_start_date>$($userStartedDate)</my_start_date>
+        <my_finish_date>$($userEndedDate)</my_finish_date>
+        <my_score>$($userScore)</my_score>
+        <my_status>$($userStatus)</my_status>
+        <my_tags><![CDATA[$($userTags)]]></my_tags>
+        <my_comments><![CDATA[$($userNotes)]]></my_comments>
+        <update_on_import>1</update_on_import>
+    </anime>
+"@
+    }
+
+    # Building XML
+    $xmlData = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<myanimelist>
+    <myinfo>
+        <user_id>$($animeData[0].id_user)</user_id>
+        <user_name>$($otakUsername)</user_name>
+        <user_export_type>1</user_export_type>
+        <user_total_anime>$($totalAnime)</user_total_anime>
+        <user_total_watching>$($current)</user_total_watching>
+        <user_total_completed>$($completed)</user_total_completed>
+        <user_total_onhold>$($paused)</user_total_onhold>
+        <user_total_dropped>$($dropped)</user_total_dropped>
+        <user_total_plantowatch>$($planned)</user_total_plantowatch>
+    </myinfo>
+
+    <!--
+        Created by GitHub:nattadasu/animeManga-autoBackup
+        Exported at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") $((Get-TimeZone).Id)
+    -->
+
+"@
+    $xmlData += $arrItems
+    $xmlData += "`n</myanimelist>"
+
+    # Write XML to file
+    $xmlData | Out-File -FilePath "./otakOtaku/animeList.xml" -Encoding utf8 -Force
+}
+
 Function Get-ShikimoriBackup {
     Add-Directory -Path ./shikimori -Name Shikimori
 
@@ -1095,7 +1191,7 @@ If (!($isAction) -and $IsWindows -and (Get-Alias -Name curl -ErrorAction Silentl
 }
 
 # Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
-If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
+If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:OTAKOTAKU_USERNAME) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
     Confirm-UserAgent
 }
 
@@ -1110,6 +1206,7 @@ If ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
 If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }
 If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup }
 If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
+If ($Env:OTAKOTAKU_USERNAME) { Get-OtakOtakuBackup }
 If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
 If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
 If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
