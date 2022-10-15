@@ -425,12 +425,11 @@ Function Get-MangaDexBackup {
 
     Write-None
     $mdFollowsData = @()
-    For ($i = 0; $i -lt $mdFollows.total; $i++) {
+    For ($i = 0; $i -lt $mdFollows.total; $i += 100) {
         Write-Host "`rGrabbing your manga follow lists, page ($([Math]::Floor(($i + 100) / 100))/$([Math]::Ceiling($mdFollows.total / 100)))" -NoNewLine
         $mdFollowsQuery = "https://api.mangadex.org/user/follows/manga?limit=100&offset=$($i)"
         $mdFollows = ((Invoke-WebRequest -Uri $mdFollowsQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json)
         $mdFollowsData += $mdFollows.data
-        $i += 100
     }
 
     # Used for debugging requests
@@ -538,7 +537,7 @@ $($malCommons)
     </manga-->
 "@
         }
-        $n += 1
+        $n++
     }
 
     $ReadMe = @"

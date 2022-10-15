@@ -219,6 +219,8 @@ You also need to fork the repository before cloning the repo to your local machi
   Find a name of the cookie that starts with `secure_session` and copy the value.
 * `NOTIFYMOE_NICKNAME`\
   Your Notify.moe nickname/username, string should be `Upper-first case`. <!-- The script will automatically generate user ID from this nickname. -->
+* `OTAKOTAKU_USERNAME`\
+  Your Otak Otaku username.
 * `REPO_PAT`\
   **Required for GitHub Actions**, your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new). Enable `workflow` option and set expiration date more than a month.
 
