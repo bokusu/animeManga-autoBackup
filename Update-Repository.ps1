@@ -43,8 +43,11 @@ If ($templateRepo -eq "$localAuthorName/$localRepoName") {
         If (($Null -eq $Env:REPO_PAT) -or ($Env:REPO_PAT -eq '')) {
             Remove-Item -Path "./Update/.github/workflows" -Recurse -Force -ErrorAction SilentlyContinue
         }
+
+        # Remove dependabot for stability
+        Remove-Item -Path "./Update/.github/dependabot.yml" -Force
+
         Remove-Item -Path "./update/.git" -Recurse -Force
-        # Remove-Item -Path "./update/Update-Repository.ps1" -Force
 
         Copy-Item -Path "./update/*" -Destination "./" -Recurse -Force
 
