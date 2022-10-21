@@ -1190,7 +1190,7 @@ If (!($isAction) -and $IsWindows -and (Get-Alias -Name curl -ErrorAction Silentl
 }
 
 # Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
-If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:OTAKOTAKU_USERNAME) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
+If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MAL_USERNAME) -or ($Env:OTAKOTAKU_USERNAME) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
     Confirm-UserAgent
 }
 
