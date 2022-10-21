@@ -31,7 +31,24 @@ Automatically (and also manually) backup your anime and manga libraries from [se
     * [Based on where you run](#based-on-where-you-run)
       * [For Local Machine](#for-local-machine)
       * [For GitHub Actions](#for-github-actions)
-    * [Variables Instruction](#variables-instruction)
+* [Variable Keys](#variable-keys)
+  * [AniList](#anilist)
+  * [Anime-Planet](#anime-planet)
+  * [Annict](#annict)
+  * [Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates)
+  * [Kitsu](#kitsu)
+  * [MangaDex](#mangadex)
+  * [MyAnimeList](#myanimelist)
+  * [Notify.moe](#notifymoe)
+  * [Otak Otaku](#otak-otaku)
+  * [SIMKL](#simkl)
+  * [Shikimori](#shikimori)
+  * [Trakt](#trakt)
+  * [Visual Novel Database (VNDB)](#visual-novel-database-vndb)
+* [Configurations](#configurations)
+  * [Network](#network)
+  * [Repository](#repository)
+  * [Schedule](#schedule)
 * [Usage](#usage)
   * [On Local Machine](#on-local-machine)
   * [On GitHub Actions](#on-github-actions)
@@ -164,7 +181,7 @@ You also need to fork the repository before cloning the repo to your local machi
 ##### For Local Machine
 
 1. Duplicate the `.env.example` file and rename to `.env` file.
-2. Follow the instructions in [# Variables Instructions](#variables-instruction) to set the variables.
+2. Follow the instructions in [# Variable Keys](#variable-keys) to set the variables.
    * If you did not registered to some site, leave the value empty.
 
 ##### For GitHub Actions
@@ -172,21 +189,59 @@ You also need to fork the repository before cloning the repo to your local machi
 1. Open repo settings.
 2. On the left sidebar, find "**Secrets**" and click **Actions**.
 3. Click <kbd>New repository secret</kbd> button.
-4. Follow the instructions in [# Variables Instructions](#variables-instruction) to set the variables.
+4. Follow the instructions in [# Variables Keys](#variable-keys) to set the variables.
    * The text on `code block` in the instruction mean a name, and Value is the key/cookie.
    * Repeat this step for all the variables listed in the instruction.
    * If you did not registered to some site, leave the value empty.
 
-#### Variables Instruction
+## Variable Keys
 
-* `ANILIST_USERNAME`\
-  Your AniList username.
-* `ANIMEPLANET_USERNAME`\
-  Your Anime-Planet username.
-* `ANNICT_PERSONAL_ACCESS_TOKEN`\
-  Your Annict Personal Access Token. You can generate one from your account via [Application Settings](https://en.annict.com/settings/apps).
-* `KITSU_EMAIL`\
-  Your Kitsu email used to login.
+### AniList
+
+**Website**: https://anilist.co
+
+<!-- omit in toc -->
+#### `ANILIST_USERNAME`
+
+Your AniList username.
+
+### Anime-Planet
+
+**Website**: https://anime-planet.com
+
+> **Warning**
+>
+> This method requires [# User Agent](#network) configured properly
+
+<!-- omit in toc -->
+#### `ANIMEPLANET_USERNAME`
+
+Your Anime-Planet username.
+
+### Annict
+
+**Website**: https://annict.com | https://en.annict.com | https://annict.jp
+
+<!-- omit in toc -->
+#### `ANNICT_PERSONAL_ACCESS_TOKEN`
+
+Your Annict Personal Access Token. You can generate one from your account via [Application Settings](https://en.annict.com/settings/apps).
+
+### Baka-Updates' Manga Section (MangaUpdates)
+
+**Website**: https://mangaupdates.com
+
+> **Warning**
+>
+> This method requires [# User Agent](#network) configured properly
+
+<!-- omit in toc -->
+#### `MANGAUPDATES_SESSION`
+
+Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+
+Find a name of the cookie that starts with `secure_session` and copy the value.
+
 * `KITSU_PASSWORD`\
   Your Kitsu password used to login.
 <!-- * `KITSU_USERID`\
@@ -208,53 +263,147 @@ You also need to fork the repository before cloning the repo to your local machi
                               ^^^^^^
   ```
 
-  then `000000` is the ID. -->
-* `MAL_USERNAME`\
-  Your MyAnimeList username.
-* `MANGADEX_USERNAME`\
-  Your MangaDex username.
-* `MANGADEX_PASSWORD`\
-  Your MangaDex password.
-* `MANGAUPDATES_SESSION`\
-  Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+### Kitsu
 
-  Find a name of the cookie that starts with `secure_session` and copy the value.
-* `NOTIFYMOE_NICKNAME`\
-  Your Notify.moe nickname/username, string should be `Upper-first case`. <!-- The script will automatically generate user ID from this nickname. -->
-* `OTAKOTAKU_USERNAME`\
-  Your Otak Otaku username.
-* `REPO_PAT`\
-  **Required for GitHub Actions**, your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new). Enable `workflow` option and set expiration date more than a month.
+**Website**: https://kitsu.io
 
-  However, you are not needed to add `REPO_PAT` in your Environment File if you run the script locally.
-* `SIMKL_ACCESS_TOKEN`\
-  Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](Get-SimklAuth.ps1), then follow the instructions.
-* `SIMKL_CLIENT_ID`\
-  Your SIMKL Client ID. To get it, [create new app on SIMKL](https://simkl.com/settings/developer/new/), and set for redirection URI to `urn:ietf:wg:oauth:2.0:oob`.
-* `SHIKIMORI_KAWAI_SESSION`\
-  Your Shikimori session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+<!-- omit in toc -->
+#### `KITSU_EMAIL`
 
-  Find a name of the cookie that starts with `_kawai_session` and copy the value.
-* `TRAKT_CLIENT_ID`\
-  Your Trakt Client ID. To get it, go to [Trakt](https://trakt.tv/oauth/applications) and click "Create New Application". Set `urn:ietf:wg:oauth:2.0:oob` as `Redirect URIs`.
-* `TRAKT_CLIENT_SECRET`\
-  Your Trakt Client Secret.
-* `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`\
-  Your Trakt credential saved by `traktexport` Python module.
+Your Kitsu email used to login.
 
-  To get it, run `traktexport init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexport` from terminal.\
-  Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.\
-  After init done, run `type .traktexport\traktexport.json` in `~`/`%USERPROFILE%` directory on Windows or `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy the credential.
-* `TRAKT_USERNAME`\
-  Your Trakt username.
-* `USER_AGENT`\
-  Your user agent. This field is required for some sites. You can get your current user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/)
-* `VNDB_AUTH`\
-  Your VNDB session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+<!-- omit in toc -->
+#### `KITSU_PASSWORD`
+
+Your Kitsu password used to login.
+
+### MangaDex
+
+**Website**: https://mangadex.org
+
+<!-- omit in toc -->
+#### `MANGADEX_USERNAME`
+
+Your MangaDex username.
+
+<!-- omit in toc -->
+#### `MANGADEX_PASSWORD`
+
+Your MangaDex password.
+
+### MyAnimeList
+
+**Website**: https://myanimelist.net
+
+> **Warning**
+>
+> This method requires [# User Agent](#network) configured properly
+
+<!-- omit in toc -->
+#### `MAL_USERNAME`
+
+Your MyAnimeList username.
+
+### Notify.moe
+
+**Website**: https://notify.moe
+
+<!-- omit in toc -->
+#### `NOTIFYMOE_NICKNAME`
+
+Your Notify.moe nickname/username, string should be `Upper-first case`.
+
+### Otak Otaku
+
+**Website**: https://otakotaku.com
+
+> **Warning**
+>
+> This method requires [# User Agent](#network) configured properly
+
+<!-- omit in toc -->
+#### `OTAKOTAKU_USERNAME`
+
+Your Otak Otaku username.
+
+### SIMKL
+
+**Website**: https://simkl.com
+
+<!-- omit in toc -->
+#### `SIMKL_ACCESS_TOKEN`
+
+Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](Get-SimklAuth.ps1), then follow the instructions.
+
+<!-- omit in toc -->
+#### `SIMKL_CLIENT_ID`
+
+Your SIMKL Client ID. To get it, [create new app on SIMKL](https://simkl.com/settings/developer/new/), and set for redirection URI to `urn:ietf:wg:oauth:2.0:oob`.
+
+### Shikimori
+
+**Website**: https://shikimori.one
+
+> **Warning**
+>
+> This method requires [# User Agent](#network) configured properly
+
+<!-- omit in toc -->
+#### `SHIKIMORI_KAWAI_SESSION`
+
+Your Shikimori session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+
+Find a name of the cookie that starts with `_kawai_session` and copy the value.
+
+### Trakt
+
+**Website**: https://trakt.tv
+
+<!-- omit in toc -->
+#### `TRAKT_CLIENT_ID`
+
+Your Trakt Client ID. To get it, go to [Trakt](https://trakt.tv/oauth/applications) and click "Create New Application". Set `urn:ietf:wg:oauth:2.0:oob` as `Redirect URIs`.
+
+<!-- omit in toc -->
+#### `TRAKT_CLIENT_SECRET`
+
+Your Trakt Client Secret.
+
+<!-- omit in toc -->
+#### `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`
+
+Your Trakt credential saved by `traktexport` Python module.
+
+To get it, run `traktexport init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexport` from terminal.
+
+Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.
+
+After init done, run `type .traktexport\traktexport.json` in `~`/`%USERPROFILE%` directory on Windows or `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy the credential.
+
+<!-- omit in toc -->
+#### `TRAKT_USERNAME`
+
+Your Trakt username.
+
+### Visual Novel Database (VNDB)
+
+**Website**: https://vndb.org
+
+> **Warning**
+>
+> This method requires [# User Agent](#network) configured properly
+
+<!-- omit in toc -->
+#### `VNDB_AUTH`
+
+Your VNDB session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
   Find a name of the cookie that starts with `vndb_auth` and copy the value.
-* `VNDB_UID`\
-  Your VNDB user ID. To get it, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
+
+<!-- omit in toc -->
+#### `VNDB_UID`
+
+Your VNDB user ID. To get it, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
 
   For example:
 
@@ -264,6 +413,57 @@ You also need to fork the repository before cloning the repo to your local machi
   ```
 
   `u12345` is your UID.
+
+## Configurations
+
+The script allows user modify additional configurations. The configurations saved in `.env` file for local, and GitHub's Repository Secrets for automated process using GitHub Actions.
+
+Below are the keys of allowed configurations
+
+### Network
+
+<!-- omit in toc -->
+#### `USER_AGENT`
+
+> **Warning**
+>
+> This key is required for
+> [# Anime-Planet](#anime-planet),
+> [# Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates),
+> [# MyAnimeList](#myanimelist),
+> [# Otak Otaku](#otak-otaku),
+> [# Shikimori](#shikimori),
+> [# Visual Novel Database (VNDB)](#visual-novel-database-vndb)
+
+Your user agent. This field is required for some sites. You can get your current user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/)
+
+### Repository
+
+<!-- omit in toc -->
+#### `REPO_PAT`
+
+> **Warning**
+>
+> Required for GitHub Actions
+
+Your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new). Enable `workflow` option and set expiration date more than a month.
+
+However, you are not needed to add `REPO_PAT` in your Environment File if you run the script locally.
+
+### Schedule
+
+<!-- omit in toc -->
+#### `BACKUP_FREQ`
+
+**Default Config**: `0 0 * * SUN`
+
+Tell GitHub Actions to do backup at the time scheduled, formatted in CRON.
+
+#### `UPDATE_FREQ`
+
+**Default Config**: `0 0 * * *`
+
+Tell GitHub Actions to check and update scripts and several components, formatted in CRON.
 
 ## Usage
 
