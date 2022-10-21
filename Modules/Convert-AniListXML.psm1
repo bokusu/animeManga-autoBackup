@@ -68,6 +68,7 @@ Function Convert-AniListXML {
 "@
 
                 If ($malID -ne 0) {
+                    Write-Verbose -Message "Convert $($title) to MALXML"
                     Switch ($entry.status) {
                         "CURRENT" { If ($True -eq $isManga) { $malReading++ } Else { $malWatching++ } }
                         "PLANNING" { If ($True -eq $isManga) { $malPlanToRead++ } Else { $malPlanToWatch++ } }
@@ -98,7 +99,7 @@ Function Convert-AniListXML {
                     $n++
                 }
                 Else {
-                    Write-Host "Skipping entry: $($title) - No MAL ID"
+                    Write-Verbose -Message "Skipping entry: $($title) - No MAL ID"
                     $noEntry += @"
 `n        - [$($entryId)] $($title)
 "@
