@@ -38,3 +38,19 @@ jobs:
           }
           git commit -m "Backup lists, $(Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ')"
           git push
+      - name: Append Timestamp to GitHub Env
+        shell: pwsh
+        run: |
+          $now = Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ'
+          "NOW=$($now)" >> $GITHUB_ENV
+      - name: Backup IMDb lists
+        uses: jpalumickas/imdb-export-action@v1.3.0
+        if: ${{ secrets.IMDB_EMAIL != '' }}
+        with:
+          imdb_email: ${{ secrets.IMDB_EMAIL }}
+          imdb_password: ${{ secrets.IMDB_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ratings_path: "./IMDb/ratings.csv"
+          watchlist_path: "./IMDb/watchlist.csv"
+          ratings_commit_message: Update IMDb Rating List, ${{ env.NOW }}
+          watchlist_commit_message: Update IMDb Watch List, ${{ env.NOW }}

@@ -36,6 +36,7 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Anime-Planet](#anime-planet)
   * [Annict](#annict)
   * [Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates)
+  * [IMDb](#imdb)
   * [Kitsu](#kitsu)
   * [MangaDex](#mangadex)
   * [MyAnimeList](#myanimelist)
@@ -61,21 +62,22 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 
 This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works. You can check table below to see the library/list you need to set as public:
 
-|           Sites | Requires public |  Method  | Requires User Agent | Description                                               |
-| --------------: | :-------------: | :------: | :-----------------: | --------------------------------------------------------- |
-|         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API |
-|    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
-|          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account      |
-|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser             |
-|           Kitsu |       No        |  `API`   |         No          | Uses official API                                         |
-|        MangaDex |       No        |  `API`   |         No          | Uses official API                                         |
-| MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
-|      Notify.moe |       No        |  `API`   |         No          | Uses official API                                         |
-|      Otak Otaku |     **Yes**     |  `API`   |       **Yes**       | Uses official API fetch procedure                         |
-|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser             |
-|           SIMKL |       No        |  `API`   |         No          | Uses official API.                                        |
-|           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                  |
-|            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                  |
+|           Sites | Requires public |  Method  | Requires User Agent | Description                                                                                     |
+| --------------: | :-------------: | :------: | :-----------------: | ----------------------------------------------------------------------------------------------- |
+|         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API                                       |
+|    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                                            |
+|          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account                                            |
+|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser                                                   |
+|            IMDb |       No        |  `3PA`   |         No          | **Backup only works using GitHub Action**, uses `jpalumickas/imdb-export-action` GitHub Actions |
+|           Kitsu |       No        |  `API`   |         No          | Uses official API                                                                               |
+|        MangaDex |       No        |  `API`   |         No          | Uses official API                                                                               |
+| MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                                            |
+|      Notify.moe |       No        |  `API`   |         No          | Uses official API                                                                               |
+|      Otak Otaku |     **Yes**     |  `API`   |       **Yes**       | Uses official API fetch procedure                                                               |
+|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser                                                   |
+|           SIMKL |       No        |  `API`   |         No          | Uses official API.                                                                              |
+|           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                                                        |
+|            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                                                        |
 
 ***Note:***\
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
@@ -99,6 +101,7 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ [Anime-Planet](https://anime-planet.com)
 * ✅ [Annict](https://en.annict.com)
 * ✅ [Baka-Updates Manga (MangaUpdates)](https://www.mangaupdates.com/)
+* ✅ [IMDb](https://imdb.com)
 * ✅ [Kitsu](https://kitsu.io)
 * ✅ [MangaDex](https://mangadex.org)
 * ✅ [MyAnimeList](https://myanimelist.net)
@@ -113,7 +116,6 @@ This project **requires you to set the library/list as public** as most API used
 * 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
 * 💻 [Bangumi.tv](https://bgm.tv) &mdash; Pagination
 * 🚫 [Goodreads](https://goodreads.com) &mdash; *Export feature is not instantaneous, and yet they closed Public API*
-* 🚫 [IMDb](https://imdb.com) &mdash; *Failed to bypass using cookie method; API paid*
 * 💻 [LiveChart.me](https://livechart.me) &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
 * 💻 [Nautiljon](https://nautiljon.com) &mdash; *No export feature and no API access*
 * ⌛ [The Movie Database (TMDB)](https://themoviedb.org)
@@ -126,6 +128,7 @@ This project **requires you to set the library/list as public** as most API used
 | Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                         |
 | Annict       | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
 | Baka-Updates | `.tsv`                              | No             | No                    | There is no official import/export feature                                                                                |
+| IMDb         | `.csv`                              | No             | Yes                   | Can be> reimport to several general TV Shows & Movies tracker sites                                                       |
 | Kitsu        | **`.xml`**                          | Yes            | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                                                                   |
 | MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML                                            |
 | MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                      |
@@ -242,26 +245,23 @@ Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when righ
 
 Find a name of the cookie that starts with `secure_session` and copy the value.
 
-* `KITSU_PASSWORD`\
-  Your Kitsu password used to login.
-<!-- * `KITSU_USERID`\
-  Your Kitsu user ID. To get it, open your Kitsu profile, right click on your display/profile picture, and click "Open in new tab".
+### IMDb
 
-  In some cases, your ID is right after `avatar/` or after `user/`
+**Website**: https://imdb.com
 
-  For example:
+> **Warning**
+>
+> Backup only works if script automated using GitHub Actions
 
-  ```py
-  https://media.kitsu.io/users/avatars/000000/large.jpeg
-                                       ^^^^^^
-  ```
+<!-- omit in toc -->
+#### `IMDB_EMAIL`
 
-  If the url uses `users/avatars/` path, `000000` is the ID. However, if the path is:
+Your IMDb email used to login
 
-  ```py
-  https://media.kitsu.io/user/000000/avatar/[FILENAME]
-                              ^^^^^^
-  ```
+<!-- omit in toc -->
+#### `IMDB_PASSWORD`
+
+Your IMDb password used to login
 
 ### Kitsu
 
