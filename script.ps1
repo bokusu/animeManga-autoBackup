@@ -1227,6 +1227,12 @@ If ($Env:VNDB_UID) { Get-VNDBBackup }
 Write-None
 Write-Host "Format JSON files"
 Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
-    Write-Host "Formatting $($_)"
-    Format-Json -Json (Get-Content $_ -Raw).trim() -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $_
+    $fileToFormat = $_
+    Write-Host "Formatting $($fileToFormat)"
+    Try {
+        Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat
+    }
+    Catch {
+        Write-Error -Message "Unable to format $($fileToFormat): $($_)" -ErrorAction Continue
+    }
 }
