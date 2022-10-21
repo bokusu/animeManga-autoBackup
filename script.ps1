@@ -619,11 +619,22 @@ Function Get-MangaUpdatesBackup {
         "wish"
     )
 
+    $muRename = @{
+    	complete = "completed";
+    	hold = "onHold";
+    	read = "currentlyReading";
+    	unfinished = "dropped";
+    	wish = "planToRead"
+    }
+
     ForEach ($action in $muLists) {
         Write-Host "Exporting $($action) list from MangaUpdates"
         $fileName = $muRename.$action
         $path = "./mangaUpdates/$($fileName).tsv"
         Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=$($action)" -OutFile $path
+        $rawCsv = Get-Content -Path $path -Raw
+        $csv = $rawCsv | ConvertFrom-Csv -Delimiter `t
+        $csv | Select-Object -Property Series, Volume, Chapter, 'Date Changed', Rating | Export-Csv -Path $path -Delimiter `t -NoTypeInformation -Encoding utf8 -Force -UseQuotes AsNeeded
     }
 
     $readmeValue = @"
@@ -761,7 +772,7 @@ Function Get-NotifyMoeBackup {
         }
     }
 
-    $animeCsv | ConvertTo-Json | ConvertFrom-Json | ConvertTo-Csv -UseQuotes AsNeeded | Out-File ./notifyMoe/animeList.csv -Encoding utf8 -Force
+    $animeCsv | Select-Object -Property Id, Title, Status, Episodes, Overall, Story, Visual, Soundtrack, Rewatched | Export-Csv -UseQuotes AsNeeded -Path ./notifyMoe/animeList.csv -Encoding utf8 -Force
     "# Notify.moe Watchlist`n`n" + $animeTxt | Out-File ./notifyMoe/animeList.md -Encoding utf8 -Force
     $animeTxt -Replace '\\\n', "`n" -Replace '1. Title', 'Title' -Replace '   ', '' | Out-File ./notifyMoe/animeList.txt -Encoding utf8 -Force
 
@@ -1081,7 +1092,7 @@ Function Get-SimklBackup {
     #    when converting directly from hashtable to CSV
     Write-None
     Write-Host "Exporting SIMKL watchlist to CSV"
-    $entries | ConvertTo-Json | ConvertFrom-Json | Export-Csv -Path ./simkl/SimklBackup.csv -Encoding utf8 -Force -NoTypeInformation -UseQuotes AsNeeded
+    $entries | Select-Object -Property SIMKL_ID, Title, Type, Year, Watchlist, LastEpWatched, WatchedDate, Rating, Memo, TVDB, TMDB, IMDB, MAL_ID | Export-Csv -Path ./simkl/SimklBackup.csv -UseQuotes AsNeeded -Encoding utf8 -Force -NoTypeInformation
 
     Write-None
     Write-Host "Exporting SIMKL watchlist to MAL-XML"
