@@ -41,11 +41,11 @@ If ($templateRepo -eq "$localAuthorName/$localRepoName") {
         git clone $gitUrl update
 
         If (($Null -eq $Env:REPO_PAT) -or ($Env:REPO_PAT -eq '')) {
-            Remove-Item -Path "./Update/.github/workflows" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item -Path "./update/.github/workflows" -Recurse -Force -ErrorAction SilentlyContinue
         }
 
         # Remove dependabot for stability
-        Remove-Item -Path "./Update/.github/dependabot.yml" -Force
+        Remove-Item -Path "./update/.github/dependabot.yml" -Force
 
         Remove-Item -Path "./update/.git" -Recurse -Force
 
