@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 #Requires -Version 7
 
 # Set variable
@@ -608,11 +608,23 @@ Function Get-MangaUpdatesBackup {
     $muSession.Cookies.Add($muCookie);
 
     Write-Host "Exporting Baka-Updates' MangaUpdates list"
-    Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=complete" -OutFile "./mangaUpdates/completed.tsv"
-    Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=hold" -OutFile "./mangaUpdates/onHold.tsv"
-    Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=read" -OutFile "./mangaUpdates/currentlyReading.tsv"
-    Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=unfinished" -OutFile "./mangaUpdates/dropped.tsv"
-    Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=wish" -OutFile "./mangaUpdates/planToRead.tsv"
+
+    # Add automated download
+
+    $muLists = @(
+        "complete",
+        "hold",
+        "read",
+        "unfinished",
+        "wish"
+    )
+
+    ForEach ($action in $muLists) {
+        Write-Host "Exporting $($action) list from MangaUpdates"
+        $fileName = $muRename.$action
+        $path = "./mangaUpdates/$($fileName).tsv"
+        Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=$($action)" -OutFile $path
+    }
 
     $readmeValue = @"
 This is a backup of your MangaUpdates list.
