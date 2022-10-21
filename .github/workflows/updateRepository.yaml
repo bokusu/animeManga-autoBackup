@@ -11,6 +11,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.REPO_PAT }}
+      - name: Load secrets to environment variables
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
       - name: Check update
         shell: pwsh
         env:
