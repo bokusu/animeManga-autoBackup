@@ -1,10 +1,12 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 #Requires -Version 7
+
+# Add -Verbose
+[CmdletBinding()]
+Param()
 
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
-
-Function Write-None { Write-Host "" }
 
 Function New-WebSession {
     param(
@@ -36,7 +38,7 @@ Function Test-Binary {
     )
 
     If ($isModule) {
-        Write-Host "Checking if $Binary module installed"
+        Write-Host "`nChecking if $Binary module installed"
         If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
@@ -44,7 +46,7 @@ Function Test-Binary {
         }
     }
     ElseIf ($isNuGet) {
-        Write-Host "Checking if $Binary package is installed"
+        Write-Host "`nChecking if $Binary package is installed"
         If (-Not (Get-Package -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Installing $Binary locally"
@@ -52,7 +54,7 @@ Function Test-Binary {
         }
     }
     Else {
-        Write-Host "Checking if $Binary is installed"
+        Write-Host "`nChecking if $Binary is installed"
         If (-Not (Get-Command -Name "$Binary" -ErrorAction SilentlyContinue)) {
             Write-Host "$Binary is not installed"
             Write-Host "Please to install latest version of $Binary"
@@ -72,8 +74,7 @@ Function Add-Directory {
         [string]$Path,
         [string]$Name
     )
-    Write-None
-    Write-Host "Creating directory for $Name"
+    Write-Host "`nCreating directory for $Name"
     If (-Not (Test-Path $Path)) {
         New-Item -ItemType Directory -Path $Path -Force
     }
@@ -96,7 +97,13 @@ Test-Binary -Binary pip -ErrorAction Break
 Write-Host "Installing required Python packages"
 pip install -r ./requirements.txt
 
-Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+If ((Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue).InstallationPolicy -ne 'Trusted') {
+    Write-Verbose -Message "Configuring PSGallery to Trusted repo"
+    Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+}
+Else {
+    Write-Verbose -Message "PSGallery set to trusted"
+}
 
 # check if the script run from GitHub Actions
 If ($isAction) {
@@ -121,7 +128,6 @@ If (!($isAction)) {
 }
 
 ForEach ($pkg in $PSRequiredPkgs) {
-    Write-None
     Test-Binary -Binary $pkg -isModule
 }
 
@@ -135,15 +141,13 @@ Function Install-NuGetPackages {
     )
 
     ForEach ($pkg in $ngPkgs) {
-        Write-None
         Test-Binary -Binary $pkg -isNuGet
     }
 }
 
 # Install-NuGetPackages
 
-Write-None
-Write-Host "Importing dotEnv file"
+Write-Host "`nImporting dotEnv file"
 If (-Not($isAction)) {
     If (Test-Path -Path ".env") {
         Write-Host ".env file exists" -ForegroundColor Green
@@ -151,7 +155,6 @@ If (-Not($isAction)) {
         Write-Host ".env file imported" -ForegroundColor Green
     }
     Else {
-        Write-None
         Write-Host ".env file does not exist, creating..." -ForegroundColor Red
         Copy-Item -Path ".env.example" -Destination ".env"
         Write-Host "Please to edit .env from your preferred text editor first and rerun the script." -ForegroundColor Red
@@ -169,8 +172,7 @@ Import-Module "./Modules/Convert-AniListXML.psm1"
 Function Get-AniListBackup {
     Add-Directory -Path ./aniList -Name AniList
 
-    Write-None
-    Write-Host "Exporting AniList anime list in JSON"
+    Write-Host "`nExporting AniList anime list in JSON"
     $aniListUsername = $Env:ANILIST_USERNAME
     $aniListUri = "https://graphql.anilist.co"
     $alAnimeBody = '
@@ -289,25 +291,21 @@ Function Get-AniListBackup {
 
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw > ./aniList/animeList.json
 
-    Write-None
-    Write-Host "Exporting AniList manga list in JSON"
+    Write-Host "`nExporting AniList manga list in JSON"
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw > ./aniList/mangaList.json
 
-    Write-None
-    Write-Host "Exporting AniList anime list in XML"
+    Write-Host "`nExporting AniList anime list in XML"
 
     Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
 
-    Write-None
-    Write-Host "Exporting AniList manga list in XML"
+    Write-Host "`nExporting AniList manga list in XML"
     Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
 }
 
 Function Get-AnimePlanetBackup {
     Add-Directory -Path ./animePlanet -Name Anime-Planet
 
-    Write-None
-    Write-Host "Exporting Anime-Planet anime list"
+    Write-Host "`nExporting Anime-Planet anime list"
     $apUsername = $Env:ANIMEPLANET_USERNAME
     $headers = @{
         Origin  = "https://malscraper.azurewebsites.net";
@@ -315,16 +313,14 @@ Function Get-AnimePlanetBackup {
     }
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$apUsername&listtype=animeplanetanime&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./animePlanet/animeList.xml"
 
-    Write-None
-    Write-Host "Exporting Anime-Planet manga list"
+    Write-Host "`nExporting Anime-Planet manga list"
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$apUsername&listtype=animeplanetmanga&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./animePlanet/mangaList.xml"
 }
 
 Function Get-AnnictBackup {
     Add-Directory -Path ./annict -Name Annict
 
-    Write-None
-    Write-Host "Exporting Annict anime list"
+    Write-Host "`nExporting Annict anime list"
 
     $annictUri = "https://api.annict.com/graphql"
     $annictQuery = '
@@ -383,8 +379,7 @@ Function Get-AnnictBackup {
 Function Get-KitsuBackup {
     Add-Directory -Path ./kitsu -Name Kitsu
 
-    Write-None
-    Write-Host "Exporting Kitsu anime list"
+    Write-Host "`nExporting Kitsu anime list"
     $kitsuEmail = $Env:KITSU_EMAIL
     $kitsuPassword = [uri]::EscapeDataString("$Env:KITSU_PASSWORD")
     $kitsuParameters = @{
@@ -397,8 +392,7 @@ Function Get-KitsuBackup {
 
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=anime" -OutFile ./kitsu/animeList.xml
 
-    Write-None
-    Write-Host "Exporting Kitsu manga list"
+    Write-Host "`nExporting Kitsu manga list"
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
 }
 
@@ -423,7 +417,7 @@ Function Get-MangaDexBackup {
     $mdFollowsQuery = "https://api.mangadex.org/user/follows/manga?limit=1&offset=0"
     $mdFollows = ((Invoke-WebRequest -Uri $mdFollowsQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json)
 
-    Write-None
+    Write-Host ""
     $mdFollowsData = @()
     For ($i = 0; $i -lt $mdFollows.total; $i += 100) {
         Write-Host "`rGrabbing your manga follow lists, page ($([Math]::Floor(($i + 100) / 100))/$([Math]::Ceiling($mdFollows.total / 100)))" -NoNewLine
@@ -436,8 +430,7 @@ Function Get-MangaDexBackup {
     # $mdFollowsData | ConvertTo-Json -Depth 10 | Out-File ./mangaDex/mdex.json
 
     # Grab User Manga Status
-    Write-None; Write-None
-    Write-Host "Grabbing reading statuses"
+    Write-Host "`n`nGrabbing reading statuses"
     $mdMangaStatusQuery = "https://api.mangadex.org/manga/status"
     $mdMangaStatus = ((Invoke-WebRequest -Uri $mdMangaStatusQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).statuses
 
@@ -445,7 +438,7 @@ Function Get-MangaDexBackup {
     $mangaData = "---"
     $malReading = 0; $malCompleted = 0; $malOnHold = 0; $malDropped = 0; $malPlanToRead = 0
 
-    Write-None
+    Write-Host ""
     $n = 1
     ForEach ($manga in $mdFollowsData) {
         $mangaId = $manga.id
@@ -553,8 +546,7 @@ In this folder, you will get:
 "@
     $ReadMe | Out-File -FilePath "./mangaDex/README.txt" -Encoding UTF8 -Force
 
-    Write-None; Write-None
-    Write-Host "Exporting MangaDex Follow List"
+    Write-Host "`n`nExporting MangaDex Follow List"
     $mangaData | Out-File -FilePath "./mangaDex/mangaList.yaml" -Encoding UTF8 -Force
     $mangaData | ConvertFrom-Yaml | ConvertTo-Json | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
 
@@ -596,8 +588,7 @@ In this folder, you will get:
 Function Get-MangaUpdatesBackup {
     Add-Directory -Path ./mangaUpdates -Name "Baka Updates' Manga-Updates"
 
-    Write-None
-    Write-Host "Configuring session cookie"
+    Write-Host "`nConfiguring session cookie"
     $muSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 
     $muCookie = New-Object System.Net.Cookie
@@ -655,8 +646,7 @@ File naming on this folder is following MyAnimeList's naming convention:
 Function Get-MyAnimeListBackup {
     Add-Directory -Path ./myAnimeList -Name MyAnimeList
 
-    Write-None
-    Write-Host "Exporting MyAnimeList anime list"
+    Write-Host "`nExporting MyAnimeList anime list"
     $malUsername = $Env:MAL_USERNAME
     $headers = @{
         Origin  = "https://malscraper.azurewebsites.net";
@@ -665,16 +655,14 @@ Function Get-MyAnimeListBackup {
 
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$malUsername&listtype=anime&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./myAnimeList/animeList.xml"
 
-    Write-None
-    Write-Host "Exporting MyAnimeList manga list"
+    Write-Host "`nExporting MyAnimeList manga list"
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$malUsername&listtype=manga&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./myAnimeList/mangaList.xml"
 }
 
 Function Get-NotifyMoeBackup {
     Add-Directory -Path ./notifyMoe -Name "Notify.moe"
 
-    Write-None
-    Write-Host "Exporting Notify.moe anime list"
+    Write-Host "`nExporting Notify.moe anime list"
     $notifyNickname = $Env:NOTIFYMOE_NICKNAME
 
     # get json
@@ -776,8 +764,7 @@ Function Get-NotifyMoeBackup {
     "# Notify.moe Watchlist`n`n" + $animeTxt | Out-File ./notifyMoe/animeList.md -Encoding utf8 -Force
     $animeTxt -Replace '\\\n', "`n" -Replace '1. Title', 'Title' -Replace '   ', '' | Out-File ./notifyMoe/animeList.txt -Encoding utf8 -Force
 
-    Write-None
-    Write-Host "Exporting Notify.moe watchlist to MAL-XML"
+    Write-Host "`nExporting Notify.moe watchlist to MAL-XML"
     $xmlData = @"
 <?xml version="1.0" encoding="UTF-8" ?>
 <myanimelist>
@@ -828,12 +815,11 @@ Function Get-OtakOtakuBackup {
 
     $animeData = @()
     For ($n = 0; $n -le $totalAnime; $n += 10) {
-        Write-Host "`rGrabbing anime data from Otak Otaku [$([Math]::Floor(($n + 10) / 10))/$([Math]::Ceiling($totalAnime / 10))]" -NoNewline
+        Write-Host "`rGrabbing anime data from Otak Otaku [($n + 10) / 10/$([Math]::Ceiling($totalAnime / 10))]" -NoNewline
         $animeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H 'referer: https://otakotaku.com/user/nattadasu'  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=10&index=$($n)" --compressed --silent
         $animeJson = ($animeJson | ConvertFrom-Json).data
         $animeData += $animeJson
     }
-    Write-None; Write-None
     $animeRaw = @{
         data = $animeData
         meta = @{
@@ -912,8 +898,7 @@ Function Get-OtakOtakuBackup {
 Function Get-ShikimoriBackup {
     Add-Directory -Path ./shikimori -Name Shikimori
 
-    Write-None
-    Write-Host "Exporting Shikimori anime list"
+    Write-Host "`nExporting Shikimori anime list"
     $shikiKawaiSession = $Env:SHIKIMORI_KAWAI_SESSION
     $shikiUsername = $Env:SHIKIMORI_USERNAME
     $shikiSession = New-WebSession -Cookies @{
@@ -922,8 +907,7 @@ Function Get-ShikimoriBackup {
     Invoke-WebRequest -Uri "https://shikimori.one/$($shikiUsername)/list_export/animes.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/animeList.json
     Invoke-WebRequest -Uri "https://shikimori.one/$($shikiUsername)/list_export/animes.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/animeList.xml
 
-    Write-None
-    Write-Host "Exporting Shikimori manga list"
+    Write-Host "`nExporting Shikimori manga list"
     Invoke-WebRequest -Uri "https://shikimori.one/$($shikiUsername)/list_export/mangas.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.json
     Invoke-WebRequest -Uri "https://shikimori.one/$($shikiUsername)/list_export/mangas.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.xml
 }
@@ -931,8 +915,7 @@ Function Get-ShikimoriBackup {
 Function Get-SimklBackup {
     Add-Directory -Path ./simkl -Name SIMKL
 
-    Write-None
-    Write-Host "Exporting SIMKL list"
+    Write-Host "`nExporting SIMKL list"
     $simklClientId = $Env:SIMKL_CLIENT_ID
     $simklAccessToken = $Env:SIMKL_ACCESS_TOKEN
 
@@ -942,8 +925,7 @@ Function Get-SimklBackup {
     } -Uri "https://api.simkl.com/sync/all-items/?episode_watched_at=yes" -OutFile "./simkl/data.json"
 
     # Create a zip file for SIMKL allows importing it back
-    Write-None
-    Write-Host "Creating SIMKL zip file"
+    Write-Host "`nCreating SIMKL zip file"
     [System.IO.File]::ReadAllText("./simkl/data.json").Replace('/', '\/') | Out-File -FilePath ./simkl/SimklBackup.json -Encoding utf8 -Force
     Compress-Archive -Path ./simkl/SimklBackup.json -Destination ./simkl/SimklBackup.zip -CompressionLevel Optimal -Force
     Remove-Item -Path ./simkl/SimklBackup.json
@@ -951,8 +933,7 @@ Function Get-SimklBackup {
     # Create another export format
     $simklJson = Get-Content -Path ./simkl/data.json -Raw | ConvertFrom-Json
 
-    Write-None
-    Write-Host "Preparing to convert SIMKL watchlist to CSV format"
+    Write-Host "`nPreparing to convert SIMKL watchlist to CSV format"
     [array]$entries = @()
     # Convert to CSV format
     ForEach ($mov in $simklJson.movies) {
@@ -1090,12 +1071,10 @@ Function Get-SimklBackup {
     # Convert to CSV
     # Utilize ConvertTo-Json | ConvertFrom-Json to sanitize unwanted errors...
     #    when converting directly from hashtable to CSV
-    Write-None
-    Write-Host "Exporting SIMKL watchlist to CSV"
+    Write-Host "`nExporting SIMKL watchlist to CSV"
     $entries | Select-Object -Property SIMKL_ID, Title, Type, Year, Watchlist, LastEpWatched, WatchedDate, Rating, Memo, TVDB, TMDB, IMDB, MAL_ID | Export-Csv -Path ./simkl/SimklBackup.csv -UseQuotes AsNeeded -Encoding utf8 -Force -NoTypeInformation
 
-    Write-None
-    Write-Host "Exporting SIMKL watchlist to MAL-XML"
+    Write-Host "`nExporting SIMKL watchlist to MAL-XML"
     $xmlData = @"
 <?xml version="1.0" encoding="UTF-8" ?>
 <myanimelist>
@@ -1149,8 +1128,7 @@ Function Get-TraktBackup {
 
     $traktUsername = $Env:TRAKT_USERNAME
 
-    Write-None
-    Write-Host "Exporting Trakt.tv data"
+    Write-Host "`nExporting Trakt.tv data"
     # Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
 
     <# If (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
@@ -1189,14 +1167,12 @@ Function Get-TraktBackup {
 }
 
 Function Get-VNDBBackup {
-    Write-None
-    Write-Host "Checking if curl is installed as fallback due to Invoke-WebRequest not working properly in handling cookies"
+    Write-Host "`nChecking if curl is installed as fallback due to Invoke-WebRequest not working properly in handling cookies"
     Test-Binary -Binary curl
 
     Add-Directory -Path ./vndb -Name VNDB
 
-    Write-None
-    Write-Host "Exporting VNDB game list"
+    Write-Host "`nExporting VNDB game list"
     $vndbUid = $Env:VNDB_UID
     $vndbAuth = $Env:VNDB_AUTH
     $vndbUrl = "https://vndb.org/$($vndbUid)/list-export/xml"
@@ -1235,8 +1211,7 @@ If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
 If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
 If ($Env:VNDB_UID) { Get-VNDBBackup }
 
-Write-None
-Write-Host "Format JSON files"
+Write-Host "`nFormat JSON files"
 Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
     $fileToFormat = $_
     Write-Host "Formatting $($fileToFormat)"
