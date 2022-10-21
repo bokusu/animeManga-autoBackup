@@ -17,12 +17,10 @@ jobs:
           secrets: ${{ toJSON(secrets) }}
       - name: Check update
         shell: pwsh
-        env:
-          REPO_PAT: ${{ secrets.REPO_PAT }}
         run: |
           ./Update-Repository.ps1
       - name: Reconfigure script
-        if: ${{ secrets.REPO_PAT != '' }}
+        if: env.REPO_PAT != ''
         shell: pwsh
         run: |
           ./Modules/Initialize-PostUpdate.ps1
