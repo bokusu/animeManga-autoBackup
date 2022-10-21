@@ -945,7 +945,7 @@ Function Get-SimklBackup {
     [array]$entries = @()
     # Convert to CSV format
     ForEach ($mov in $simklJson.movies) {
-        Write-Host "Converting movie: [$($mov.movie.ids.simkl)] $($mov.movie.title)"
+        Write-Verbose "Converting movie: $($mov.movie.title) ($($mov.movie.ids.simkl))"
         $movStatus = Switch ($mov.status) {
             'completed' { 'completed' }
             'hold' { 'on hold' }
@@ -971,7 +971,7 @@ Function Get-SimklBackup {
     }
 
     ForEach ($show in $simklJson.shows) {
-        Write-Host "Converting show: [$($show.show.ids.simkl)] $($show.show.title)"
+        Write-Verbose -Message "Converting show: $($show.show.title) ($($show.show.ids.simkl))"
         $tvStatus = Switch ($show.status) {
             'completed' { 'completed' }
             'hold' { 'on hold' }
@@ -998,7 +998,7 @@ Function Get-SimklBackup {
 
     $malCurrent = 0; $malPtw = 0; $malPause = 0; $malDrop = 0; $malFinish = 0; $unlistedEntries = ""; $aniCount = 0
     ForEach ($anime in $simklJson.anime) {
-        Write-Host "Converting anime: [$($anime.show.ids.simkl)] $($anime.show.title)"
+        Write-Verbose -Message "Converting anime: $($anime.show.title) ($($anime.show.ids.simkl))"
         $aniCount++
         Switch ($anime.status) {
             'completed' {
