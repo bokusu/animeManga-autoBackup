@@ -17,6 +17,11 @@ jobs:
           REPO_PAT: ${{ secrets.REPO_PAT }}
         run: |
           ./Update-Repository.ps1
+      - name: Reconfigure script
+        if: ${{ secrets.REPO_PAT != '' }}
+        shell: pwsh
+        run: |
+          ./Modules/Initialize-PostUpdate.ps1
       - name: Commit changes
         shell: pwsh
         run: |

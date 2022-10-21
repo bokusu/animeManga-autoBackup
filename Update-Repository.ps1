@@ -55,17 +55,9 @@ If ($templateRepo -eq "$localAuthorName/$localRepoName") {
     }
 }
 
-<#
-if ($isAction) {
-    $mailAddress = "$($Env:GITHUB_ACTOR)@noreply.users.github.com"
-    $name = "$($Env:GITHUB_ACTOR)"
-
-    git config user.email $mailAddress
-    git config user.name $name
-}
-#>
-
 If (!($isAction)) {
+    ./Modules/Initialize-PostUpdate.ps1
+
     git add .
 
     $templateCommits = (Invoke-WebRequest -Uri "$templateUri/commits" -Method Get -ContentType "application/json").Content | ConvertFrom-Json
