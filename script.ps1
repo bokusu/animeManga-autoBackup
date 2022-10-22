@@ -151,15 +151,13 @@ Write-Host "`nImporting dotEnv file"
 If (-Not($isAction)) {
     If (Test-Path -Path ".env") {
         Write-Host ".env file exists" -ForegroundColor Green
-        Set-PsEnv
-        Write-Host ".env file imported" -ForegroundColor Green
     }
     Else {
         Write-Host ".env file does not exist, creating..." -ForegroundColor Red
-        Copy-Item -Path ".env.example" -Destination ".env"
-        Write-Host "Please to edit .env from your preferred text editor first and rerun the script." -ForegroundColor Red
-        Exit 1 # User requires to manually configure the file
+        ./Modules/Environment-Generator.ps1
     }
+    Set-PsEnv
+    Write-Host ".env file imported" -ForegroundColor Green
 }
 
 Import-Module "./Modules/Format-Json.psm1"

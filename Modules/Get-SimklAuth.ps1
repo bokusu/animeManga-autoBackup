@@ -1,19 +1,30 @@
-$isAction = $null -ne $Env:GITHUB_WORKSPACE
-if (-Not($isAction)) {
-    if (!(Get-Module -Name "Set-PsEnv")) {
+#!/usr/bin/env pwsh
+#Requires -Version 7.0
+
+[CmdletBinding()]
+Param(
+    [string]$ClientId,
+    [switch]$NoLaunchBrowser
+)
+
+if (!($simklClientId)) {
+    if (!(Get-Package -Name "Set-PsEnv")) {
         Write-Host "Installing Set-PsEnv" -ForegroundColor Red
         Install-Module Set-PsEnv
     } else {
         Write-Host "Set-PsEnv is already installed"
     }
+
+    Set-PsEnv
+
+    $ClientId = $Env:SIMKL_CLIENT_ID
 }
 
-Set-PsEnv
 
 Write-Host "Get SIMKL Auth Key"
 
 $simklApi = "https://api.simkl.com/oauth/pin"
-$clientId = "?client_id=$Env:SIMKL_CLIENT_ID"
+$clientId = "?client_id=$ClientId"
 
 $simklRequestJson = (Invoke-WebRequest -Uri $simklApi$clientId -Method Get -ContentType "application/json").Content | ConvertFrom-Json
 
@@ -25,13 +36,14 @@ We have generated you a code/PIN to authenticate with SIMKL. Please to input it 
 
 Your PIN is:
 $userCode
-
-We also automatically open your browser to the SIMKL website.
-
+$(if (!$NoLaunchBrowser) { "
+We also automatically open your browser to the SIMKL website." } )
 We'll wait your response 😉
 "@
 
-Start-Process "https://simkl.com/pin/$userCode"
+If (!($NoLaunchBrowser)) {
+    Start-Process "https://simkl.com/pin/$userCode"
+}
 
 $expiredIn = $simklRequestJson.expires_in
 $interval = $simklRequestJson.interval
