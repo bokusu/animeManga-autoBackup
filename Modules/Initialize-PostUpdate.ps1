@@ -13,7 +13,7 @@ Write-Verbose -Message "[$(Get-Date)] Initialize Post Update"
 
 Function Update-Backupper {
     $path = "./.github/workflows/backup.yaml"
-    $loadYaml = Get-Content -Path $path -Raw
+    $loadYaml = (Get-Content -Path $path -Raw).Trim()
 
     # Replace update frequency
     Write-Verbose -Message "[$(Get-Date)] Replace backup frequency"
@@ -29,7 +29,7 @@ Function Update-Backupper {
 
 Function Update-Updater {
     $path = "./.github/workflows/updateRepository.yaml"
-    $loadYaml = Get-Content -Path $path -Raw
+    $loadYaml = (Get-Content -Path $path -Raw).Trim()
 
     # Replace update frequency
     Write-Verbose -Message "[$(Get-Date)] Replace Update frequency"
