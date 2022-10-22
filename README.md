@@ -36,7 +36,6 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Anime-Planet](#anime-planet)
   * [Annict](#annict)
   * [Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates)
-  * [IMDb](#imdb)
   * [Kitsu](#kitsu)
   * [MangaDex](#mangadex)
   * [MyAnimeList](#myanimelist)
@@ -50,6 +49,7 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Network](#network)
   * [Repository](#repository)
   * [Schedule](#schedule)
+    * [`UPDATE_FREQ`](#update_freq)
 * [Usage](#usage)
   * [On Local Machine](#on-local-machine)
   * [On GitHub Actions](#on-github-actions)
@@ -62,22 +62,21 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 
 This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works. You can check table below to see the library/list you need to set as public:
 
-|           Sites | Requires public |  Method  | Requires User Agent | Description                                                                                     |
-| --------------: | :-------------: | :------: | :-----------------: | ----------------------------------------------------------------------------------------------- |
-|         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API                                       |
-|    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                                            |
-|          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account                                            |
-|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser                                                   |
-|            IMDb |       No        |  `3PA`   |         No          | **Backup only works using GitHub Action**, uses `jpalumickas/imdb-export-action` GitHub Actions |
-|           Kitsu |       No        |  `API`   |         No          | Uses official API                                                                               |
-|        MangaDex |       No        |  `API`   |         No          | Uses official API                                                                               |
-| MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                                                            |
-|      Notify.moe |       No        |  `API`   |         No          | Uses official API                                                                               |
-|      Otak Otaku |     **Yes**     |  `API`   |       **Yes**       | Uses official API fetch procedure                                                               |
-|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser                                                   |
-|           SIMKL |       No        |  `API`   |         No          | Uses official API.                                                                              |
-|           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                                                        |
-|            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                                                        |
+|           Sites | Requires public |  Method  | Requires User Agent | Description                                               |
+| --------------: | :-------------: | :------: | :-----------------: | --------------------------------------------------------- |
+|         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API |
+|    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
+|          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account      |
+|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser             |
+|           Kitsu |       No        |  `API`   |         No          | Uses official API                                         |
+|        MangaDex |       No        |  `API`   |         No          | Uses official API                                         |
+| MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
+|      Notify.moe |       No        |  `API`   |         No          | Uses official API                                         |
+|      Otak Otaku |     **Yes**     |  `API`   |       **Yes**       | Uses official API fetch procedure                         |
+|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser             |
+|           SIMKL |       No        |  `API`   |         No          | Uses official API.                                        |
+|           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                  |
+|            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                  |
 
 ***Note:***\
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
@@ -421,6 +420,14 @@ Your user agent. This field is required for some sites. You can get your current
 ### Repository
 
 <!-- omit in toc -->
+#### `MINIFY_JSON`
+
+**Default Config**: `False`\
+**Options**: `False`, `True`
+
+Minify a JSON file for less storage space, not recommended if the file was intended to be checked manually or using `git diff`.
+
+<!-- omit in toc -->
 #### `REPO_PAT`
 
 > **Warning**
@@ -440,6 +447,7 @@ However, you are not needed to add `REPO_PAT` in your Environment File if you ru
 
 Tell GitHub Actions to do backup at the time scheduled, formatted in CRON.
 
+<!-- omit in toc -->
 #### `UPDATE_FREQ`
 
 **Default Config**: `0 0 * * *`
