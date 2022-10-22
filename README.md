@@ -30,6 +30,8 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Setting Environment Variables](#setting-environment-variables)
     * [Based on where you run](#based-on-where-you-run)
       * [For Local Machine](#for-local-machine)
+        * [Automated](#automated)
+        * [Manual](#manual)
       * [For GitHub Actions](#for-github-actions)
 * [Variable Keys](#variable-keys)
   * [AniList](#anilist)
@@ -49,7 +51,6 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Network](#network)
   * [Repository](#repository)
   * [Schedule](#schedule)
-    * [`UPDATE_FREQ`](#update_freq)
 * [Usage](#usage)
   * [On Local Machine](#on-local-machine)
   * [On GitHub Actions](#on-github-actions)
@@ -180,6 +181,18 @@ You also need to fork the repository before cloning the repo to your local machi
 #### Based on where you run
 
 ##### For Local Machine
+
+###### Automated
+
+* Run from working directory:
+
+  ```ps1
+  ./Modules/Environment-Generator.ps1
+  ```
+
+* Or, start `./script.ps1`, as the script will run generator automatically if `.env`file can not be found.
+
+###### Manual
 
 1. Duplicate the `.env.example` file and rename to `.env` file.
 2. Follow the instructions in [# Variable Keys](#variable-keys) to set the variables.
