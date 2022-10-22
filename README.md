@@ -101,7 +101,6 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ [Anime-Planet](https://anime-planet.com)
 * ✅ [Annict](https://en.annict.com)
 * ✅ [Baka-Updates Manga (MangaUpdates)](https://www.mangaupdates.com/)
-* ✅ [IMDb](https://imdb.com)
 * ✅ [Kitsu](https://kitsu.io)
 * ✅ [MangaDex](https://mangadex.org)
 * ✅ [MyAnimeList](https://myanimelist.net)
@@ -114,10 +113,11 @@ This project **requires you to set the library/list as public** as most API used
 * 🚫 9Anime &mdash; *Can not bypass security*
 * 💻 [AniDB](https://anidb.net) &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
-* 💻 [Bangumi.tv](https://bgm.tv) &mdash; Pagination
-* 🚫 [Goodreads](https://goodreads.com) &mdash; *Export feature is not instantaneous, and yet they closed Public API*
-* 💻 [LiveChart.me](https://livechart.me) &mdash; *Doable using cookie bypass, but has no capability to scrape HTML*
-* 💻 [Nautiljon](https://nautiljon.com) &mdash; *No export feature and no API access*
+* ⌛ [Bangumi.tv](https://bgm.tv)
+* 🚫 [Goodreads](https://goodreads.com) &mdash; *List return HTML than JSON, export feature is not instantaneous, and yet they closed Public API*
+* 🚫 [IMDb](https://imdb.com) &mdash; *Unable to bypass MFA, paid API*
+* 🚫 [LiveChart.me](https://livechart.me) &mdash; *Unable to bypass Cloudflare's "*I'm Under Attack*" mode.*
+* 💻 [Nautiljon](https://nautiljon.com) &mdash; *Unable to parse HTML directly using PowerShell*
 * ⌛ [The Movie Database (TMDB)](https://themoviedb.org)
 
 ## Files Generated and Importability
@@ -128,7 +128,6 @@ This project **requires you to set the library/list as public** as most API used
 | Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                         |
 | Annict       | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
 | Baka-Updates | `.tsv`                              | No             | No                    | There is no official import/export feature                                                                                |
-| IMDb         | `.csv`                              | No             | Yes                   | Can be> reimport to several general TV Shows & Movies tracker sites                                                       |
 | Kitsu        | **`.xml`**                          | Yes            | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                                                                   |
 | MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML                                            |
 | MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                      |
@@ -244,24 +243,6 @@ Your Annict Personal Access Token. You can generate one from your account via [A
 Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
 Find a name of the cookie that starts with `secure_session` and copy the value.
-
-### IMDb
-
-**Website**: https://imdb.com
-
-> **Warning**
->
-> Backup only works if script automated using GitHub Actions
-
-<!-- omit in toc -->
-#### `IMDB_EMAIL`
-
-Your IMDb email used to login
-
-<!-- omit in toc -->
-#### `IMDB_PASSWORD`
-
-Your IMDb password used to login
 
 ### Kitsu
 
