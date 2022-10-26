@@ -374,6 +374,76 @@ Function Get-AnnictBackup {
     Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTable -Raw > ./annict/animeList.json
 }
 
+Function Get-BangumiBackup {
+    Add-Directory -Path ./bangumi -Name "Bangumi.tv"
+
+    Write-Host "`nChecking Bangumi lists"
+    # $bgmPAT = $Env:BANGUMI_PERSONAL_ACCESS_TOKEN
+    # $bgmUserDetail = Invoke-RestMethod -Method Get -Uri "https://api.bgm.tv/v0/me" -Headers @{ Authorization = "Bearer $($bgmPat)"}
+    # $bgmUsername = $bgmUserDetail.username
+    $bgmUsername = $Env:BANGUMI_USERNAME
+    $bgmApiAddress = "https://api.bgm.tv/v0/users/$($bgmUsername)/collections"
+
+    # Grab total titles to scrape
+    $bgmManTotal = (Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=1&limit=1&offset=0").total
+    $bgmAniTotal = (Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=2&limit=1&offset=0").total
+    $bgmGmeTotal = (Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=4&limit=1&offset=0").total
+    $bgmDrmTotal = (Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=6&limit=1&offset=0").total
+
+    $bgmMan = @(); $bgmAni = @(); $bgmGme = @(); $bgmDrm = @();
+    # Start loop for manga
+    For ($page = 0; $page -lt $bgmManTotal; $page += 50) {
+        Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmManTotal / 50))] Scraping Manga List" -NoNewline
+        $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=1&limit=50&offset=$($page)"
+        $bgmMan += $bgmLists.data
+    }
+
+    # Check if there are any items in the list
+    If ($bgmMan.Count -gt 0) {
+        Write-Host "`nExporting Bangumi manga list"
+        $bgmMan | ConvertTo-Json -Depth 10 | Out-File "./bangumi/mangaList.json"
+    }
+
+    # Start loop for anime
+    For ($page = 0; $page -lt $bgmAniTotal; $page += 50) {
+        Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmAniTotal / 50))] Scraping Anime List" -NoNewline
+        $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=2&limit=50&offset=$($page)"
+        $bgmAni += $bgmLists.data
+    }
+
+    # Check if there are any items in the list
+    If ($bgmAni.Count -gt 0) {
+        Write-Host "`nExporting Bangumi anime list"
+        $bgmAni | ConvertTo-Json -Depth 10 | Out-File "./bangumi/animeList.json"
+    }
+
+    # Start loop for games
+    For ($page = 0; $page -lt $bgmGmeTotal; $page += 50) {
+        Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmGmeTotal / 50))] Scraping Game List" -NoNewline
+        $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=4&limit=50&offset=$($page)"
+        $bgmGme += $bgmLists.data
+    }
+
+    # Check if there are any items in the list
+    If ($bgmGme.Count -gt 0) {
+        Write-Host "`nExporting Bangumi game list"
+        $bgmGme | ConvertTo-Json -Depth 10 | Out-File "./bangumi/gameList.json"
+    }
+
+    # Start loop for drama
+    For ($page = 0; $page -lt $bgmDrmTotal; $page += 50) {
+        Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmDrmTotal / 50))] Scraping Drama List" -NoNewline
+        $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=6&limit=50&offset=$($page)"
+        $bgmDrm += $bgmLists.data
+    }
+
+    # Check if there are any items in the list
+    If ($bgmDrm.Count -gt 0) {
+        Write-Host "`nExporting Bangumi drama list"
+        $bgmDrm | ConvertTo-Json -Depth 10 | Out-File "./bangumi/dramaList.json"
+    }
+}
+
 Function Get-KitsuBackup {
     Add-Directory -Path ./kitsu -Name Kitsu
 
@@ -1202,6 +1272,7 @@ $userAgent = $Env:USER_AGENT
 If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
 If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
 If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
+If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup }
 If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
 If ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
 If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }

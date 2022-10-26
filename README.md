@@ -38,6 +38,7 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Anime-Planet](#anime-planet)
   * [Annict](#annict)
   * [Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates)
+  * [Bangumi](#bangumi)
   * [Kitsu](#kitsu)
   * [MangaDex](#mangadex)
   * [MyAnimeList](#myanimelist)
@@ -69,6 +70,7 @@ This project **requires you to set the library/list as public** as most API used
 |    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
 |          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account      |
 |    Baka-Updates |       No        |  `API`   |       **Yes**       | Uses official API for token                               |
+|         Bangumi |     **Yes**     |  `API`   |         No          | Uses official API                                         |
 |           Kitsu |       No        |  `API`   |         No          | Uses official API                                         |
 |        MangaDex |       No        |  `API`   |         No          | Uses official API                                         |
 | MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
@@ -101,6 +103,7 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ [Anime-Planet](https://anime-planet.com)
 * ✅ [Annict](https://en.annict.com)
 * ✅ [Baka-Updates Manga (MangaUpdates)](https://www.mangaupdates.com/)
+* ✅ [Bangumi.tv](https://bgm.tv)
 * ✅ [Kitsu](https://kitsu.io)
 * ✅ [MangaDex](https://mangadex.org)
 * ✅ [MyAnimeList](https://myanimelist.net)
@@ -113,7 +116,6 @@ This project **requires you to set the library/list as public** as most API used
 * 🚫 9Anime &mdash; *Can not bypass security*
 * 💻 [AniDB](https://anidb.net) &mdash; *Probably won't integrated as they uses different API method, and very niche site*
 * 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
-* ⌛ [Bangumi.tv](https://bgm.tv)
 * 🚫 [Goodreads](https://goodreads.com) &mdash; *List return HTML than JSON, export feature is not instantaneous, and yet they closed Public API*
 * 🚫 [IMDb](https://imdb.com) &mdash; *Unable to bypass MFA, paid API*
 * 🚫 [LiveChart.me](https://livechart.me) &mdash; *Unable to bypass Cloudflare's "*I'm Under Attack*" mode.*
@@ -128,6 +130,7 @@ This project **requires you to set the library/list as public** as most API used
 | Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                         |
 | Annict       | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
 | Baka-Updates | `.tsv`                              | No             | No                    | There is no official import/export feature                                                                                |
+| Bangumi      | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
 | Kitsu        | **`.xml`**                          | Yes            | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                                                                   |
 | MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML                                            |
 | MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                      |
@@ -269,6 +272,15 @@ Your Baka-Updates username used to login.
 #### `MANGAUPDATES_PASSWORD`
 
 Your Baka-Updates password used to login.
+
+### Bangumi
+
+**Website**: https://bgm.tv
+
+<!-- omit in toc -->
+#### `BANGUMI_USERNAME`
+
+Your Bangumi username.
 
 ### Kitsu
 

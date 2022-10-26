@@ -144,6 +144,7 @@ Function Read-Bangumi {
     }
 
     If ($initBangumi -eq "Y") {
+        <#
         $newTokenUri = "https://next.bgm.tv/demo/access-token"
         Write-Host @"
 `nBangumi requires you to use Personal Access Token to be able to get your data from server.
@@ -154,6 +155,8 @@ To generate, click "创建个人令牌" link (or click this URL: $($newTokenUri)
         Write-Host "`nLaunching Bangumi Token portal website" -ForegroundColor Yellow
         Start-Process $newTokenUri
         $Global:bgmPAT = Read-Host -Prompt "`nPlease paste the code genrated from website"
+        #>
+        $Global:bgmUname = Read-Host -Prompt "`nYour Bangumi Username"
     }
 }
 
@@ -421,7 +424,7 @@ If (!($GenerateEnvExample)) {
     Read-AnimePlanet
     Read-Annict
     Read-MangaUpdates
-    # Read-Bangumi
+    Read-Bangumi
     Read-Kitsu
     Read-MangaDex
     Read-MyAnimeList
@@ -456,7 +459,8 @@ ANIMEPLANET_USERNAME=$($apUname)
 
 ANNICT_PERSONAL_ACCESS_TOKEN=$($acPAT)
 
-BANGUMI_PERSONAL_ACCESS_TOKEN=$($bgmPAT)
+# BANGUMI_PERSONAL_ACCESS_TOKEN=$($bgmPAT)
+BANGUMI_USERNAME=$($bgmUname)
 
 # Not app specific, key available on https://kitsu.docs.apiary.io/#introduction/authentication/app-registration
 # Unused till upcoming implementation
