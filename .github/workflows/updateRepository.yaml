@@ -30,7 +30,7 @@ jobs:
           $templateAuthorName = "nattadasu"
           $templateRepoName = "animeManga-autoBackup"
           $templateRepo = "$templateAuthorName/$templateRepoName"
-          $templateUri = "https://api.github.c
+          $templateUri = "https://api.github.com/repos/$($templateRepo)"
           $templateCommits = (Invoke-WebRequest -Uri "$templateUri/commits" -Method Get -ContentType "application/json").Content | ConvertFrom-Json
           $latestCommit = $templateCommits[0].sha
           git config --local user.email "action@github.com"
