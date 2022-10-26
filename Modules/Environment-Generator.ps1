@@ -197,10 +197,15 @@ Function Read-MangaUpdates {
     }
 
     If ($initMangaUpdate -eq 'Y') {
-        Get-CookieHelp -Uri "https://www.mangaupdates.com" -CookiesName "secure_session"
-        $Global:muSession = Read-Host -Prompt "secure_session value" -MaskInput
+        # Deprecated method, use regular login instead
+        # Get-CookieHelp -Uri "https://www.mangaupdates.com" -CookiesName "secure_session"
+        # $Global:muSession = Read-Host -Prompt "secure_session value" -MaskInput
+
+        $Global:muUname = Read-Host -Prompt "`nYour MangaUpdates Username"
+        $Global:muPass = Read-Host -Prompt "Your MangaUpdates Password" -MaskInput
     }
 }
+
 Function Read-MyAnimeList {
     Clear-Host
     Write-Header -Message "MyAnimeList" -ForegroundColor DarkBlue
@@ -465,7 +470,10 @@ MAL_USERNAME=$($malUname)
 MANGADEX_USERNAME=$($mdMail)
 MANGADEX_PASSWORD=$($mdPass)
 
-MANGAUPDATES_SESSION=$($muSession)
+# MANGAUPDATES_SESSION=$($muSession)
+MANGAUPDATES_USERNAME=$($muUname)
+MANGAUPDATES_PASSWORD=$($muPass)
+
 
 NOTIFYMOE_NICKNAME=$($nmNick)
 

@@ -68,7 +68,7 @@ This project **requires you to set the library/list as public** as most API used
 |         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API |
 |    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
 |          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account      |
-|    Baka-Updates |       No        | `COOKIE` |       **Yes**       | Uses `secure_session` cookie saved on browser             |
+|    Baka-Updates |       No        |  `API`   |       **Yes**       | Uses official API for token                               |
 |           Kitsu |       No        |  `API`   |         No          | Uses official API                                         |
 |        MangaDex |       No        |  `API`   |         No          | Uses official API                                         |
 | MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
@@ -252,9 +252,23 @@ Your Annict Personal Access Token. You can generate one from your account via [A
 <!-- omit in toc -->
 #### `MANGAUPDATES_SESSION`
 
+> **Warning**
+>
+> This environment variable/secret is deprecated, use [# `MANGAUPDATES_USERNAME`](#mangaupdates_username) and [# `MANGAUPDATES_PASSWORD`](#mangaupdates_password)
+
 Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
 Find a name of the cookie that starts with `secure_session` and copy the value.
+
+<!-- omit in toc -->
+#### `MANGAUPDATES_USERNAME`
+
+Your Baka-Updates username used to login.
+
+<!-- omit in toc -->
+#### `MANGAUPDATES_PASSWORD`
+
+Your Baka-Updates password used to login.
 
 ### Kitsu
 

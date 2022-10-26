@@ -586,12 +586,25 @@ In this folder, you will get:
 Function Get-MangaUpdatesBackup {
     Add-Directory -Path ./mangaUpdates -Name "Baka Updates' Manga-Updates"
 
+    # Check if user uses old method, if not, create access token
+    If ($Env:MANGAUPDATES_USERNAME) {
+        $muCredential = @{
+            username = "$($Env:MANGAUPDATES_USERNAME)";
+            password = "$($Env:MANGAUPDATES_PASSWORD)"
+        } | ConvertTo-Json
+        $muReqToken = (Invoke-WebRequest -Method Put -Uri "https://api.mangaupdates.com/v1/account/login" -Body $muCredential -ContentType "application/json").Content | ConvertFrom-Json
+        $muToken = $muReqToken.context.session_token
+    }
+    Else {
+        $muToken = $Env:MANGAUPDATES_SESSION
+    }
+
     Write-Host "`nConfiguring session cookie"
     $muSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 
     $muCookie = New-Object System.Net.Cookie
     $muCookie.Name = "secure_session"
-    $muCookie.Value = $Env:MANGAUPDATES_SESSION
+    $muCookie.Value = $muToken
     $muCookie.Domain = "www.mangaupdates.com"
 
     $muSession.Cookies.Add($muCookie);
@@ -599,30 +612,21 @@ Function Get-MangaUpdatesBackup {
     Write-Host "Exporting Baka-Updates' MangaUpdates list"
 
     # Add automated download
-
     $muLists = @(
-        "complete",
-        "hold",
-        "read",
-        "unfinished",
-        "wish"
+        @{complete = "completed" }
+        @{hold = "onHold" }
+        @{read = "currentlyReading" }
+        @{unfinished = "dropped" }
+        @{wish = "planToRead" }
     )
 
-    $muRename = @{
-    	complete = "completed";
-    	hold = "onHold";
-    	read = "currentlyReading";
-    	unfinished = "dropped";
-    	wish = "planToRead"
-    }
-
-    ForEach ($action in $muLists) {
-        Write-Host "Exporting $($action) list from MangaUpdates"
-        $fileName = $muRename.$action
-        $path = "./mangaUpdates/$($fileName).tsv"
-        Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=$($action)" -OutFile $path
-        $rawCsv = Get-Content -Path $path -Raw
-        $csv = $rawCsv | ConvertFrom-Csv -Delimiter `t
+    For ($loc = 0; $loc -lt 5; $loc++) {
+        $muCat = $muLists[$loc].Keys
+        $malCat = $muLists[$loc].Values
+        Write-Host "Exporting $($muCat) list from MangaUpdates"
+        $path = "./mangaUpdates/$($malCat).tsv"
+        Invoke-WebRequest -Method Get -WebSession $muSession -Uri "https://www.mangaupdates.com/mylist.html?act=export&list=$($muCat)" -OutFile $path
+        $csv = Get-Content -Path $path -Raw | ConvertFrom-Csv -Delimiter "`t"
         $csv | Select-Object -Property Series, Volume, Chapter, 'Date Changed', Rating | Export-Csv -Path $path -Delimiter `t -NoTypeInformation -Encoding utf8 -Force -UseQuotes AsNeeded
     }
 
