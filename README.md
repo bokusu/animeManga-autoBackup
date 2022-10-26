@@ -118,6 +118,7 @@ This project **requires you to set the library/list as public** as most API used
 * 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
 * 🚫 [Goodreads](https://goodreads.com) &mdash; *List return HTML than JSON, export feature is not instantaneous, and yet they closed Public API*
 * 🚫 [IMDb](https://imdb.com) &mdash; *Unable to bypass MFA, paid API*
+* ⌛ [Kaize](https://kaize.io)
 * 🚫 [LiveChart.me](https://livechart.me) &mdash; *Unable to bypass Cloudflare's "*I'm Under Attack*" mode.*
 * 💻 [Nautiljon](https://nautiljon.com) &mdash; *Unable to parse HTML directly using PowerShell*
 * ⌛ [The Movie Database (TMDB)](https://themoviedb.org)
