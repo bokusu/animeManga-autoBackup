@@ -444,6 +444,27 @@ Function Get-BangumiBackup {
     }
 }
 
+Function Get-KaizeBackup {
+    Add-Directory -Path ./kaize -Name "Kaize.io"
+    Write-Host "`nInitializing backup script"
+
+    $scriptPath = "./Modules/Get-KaizeBackup.py"
+
+    $kaizeUsername = $Env:KAIZE_USERNAME
+
+    Invoke-WebRequest -Method Get -Uri "https://raw.githubusercontent.com/nattadasu/KaizeListExporter/main/main.py" -OutFile $scriptPath
+
+    If ($IsLinux -or $IsMacOS) {
+        python3 $scriptPath -u $kaizeUsername -t anime -o "./kaize/animeList.json"
+        python3 $scriptPath -u $kaizeUsername -t manga -o "./kaize/mangaList.json"
+    } Else {
+        python $scriptPath -u $kaizeUsername -t anime -o "./kaize/animeList.json"
+        python $scriptPath -u $kaizeUsername -t manga -o "./kaize/mangaList.json"
+    }
+
+    Remove-Item $scriptPath
+}
+
 Function Get-KitsuBackup {
     Add-Directory -Path ./kitsu -Name Kitsu
 
@@ -1273,6 +1294,7 @@ If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
 If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
 If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
 If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup }
+If ($Env:KAIZE_USERNAME) { Get-KaizeBackup }
 If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
 If ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
 If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }

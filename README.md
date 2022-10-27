@@ -39,6 +39,7 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Annict](#annict)
   * [Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates)
   * [Bangumi](#bangumi)
+  * [Kaize.io](#kaizeio)
   * [Kitsu](#kitsu)
   * [MangaDex](#mangadex)
   * [MyAnimeList](#myanimelist)
@@ -71,6 +72,7 @@ This project **requires you to set the library/list as public** as most API used
 |          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account      |
 |    Baka-Updates |       No        |  `API`   |       **Yes**       | Uses official API for token                               |
 |         Bangumi |     **Yes**     |  `API`   |         No          | Uses official API                                         |
+|           Kaize |     **Yes**     | `SCRAPE` |         No          | Scrapes user's profile page and lists                     |
 |           Kitsu |       No        |  `API`   |         No          | Uses official API                                         |
 |        MangaDex |       No        |  `API`   |         No          | Uses official API                                         |
 | MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
@@ -82,7 +84,7 @@ This project **requires you to set the library/list as public** as most API used
 |            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                  |
 
 ***Note:***\
-`API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass
+`API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass, `SCRAPE` HTML Scraping
 
 > **Warning**
 >
@@ -104,6 +106,7 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ [Annict](https://en.annict.com)
 * ✅ [Baka-Updates Manga (MangaUpdates)](https://www.mangaupdates.com/)
 * ✅ [Bangumi.tv](https://bgm.tv)
+* ✅ [Kaize](https://kaize.io)
 * ✅ [Kitsu](https://kitsu.io)
 * ✅ [MangaDex](https://mangadex.org)
 * ✅ [MyAnimeList](https://myanimelist.net)
@@ -118,7 +121,6 @@ This project **requires you to set the library/list as public** as most API used
 * 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
 * 🚫 [Goodreads](https://goodreads.com) &mdash; *List return HTML than JSON, export feature is not instantaneous, and yet they closed Public API*
 * 🚫 [IMDb](https://imdb.com) &mdash; *Unable to bypass MFA, paid API*
-* ⌛ [Kaize](https://kaize.io)
 * 🚫 [LiveChart.me](https://livechart.me) &mdash; *Unable to bypass Cloudflare's "*I'm Under Attack*" mode.*
 * 💻 [Nautiljon](https://nautiljon.com) &mdash; *Unable to parse HTML directly using PowerShell*
 * ⌛ [The Movie Database (TMDB)](https://themoviedb.org)
@@ -132,6 +134,7 @@ This project **requires you to set the library/list as public** as most API used
 | Annict       | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
 | Baka-Updates | `.tsv`                              | No             | No                    | There is no official import/export feature                                                                                |
 | Bangumi      | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
+| Kaize        | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
 | Kitsu        | **`.xml`**                          | Yes            | Yes                   | You can reimport back to Kitsu or import to MyAnimeList                                                                   |
 | MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML                                            |
 | MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                      |
@@ -170,7 +173,6 @@ You also need to fork the repository before cloning the repo to your local machi
     | -------------- | :------------------------- | :----------------------------------------------------------- |
     | Commit History | Follows upstream (dirty)   | No previous commit history (clean)                           |
     | GitHub Actions | Disabled by default        | Enabled by default                                           |
-    | Stability      | No, upstream               | Yes, because the snapshot basically is stable                |
     | Update         | Yes                        | Yes, however user requires to generate personal access token |
     | Visibility     | You can not set to Private | You can set to Private                                       |
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
@@ -282,6 +284,15 @@ Your Baka-Updates password used to login.
 #### `BANGUMI_USERNAME`
 
 Your Bangumi username.
+
+### Kaize.io
+
+**Website**: https://kaize.io
+
+<!-- omit in toc -->
+#### `KAIZE_USERNAME`
+
+Your Kaize.io username.
 
 ### Kitsu
 

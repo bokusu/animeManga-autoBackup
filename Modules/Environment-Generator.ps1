@@ -160,6 +160,20 @@ To generate, click "创建个人令牌" link (or click this URL: $($newTokenUri)
     }
 }
 
+Function Read-Kaize {
+    Clear-Host
+    Write-Header -Message "Kaize.io" -ForegroundColor DarkMagenta
+    $initKaize = Read-Host -Prompt "Do you want to backup your Kaize.io (Anime, Manga)? [Y/n]"
+
+    If (!($initKaize)) {
+        $initKaize = "Y"
+    }
+
+    If ($initKaize -eq "Y") {
+        $Global:kzUname = Read-Host -Prompt "`nYour Kaize.io Username"
+    }
+}
+
 Function Read-Kitsu {
     Clear-Host
     Write-Header -Message "Kitsu" -ForegroundColor DarkMagenta
@@ -425,6 +439,7 @@ If (!($GenerateEnvExample)) {
     Read-Annict
     Read-MangaUpdates
     Read-Bangumi
+    Read-Kaize
     Read-Kitsu
     Read-MangaDex
     Read-MyAnimeList
@@ -461,6 +476,8 @@ ANNICT_PERSONAL_ACCESS_TOKEN=$($acPAT)
 
 # BANGUMI_PERSONAL_ACCESS_TOKEN=$($bgmPAT)
 BANGUMI_USERNAME=$($bgmUname)
+
+KAIZE_USERNAME=$($kzUname)
 
 # Not app specific, key available on https://kitsu.docs.apiary.io/#introduction/authentication/app-registration
 # Unused till upcoming implementation
