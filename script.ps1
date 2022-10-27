@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 #Requires -Version 7
 
 # Add -Verbose
@@ -268,18 +268,14 @@ Function Get-AniListBackup {
     }
     '
 
-    $alVariableRaw = '
-    {
-        "name": "anonymous"
-    }
-    '
+    $alVariableFix = @{
+        name = $aniListUsername
+    } | ConvertTo-Json
 
-    $alVariableFix = $alVariableRaw -replace "anonymous", $aniListUsername
-
-    Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw > ./aniList/animeList.json
+    Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/animeList.json -Encoding utf8
 
     Write-Host "`nExporting AniList manga list in JSON"
-    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw > ./aniList/mangaList.json
+    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8
 
     Write-Host "`nExporting AniList anime list in XML"
 
