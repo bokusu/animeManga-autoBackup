@@ -95,7 +95,12 @@ Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
 
 Test-Binary -Binary pip -ErrorAction Break
 Write-Host "Installing required Python packages"
-pip install -r ./requirements.txt
+If ($IsLinux -Or $IsMacOS) {
+    python3 -m pip install -r requirements.txt
+}
+Else {
+    python -m pip install -r requirements.txt
+}
 
 If ((Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue).InstallationPolicy -ne 'Trusted') {
     Write-Verbose -Message "Configuring PSGallery to Trusted repo"
@@ -130,22 +135,6 @@ If (!($isAction)) {
 ForEach ($pkg in $PSRequiredPkgs) {
     Test-Binary -Binary $pkg -isModule
 }
-
-Function Install-NuGetPackages {
-    If (!((Get-PackageSource).Name -eq 'nuget.org')) {
-        Register-PackageSource -Name 'nuget.org' -ProviderName NuGet -Location 'https://api.nuget.org/v3/index.json' -Force -Trusted
-    }
-
-    $ngPkgs = @(
-        'AngleSharp'
-    )
-
-    ForEach ($pkg in $ngPkgs) {
-        Test-Binary -Binary $pkg -isNuGet
-    }
-}
-
-# Install-NuGetPackages
 
 Write-Host "`nImporting dotEnv file"
 If (-Not($isAction)) {
@@ -1256,7 +1245,13 @@ Function Get-TraktBackup {
         New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExportJson
     }
 
-    traktexport export $traktUsername | Out-File "./trakt/data.json"
+    If ($IsLinux -or $IsMacOS) {
+        python3 -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
+    }
+    Else {
+        python -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
+    }
+    
 }
 
 Function Get-VNDBBackup {
