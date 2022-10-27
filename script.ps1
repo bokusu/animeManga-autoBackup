@@ -1303,9 +1303,9 @@ Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
     Write-Host "Formatting $($fileToFormat)"
     Try {
         If ($Env:MINIFY_JSON -eq 'True') {
-            Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Minify -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat1
+            Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Minify -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat
         } Else {
-            Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat1
+            Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat
         }
     }
     Catch {
