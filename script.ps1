@@ -897,7 +897,7 @@ Function Get-OtakOtakuBackup {
 
     $animeData = @()
     For ($n = 0; $n -le $totalAnime; $n += 10) {
-        Write-Host "`rGrabbing anime data from Otak Otaku [$($n + 10) / $([Math]::Ceiling($totalAnime / 10))]" -NoNewline
+        Write-Host "`rGrabbing anime data from Otak Otaku [$(($n + 10) / 10) / $([Math]::Ceiling($totalAnime / 10))]" -NoNewline
         $animeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H 'referer: https://otakotaku.com/user/nattadasu'  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=10&index=$($n)" --compressed --silent
         $animeJson = ($animeJson | ConvertFrom-Json).data
         $animeData += $animeJson
