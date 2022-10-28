@@ -437,14 +437,17 @@ Function Get-KaizeBackup {
 
     $kaizeUsername = $Env:KAIZE_USERNAME
 
+    $kzAnimePath = "./kaize/animeList.json"
+    $kzMangaPath = "./kaize/mangaList.json"
+
     Invoke-WebRequest -Method Get -Uri "https://raw.githubusercontent.com/nattadasu/KaizeListExporter/main/main.py" -OutFile $scriptPath
 
     If ($IsLinux -or $IsMacOS) {
-        python3 $scriptPath -u $kaizeUsername -t anime -o "./kaize/animeList.json"
-        python3 $scriptPath -u $kaizeUsername -t manga -o "./kaize/mangaList.json"
+        python3 $scriptPath -u $kaizeUsername -t anime -o "$($kzAnimePath)"
+        python3 $scriptPath -u $kaizeUsername -t manga -o "$($kzMangaPath)"
     } Else {
-        python $scriptPath -u $kaizeUsername -t anime -o "./kaize/animeList.json"
-        python $scriptPath -u $kaizeUsername -t manga -o "./kaize/mangaList.json"
+        python $scriptPath -u $kaizeUsername -t anime -o "$($kzAnimePath)"
+        python $scriptPath -u $kaizeUsername -t manga -o "$($kzMangaPath)"
     }
 
     Remove-Item $scriptPath
@@ -809,13 +812,15 @@ Function Get-NotifyMoeBackup {
         <my_comments><![CDATA[$($entry.notes)]]></my_comments>
         <update_on_import>1</update_on_import>
 "@
+        # Replace possibly breakable URL encoded Base64 for XML comment to original state
+        $safeNotifyId = $entry.animeId -replace '-', '+' -replace '_', '/'
         If (!($malId)) {
             $noEntry += @"
 `n        - [$($entry.animeId)] $($aniTitle)
 "@
             $animeIndex += @"
 `n    <!--anime>
-        <series_notify_id>$($entry.animeId)</series_notify_id>
+        <series_notify_id><![CDATA[$($safeNotifyId)]]></series_notify_id>
         $($commonXml)
     </anime-->
 "@
@@ -831,7 +836,7 @@ Function Get-NotifyMoeBackup {
             $animeIndex += @"
 `n    <anime>
         <series_animedb_id>$($malId)</series_animedb_id>
-        <!--series_notify_id>$($entry.animeId)</series_notify_id-->
+        <!--series_notify_id><![CDATA[$($safeNotifyId)]]></series_notify_id-->
         $($commonXml)
     </anime>
 "@
@@ -1247,7 +1252,7 @@ Function Get-TraktBackup {
     Else {
         python -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
     }
-    
+
 }
 
 Function Get-VNDBBackup {
