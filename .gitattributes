@@ -1,2 +1,2 @@
-.devcontainer/*         linguist-generated
+.devcontainer/**/*      linguist-generated
 .env.example            linguist-vendored
