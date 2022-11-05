@@ -9,6 +9,8 @@ Param(
     #>
 )
 
+# $IsAction = $null -ne $Env:GITHUB_WORKSPACE
+
 Write-Verbose -Message "[$(Get-Date)] Initialize Post Update"
 
 Function Update-Backupper {
@@ -43,17 +45,18 @@ Function Update-Updater {
     }
 }
 
-<#
 Function Remove-RepoTrash {
     $filePath = @(
         "./.github/dependabot.yml",
-        "./Modules/Get-AniDBBackup.py"
+        "./Modules/Get-AniDBBackup.py",
+        "./mypy.ini"
     )
     ForEach ($file in $filePath) {
         Write-Verbose "[$(Get-Date)] Removing $($file)"
-        Remove-Item -Path $file
+        Remove-Item -Path $file -ErrorAction Continue
     }
-} #>
+}
 
 Update-Backupper
 Update-Updater
+Remove-RepoTrash
