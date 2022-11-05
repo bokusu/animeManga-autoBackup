@@ -20,39 +20,61 @@ If ($localClone -Match "^git@github.com") {
     $localClone = $localClone.Split("/")
     $localAuthorName = $localClone[0] -Replace "git@github.com:", ""
     $localRepoName = $localClone[1] -Replace "\.git$", ""
-} Else {
+}
+Else {
     # Split the url from https://github.com/nattadasu/animeManga-autoBackup to nattadasu/animeManga-autoBackup
     $localClone = $localClone.Split("/")
     $localAuthorName = $localClone[3]
     $localRepoName = $localClone[4] -Replace "\.git$", ""
 }
 
+$localRepoApi = "https://api.github.com/repos/$localAuthorName/$localRepoName"
+$localRepoContent = (Invoke-WebRequest -Uri $localRepoApi -Method Get -ContentType "application/json").Content | ConvertFrom-Json
+$localRepoIsFork = $localRepoContent.fork
+
 $localLastUpdate = git log -1 --format="%ct"
 
 If ($templateRepo -eq "$localAuthorName/$localRepoName") {
     Write-Host "Repo is a template"
     Exit
-} Else {
+}
+Else {
     Write-Host "Checking if template repo is newer than local repo"
     If ($templateLastUpdate -gt $localLastUpdate) {
         Write-Host "Template repo is newer than local repo"
         Write-Host "Updating local repo"
-        $gitUrl = "https://github.com/$templateRepo"
-        git clone $gitUrl update
-
-        If (($Null -eq $Env:REPO_PAT) -or ($Env:REPO_PAT -eq '')) {
-            Remove-Item -Path "./update/.github/workflows" -Recurse -Force -ErrorAction SilentlyContinue
+        If ($localRepoIsFork) {
+            Write-Host "Repo is a fork"
+            Write-Host "Updating fork"
+            git pull --unshallow
+            git remote add upstream "https://github.com/$(templateRepo).git"
+            git fetch upstream
+            git checkout main
+            git merge upstream/main
+            If (!($isAction)) {
+                git push
+            }
         }
+        Else {
+            Write-Host "Repo is not a fork"
+            $gitUrl = "https://github.com/$templateRepo"
+            git clone $gitUrl update
 
-        # Remove dependabot for stability
-        Remove-Item -Path "./update/.github/dependabot.yml" -Force
+            If (($Null -eq $Env:REPO_PAT) -or ($Env:REPO_PAT -eq '')) {
+                Remove-Item -Path "./update/.github/workflows" -Recurse -Force -ErrorAction SilentlyContinue
+            }
 
-        Remove-Item -Path "./update/.git" -Recurse -Force
+            # Remove dependabot for stability
+            Remove-Item -Path "./update/.github/dependabot.yml" -Force
 
-        Copy-Item -Path "./update/*" -Destination "./" -Recurse -Force
+            Remove-Item -Path "./update/.git" -Recurse -Force
 
-        Remove-Item -Path "./update" -Recurse -Verbose -Force
-    } Else {
+            Copy-Item -Path "./update/*" -Destination "./" -Recurse -Force
+
+            Remove-Item -Path "./update" -Recurse -Verbose -Force
+        }
+    }
+    Else {
         Write-Host "Local repo is newer than template repo"
         Exit
     }
