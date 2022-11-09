@@ -46,6 +46,7 @@ Function Update-Updater {
 }
 
 Function Remove-RepoTrash {
+    Write-Host "Please ignore any false positive warning while script trying to remove files automatically!" -ForegroundColor Yellow
     $filePath = @(
         "./.github/dependabot.yml",
         "./Modules/Get-AniDBBackup.py",
