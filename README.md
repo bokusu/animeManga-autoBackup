@@ -4,7 +4,7 @@
 <!-- omit in toc -->
 # Anime Manga Auto Backup
 
-[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE) [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell)
+[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE) [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell) [![Discord](https://img.shields.io/discord/589128995501637655?label=Discord&color=%235865F2&logo=discord&logoColor=%23FFFFFF&style=for-the-badge)](https://discord.gg/UKvMEZvaXc)
 
 Automatically (and also manually) backup your anime and manga libraries from [several anime, manga, TV shows, movies, and books tracking sites](#backup-from-x-site). Made possible with PowerShell Core.
 
