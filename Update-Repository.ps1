@@ -29,8 +29,14 @@ Else {
 }
 
 $localRepoApi = "https://api.github.com/repos/$localAuthorName/$localRepoName"
-$localRepoContent = (Invoke-WebRequest -Uri $localRepoApi -Method Get -ContentType "application/json").Content | ConvertFrom-Json
-$localRepoIsFork = $localRepoContent.fork
+Try {
+    $localRepoContent = (Invoke-WebRequest -Uri $localRepoApi -Method Get -ContentType "application/json" -ErrorAction Continue).Content | ConvertFrom-Json
+    $localRepoIsFork = $localRepoContent.fork
+}
+Catch {
+    Write-Host "Repo is most likely a template and set to private" -ForegroundColor Yellow
+    $localRepoIsFork = $False
+}
 
 $localLastUpdate = git log -1 --format="%ct"
 
