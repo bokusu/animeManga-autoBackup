@@ -7,6 +7,7 @@ Param()
 
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
+[int]$getCurrentEpoch = Get-Date -UFormat '%s' -Milisecond 0
 
 Function New-WebSession {
     param(
@@ -1210,6 +1211,22 @@ Function Get-TraktBackup {
     Add-Directory -Path ./trakt -Name Trakt
 
     $traktUsername = $Env:TRAKT_USERNAME
+
+    [int]$traktExpiry = $Env:TRAKT_OAUTH_EXPIRY
+
+    $pyPath = If ($IsWindows) { "python" } Else { "python3" }
+
+    If ($traktExpiry -lt $getCurrentEpoch) {
+        Write-Host @"
+Your Trakt credential expired, please reinitialize the token by typing following command:
+
+$($pyPath) init $($traktUsername)
+"@ -ForegroundColor Red
+        Break
+    }
+    Else {
+        Continue
+    }
 
     Write-Host "`nExporting Trakt.tv data"
     # Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
