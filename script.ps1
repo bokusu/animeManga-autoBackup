@@ -7,7 +7,7 @@ Param()
 
 # Set variable
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
-[int]$getCurrentEpoch = Get-Date -UFormat '%s' -Milisecond 0
+[int]$getCurrentEpoch = Get-Date -UFormat '%s' -Millisecond 0
 
 Function New-WebSession {
     param(
