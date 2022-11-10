@@ -10,29 +10,29 @@ $isAction = $null -ne $Env:GITHUB_WORKSPACE
 [int]$getCurrentEpoch = Get-Date -UFormat '%s' -Millisecond 0
 
 Function New-WebSession {
-    param(
-        [hashtable]$Cookies,
+    Param(
+        [Hashtable]$Cookies,
         [Uri]$For
     )
 
-    $newSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
+    $newSession = [Microsoft.PowerShell.Commands.WebRequestSession]::New()
 
-    foreach ($entry in $Cookies.GetEnumerator()) {
-        $cookie = [System.Net.Cookie]::new($entry.Name, $entry.Value)
-        if ($For) {
-            $newSession.Cookies.Add([uri]::new($For, '/'), $cookie)
+    ForEach ($entry in $Cookies.GetEnumerator()) {
+        $cookie = [System.Net.Cookie]::New($entry.Name, $entry.Value)
+        If ($For) {
+            $newSession.Cookies.Add([uri]::New($For, '/'), $cookie)
         }
-        else {
+        Else {
             $newSession.Cookies.Add($cookie)
         }
     }
 
-    return $newSession
+    Return $newSession
 }
 
 Function Test-Binary {
     [CmdletBinding()]
-    param(
+    Param(
         [string]$Binary,
         [Switch]$isModule,
         [Switch]$isNuGet
@@ -71,7 +71,7 @@ Function Test-Binary {
 }
 
 Function Add-Directory {
-    param(
+    Param(
         [string]$Path,
         [string]$Name
     )
@@ -435,7 +435,8 @@ Function Get-KaizeBackup {
     If ($IsLinux -or $IsMacOS) {
         python3 $scriptPath -u $kaizeUsername -t anime -o "$($kzAnimePath)"
         python3 $scriptPath -u $kaizeUsername -t manga -o "$($kzMangaPath)"
-    } Else {
+    }
+    Else {
         python $scriptPath -u $kaizeUsername -t anime -o "$($kzAnimePath)"
         python $scriptPath -u $kaizeUsername -t manga -o "$($kzMangaPath)"
     }
@@ -1261,7 +1262,8 @@ Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
     Try {
         If ($Env:MINIFY_JSON -eq 'True') {
             Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Minify -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat
-        } Else {
+        }
+        Else {
             Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Indentation 2 -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat
         }
     }
