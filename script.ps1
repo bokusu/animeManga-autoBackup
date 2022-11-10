@@ -814,34 +814,14 @@ Function Get-NotifyMoeBackup {
         <update_on_import>1</update_on_import>
 "@
         # Replace possibly breakable URL encoded Base64 for XML comment to original state
-        $safeNotifyId = $entry.animeId -replace '-', '+' -replace '_', '/'
-        If (!($malId)) {
-            $noEntry += @"
-`n        - [$($entry.animeId)] $($aniTitle)
-"@
-            $animeIndex += @"
-`n    <!--anime>
-        <series_notify_id><![CDATA[$($safeNotifyId)]]></series_notify_id>
-        $($commonXml)
-    </anime-->
-"@
-        }
-        Else {
-            Switch ($entry.status) {
-                "completed" { $finished++ }
-                "planned" { $planned++ }
-                "watching" { $current++ }
-                "dropped" { $dropped++ }
-                "hold" { $paused++ }
-            }
-            $animeIndex += @"
+        $safeNotifyId = $entry.animeId -replace '-', '&#45;' -replace '_', '&#95;'
+        $animeIndex += @"
 `n    <anime>
         <series_animedb_id>$($malId)</series_animedb_id>
         <!--series_notify_id><![CDATA[$($safeNotifyId)]]></series_notify_id-->
         $($commonXml)
     </anime>
 "@
-        }
     }
 
     $animeCsv | Select-Object -Property Id, Title, Status, Episodes, Overall, Story, Visual, Soundtrack, Rewatched | Export-Csv -UseQuotes AsNeeded -Path ./notifyMoe/animeList.csv -Encoding utf8 -Force
@@ -855,8 +835,7 @@ Function Get-NotifyMoeBackup {
     <myinfo>
         <user_id></user_id>
         <user_export_type>1</user_export_type>
-        <user_total_anime>$($current + $planned + $finished + $paused + $dropped)</user_total_anime>
-        <!--user_total_notify_anime>$($n)</user_total_notify_anime-->
+        <user_total_anime>$($n)</user_total_anime>
         <user_total_plantowatch>$($planned)</user_total_plantowatch>
         <user_total_watching>$($current)</user_total_watching>
         <user_total_completed>$($finished)</user_total_completed>
@@ -867,12 +846,6 @@ Function Get-NotifyMoeBackup {
     <!--
         Created by GitHub:nattadasu/animeManga-autoBackup
         Exported at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") $((Get-TimeZone).Id)
-    -->
-
-    <!--Unindexed Entry on MAL
-        Format:
-        - [Notify.moe ID] Title
-        ========================================$($noEntry)
     -->
 
 "@
