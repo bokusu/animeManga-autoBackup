@@ -338,17 +338,6 @@ Function Get-AnnictBackup {
                             id
                             seasonYear
                             seasonName
-                            episodes {
-                                edges {
-                                    node {
-                                        id
-                                        title
-                                        annictId
-                                        number
-                                        viewerDidTrack
-                                    }
-                                }
-                            }
                         }
                     }
                 }
