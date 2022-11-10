@@ -752,7 +752,7 @@ Function Get-NotifyMoeBackup {
 
     $animeData = Get-Content -Path ./notifyMoe/animeList.json -Raw | ConvertFrom-Json
 
-    [array]$animeCsv = @(); $animeTxt = ""; $noEntry = ""; $animeIndex = ""
+    [array]$animeCsv = @(); $animeTxt = ""; $animeIndex = ""
     $finished = 0; $dropped = 0; $current = 0; $planned = 0; $paused = 0; $n = 0
     ForEach ($entry in $animeData.items) {
         $n++
@@ -1045,7 +1045,7 @@ Function Get-SimklBackup {
         }
     }
 
-    $malCurrent = 0; $malPtw = 0; $malPause = 0; $malDrop = 0; $malFinish = 0; $unlistedEntries = ""; $aniCount = 0
+    $malCurrent = 0; $malPtw = 0; $malPause = 0; $malDrop = 0; $malFinish = 0; $aniCount = 0
     ForEach ($anime in $simklJson.anime) {
         Write-Verbose -Message "Converting anime: $($anime.show.title) ($($anime.show.ids.simkl))"
         $aniCount++
@@ -1125,8 +1125,7 @@ Function Get-SimklBackup {
     <myinfo>
         <user_id></user_id>
         <user_export_type>1</user_export_type>
-        <user_total_anime>$($malCurrent + $malPtw + $malFinish + $malPause + $malDrop)</user_total_anime>
-        <!--user_total_simkl_anime>$($aniCount)</user_total_simkl_anime-->
+        <user_total_anime>$($aniCount)</user_total_anime>
         <user_total_plantowatch>$($malPtw)</user_total_plantowatch>
         <user_total_watching>$($malCurrent)</user_total_watching>
         <user_total_completed>$($malFinish)</user_total_completed>
