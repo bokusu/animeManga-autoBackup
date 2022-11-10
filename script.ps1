@@ -1103,26 +1103,13 @@ Function Get-SimklBackup {
         <update_on_import>1</update_on_import>
 "@
 
-        If ($Null -ne $anime.show.ids.mal) {
-            $xmlEntries += @"
+        $xmlEntries += @"
 `n    <anime>
         <series_animedb_id>$($anime.show.ids.mal)</series_animedb_id>
         <!--simkl_animedb_id>$($anime.show.ids.simkl)</simkl_animedb_id-->
         $($xmlCommonEntry)
     </anime>
 "@
-        }
-        Else {
-            $unlistedEntries += @"
-`n        - [$($anime.show.ids.simkl)] $($anime.show.title)
-"@
-            $xmlEntries += @"
-`n    <!--anime>
-        <simkl_animedb_id>$($anime.show.ids.simkl)</simkl_animedb_id>
-        $($xmlCommonEntry)
-    </anime-->
-"@
-        }
     }
 
     # Convert to CSV
@@ -1150,12 +1137,6 @@ Function Get-SimklBackup {
     <!--
         Created by GitHub:nattadasu/animeManga-autoBackup
         Exported at $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") $((Get-TimeZone).Id)
-    -->
-
-    <!--Unindexed Entry on MAL
-        Format:
-        - [SIMKL ID] Title
-        ========================================$($unlistedEntries)
     -->
 
 "@
