@@ -1225,16 +1225,7 @@ $($pyPath) init $($traktUsername)
         Break
     }
     Else {
-
         Write-Host "`nExporting Trakt.tv data"
-        # Code is based on https://github.com/seanbreckenridge/traktexport/blob/master/traktexport/__init__.py
-
-        <# If (Get-Command -Name "traktexport" -ErrorAction SilentlyContinue) {
-        Write-Host "Trakt Exporter Python Module is installed"
-    } Else {
-        Write-Host "Installing Trakt Exporter Python Module"
-        pip install traktexport
-    } #>
 
         Write-Host "Configuring config file"
 
@@ -1267,7 +1258,6 @@ $($pyPath) init $($traktUsername)
         Else {
             python -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
         }
-
     }
 
 }
