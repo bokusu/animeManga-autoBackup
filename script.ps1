@@ -536,18 +536,21 @@ Function Get-MangaDexBackup {
             $mdReadVol = "0"
             $mdReadCh = "0"
         }
-        $mangaData += @"
-`n- id: $($mangaId)
-  title: "$($mangaTitle -Replace "`"", "\`"")"
-  status: $($mdMangaStatus.$mangaId)
-  upstream:
-    volume: $($mangaVolumes)
-    chapter: $($mangaChaptersLogic)
-  current:
-    volume: $($mdReadVol)
-    chapter: $($mdReadCh)
-  rating: $($mdScore)
-"@
+        $rawData = [Ordered]@{
+            id       = $mangaId
+            title    = [String]$mangaTitle
+            status   = $mdMangaStatus.$mangaId
+            upstream = @{
+                volume  = $mangaVolumes
+                chapter = $mangaChaptersLogic
+            }
+            current  = @{
+                volume  = $mdReadVol
+                chapter = $mdReadCh
+            }
+            rating   = $mdScore
+        }
+        $mangaData += [PSCustomObject]$rawData
         Switch ($mdMangaStatus.$mangaId) {
             "reading" {
                 $malReading++
@@ -625,8 +628,8 @@ In this folder, you will get:
     $ReadMe | Out-File -FilePath "./mangaDex/README.txt" -Encoding UTF8 -Force
 
     Write-Host "`n`nExporting MangaDex Follow List"
-    $mangaData | Out-File -FilePath "./mangaDex/mangaList.yaml" -Encoding UTF8 -Force
-    $mangaData | ConvertFrom-Yaml | ConvertTo-Json | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
+    $mangaData | ConvertTo-Yaml | Out-File -FilePath "./mangaDex/mangaList.yaml" -Encoding UTF8 -Force
+    $mangaData | ConvertTo-Json | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
 
     Write-Host "Converting MangaDex Follow List to MyAnimeList XML format"
     $mdToMalXML = @"
