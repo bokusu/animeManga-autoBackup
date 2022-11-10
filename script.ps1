@@ -502,7 +502,7 @@ Function Get-MangaDexBackup {
     $mdMangaStatus = ((Invoke-WebRequest -Uri $mdMangaStatusQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).statuses
 
     # Grab User Rating
-    $mangaData = "---"
+    $mangaData = @()
     $malReading = 0; $malCompleted = 0; $malOnHold = 0; $malDropped = 0; $malPlanToRead = 0
 
     Write-Host ""
