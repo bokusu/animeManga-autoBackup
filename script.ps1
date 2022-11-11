@@ -511,8 +511,8 @@ Function Get-MangaDexBackup {
     ForEach ($manga in $mdFollowsData) {
         $mangaId = $manga.id
         $mangaTitle = If (($Null -eq $manga.attributes.title.en) -Or ($manga.attributes.title.en -eq '')) { If (($Null -eq $manga.attributes.title.ja) -Or ($manga.attributes.title.ja -eq '')) { $manga.attributes.title.'ja-ro' } Else { $manga.attributes.title.ja } } Else { $manga.attributes.title.en }
-        $mangaVolumes = If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) { "0" } Else { $manga.attributes.lastVolume }
-        $mangaChaptersLogic = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) { "0" } Else { $manga.attributes.lastChapter }
+        $mangaVolumes = If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) { 0 } Else { $manga.attributes.lastVolume }
+        $mangaChaptersLogic = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) { 0 } Else { $manga.attributes.lastChapter }
         $mangaChapters = [Math]::ceiling($mangaChaptersLogic)
         Write-Host "`r[$($n)/$($mdFollowsData.Count)] Grabbing rating for $($mangaTitle) ($($mangaId))" -NoNewline
         $mdRatingQuery = "https://api.mangadex.org/rating?manga%5B%5D=$($mangaId)"
@@ -523,20 +523,20 @@ Function Get-MangaDexBackup {
             $mdReadCh = $mangaChapters
         }
         Else {
-            $mdReadVol = "0"
-            $mdReadCh = "0"
+            $mdReadVol = 0
+            $mdReadCh = 0
         }
         $rawData = [Ordered]@{
             id       = $mangaId
             title    = [String]$mangaTitle
             status   = $mdMangaStatus.$mangaId
             upstream = @{
-                volume  = $mangaVolumes
-                chapter = $mangaChaptersLogic
+                volume  = [int]$mangaVolumes
+                chapter = [int]$mangaChaptersLogic
             }
             current  = @{
-                volume  = $mdReadVol
-                chapter = $mdReadCh
+                volume  = [int]$mdReadVol
+                chapter = [int]$mdReadCh
             }
             rating   = $mdScore
         }
