@@ -787,11 +787,11 @@ Function Get-NotifyMoeBackup {
 "@
 
         $status = Switch ($entry.status) {
-            "completed" { "Completed" }
-            "planned" { "Plan to Watch" }
-            "watching" { "Watching" }
-            "dropped" { "Dropped" }
-            "hold" { "On-Hold" }
+            "completed" { "Completed"; $finished++ }
+            "planned" { "Plan to Watch"; $planned++ }
+            "watching" { "Watching"; $current++ }
+            "dropped" { "Dropped"; $dropped++ }
+            "hold" { "On-Hold"; $paused++ }
         }
 
         $commonXml = @"
