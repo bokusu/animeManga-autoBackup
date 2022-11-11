@@ -441,6 +441,12 @@ Function Get-KaizeBackup {
         python $scriptPath -u $kaizeUsername -t manga -o "$($kzMangaPath)"
     }
 
+    # # Import Convert-KaizeXML.psm1 module
+    Import-Module "./Modules/Convert-KaizeXML.psm1"
+
+    # # Convert Kaize anime list to XML
+    Convert-KaizeToMal
+
     Remove-Item $scriptPath
 }
 
