@@ -4,7 +4,8 @@ on:
   schedule:
     - cron: "0 0 * * *"
 jobs:
-  RunScript:
+  update_repository_with_settings:
+    if: env.REPO_PAT != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -24,6 +25,36 @@ jobs:
         shell: pwsh
         run: |
           ./Modules/Initialize-PostUpdate.ps1
+      - name: Commit changes
+        shell: pwsh
+        run: |
+          $templateAuthorName = "nattadasu"
+          $templateRepoName = "animeManga-autoBackup"
+          $templateRepo = "$templateAuthorName/$templateRepoName"
+          $templateUri = "https://api.github.com/repos/$($templateRepo)"
+          $templateCommits = (Invoke-WebRequest -Uri "$templateUri/commits" -Method Get -ContentType "application/json").Content | ConvertFrom-Json
+          $latestCommit = $templateCommits[0].sha
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update script, $(Get-Date -AsUtc -Format 'yyyy-MM-ddTHH:mm:ssZ')
+
+          Based on $($templateRepo)@$($latestCommit)"
+          git push
+  update_repository_no_settings:
+    if: env.REPO_PAT == ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Load secrets to environment variables
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+      - name: Check update
+        shell: pwsh
+        run: |
+          ./Update-Repository.ps1
       - name: Commit changes
         shell: pwsh
         run: |
