@@ -471,6 +471,7 @@ Function Get-KitsuBackup {
 }
 
 Function Get-MangaDexBackup {
+    Write-Warning -Message "This method (login via raw password) would be deprecated in future!`nThere is no ETA to implement OAuth2 using OpenID.`n`nSee more regarding to the issue at [MangaDex Announcement Discord Server (#api-changelog)](https://discord.com/channels/833598287574990850/850131706022461440/1050086432011731034)."
     Add-Directory -Path ./mangaDex -Name "MangaDex"
     $mdUsername = $Env:MANGADEX_USERNAME
     $mdPassword = $Env:MANGADEX_PASSWORD

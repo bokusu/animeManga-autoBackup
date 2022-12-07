@@ -108,7 +108,7 @@ This project **requires you to set the library/list as public** as most API used
 * ✅ [Bangumi.tv](https://bgm.tv)
 * ✅ [Kaize](https://kaize.io)
 * ✅ [Kitsu](https://kitsu.io)
-* ✅ [MangaDex](https://mangadex.org)
+* ✅ [MangaDex](https://mangadex.org) &mdash; *Would be deprecated soon, if MangaDex team decided to deprecate raw password API access*
 * ✅ [MyAnimeList](https://myanimelist.net)
 * ✅ [Notify.moe](https://notify.moe)
 * ✅ [Otak Otaku](https://otakotaku.com)
@@ -311,6 +311,12 @@ Your Kitsu password used to login.
 ### MangaDex
 
 **Website**: https://mangadex.org
+
+> **Warning**
+>
+> This method (login via <u>raw password</u>) would be deprecated in future!
+> There is no ETA to implement OAuth2 using OpenID.
+> See more regarding to the issue at [MangaDex Announcement Discord Server (#api-changelog)](https://discord.com/channels/833598287574990850/850131706022461440/1050086432011731034).
 
 <!-- omit in toc -->
 #### `MANGADEX_USERNAME`
