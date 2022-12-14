@@ -163,111 +163,111 @@ Function Get-AniListBackup {
     Write-Host "`nExporting AniList anime list in JSON"
     $aniListUsername = $Env:ANILIST_USERNAME
     $aniListUri = "https://graphql.anilist.co"
-    $alAnimeBody = '
-    query($name: String!){
-        MediaListCollection(userName: $name, type: ANIME){
-            lists{
-                name
-                isCustomList
-                isSplitCompletedList
-                entries{
-                    ... mediaListEntry
-                }
-            }
-        }
-        User(name: $name){
+    $alAnimeBody = @'
+query($name: String!){
+    MediaListCollection(userName: $name, type: ANIME){
+        lists{
             name
-            id
-            mediaListOptions{
-                scoreFormat
+            isCustomList
+            isSplitCompletedList
+            entries{
+                ... mediaListEntry
             }
         }
     }
-
-    fragment mediaListEntry on MediaList{
-        mediaId
-        status
-        progress
-        repeat
-        notes
-        priority
-        hiddenFromStatusLists
-        customLists
-        advancedScores
-        startedAt{
-            year
-            month
-            day
+    User(name: $name){
+        name
+        id
+        mediaListOptions{
+            scoreFormat
         }
-        completedAt{
-            year
-            month
-            day
-        }
-        updatedAt
-        createdAt
-        media{
-            idMal
-            title{romaji native english}
-            episodes
-        }
-        score
     }
-    '
+}
 
-    $alMangaBody = '
-    query($name: String!){
-        MediaListCollection(userName: $name, type: MANGA){
-            lists{
-                name
-                isCustomList
-                isSplitCompletedList
-                entries{
-                    ... mediaListEntry
-                }
-            }
-        }
-        User(name: $name){
+fragment mediaListEntry on MediaList{
+    mediaId
+    status
+    progress
+    repeat
+    notes
+    priority
+    hiddenFromStatusLists
+    customLists
+    advancedScores
+    startedAt{
+        year
+        month
+        day
+    }
+    completedAt{
+        year
+        month
+        day
+    }
+    updatedAt
+    createdAt
+    media{
+        idMal
+        title{romaji native english}
+        episodes
+    }
+    score
+}
+'@
+
+    $alMangaBody = @'
+query($name: String!){
+    MediaListCollection(userName: $name, type: MANGA){
+        lists{
             name
-            id
-            mediaListOptions{
-                scoreFormat
+            isCustomList
+            isSplitCompletedList
+            entries{
+                ... mediaListEntry
             }
         }
     }
-
-    fragment mediaListEntry on MediaList{
-        mediaId
-        status
-        progress
-        progressVolumes
-        repeat
-        notes
-        priority
-        hiddenFromStatusLists
-        customLists
-        advancedScores
-        startedAt{
-            year
-            month
-            day
+    User(name: $name){
+        name
+        id
+        mediaListOptions{
+            scoreFormat
         }
-        completedAt{
-            year
-            month
-            day
-        }
-        updatedAt
-        createdAt
-        media{
-            idMal
-            title{romaji native english}
-            volumes
-            chapters
-        }
-        score
     }
-    '
+}
+
+fragment mediaListEntry on MediaList{
+    mediaId
+    status
+    progress
+    progressVolumes
+    repeat
+    notes
+    priority
+    hiddenFromStatusLists
+    customLists
+    advancedScores
+    startedAt{
+        year
+        month
+        day
+    }
+    completedAt{
+        year
+        month
+        day
+    }
+    updatedAt
+    createdAt
+    media{
+        idMal
+        title{romaji native english}
+        volumes
+        chapters
+    }
+    score
+}
+'@
 
     $alVariableFix = @{
         name = $aniListUsername
