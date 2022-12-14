@@ -1239,28 +1239,177 @@ If (!($isAction) -and $IsWindows -and (Get-Alias -Name curl -ErrorAction Silentl
 }
 
 # Skip if User Agent variable is not set when user filled ANIMEPLANET_USERNAME, MANGAUPDATES_SESSION, MAL_USERNAME, SHIKIMORI_KAWAI_SESSION, or VNDB_UID
-If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MAL_USERNAME) -or ($Env:OTAKOTAKU_USERNAME) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
+If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAUPDATES_USERNAME) -or ($Env:MAL_USERNAME) -or ($Env:OTAKOTAKU_USERNAME) -or ($Env:SHIKIMORI_KAWAI_SESSION) -or ($Env:VNDB_UID)) {
     Confirm-UserAgent
 }
 
 $userAgent = $Env:USER_AGENT
 
 # Check each Environment Variable if filled, if not skip
-If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
-If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
-If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
-If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup }
-If ($Env:KAIZE_USERNAME) { Get-KaizeBackup }
-If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
-If ($Env:MANGAUPDATES_SESSION) { Get-MangaUpdatesBackup }
-If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }
-If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup }
-If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
-If ($Env:OTAKOTAKU_USERNAME) { Get-OtakOtakuBackup }
-If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
-If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
-If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
-If ($Env:VNDB_UID) { Get-VNDBBackup }
+If ($Env:ANILIST_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://anilist.co/user/$($Env:ANILIST_USERNAME)"
+        Get-AniListBackup
+    }
+    Catch {
+        Write-Error "AniList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:ANIMEPLANET_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://www.anime-planet.com/users/$($Env:ANIMEPLANET_USERNAME)"
+        Get-AnimePlanetBackup
+    }
+    Catch {
+        Write-Error "Anime-Planet username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) {
+    Try {
+        Invoke-WebRequest -Uri "https://annict.jp/"
+        Get-AnnictBackup
+    }
+    Catch {
+        Write-Error "There's unknown error on Annict, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:BANGUMI_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://bgm.tv/user/$($Env:BANGUMI_USERNAME)"
+        Get-BangumiBackup
+    }
+    Catch {
+        Write-Error "Bangumi username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:KAIZE_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://kaize.io/user/$($Env:KAIZE_USERNAME)"
+        Get-KaizeBackup
+    }
+    Catch {
+        Write-Error "Kaize username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:KITSU_EMAIL) {
+    Try {
+        Invoke-WebRequest -Uri "https://kitsu.io/"
+        Get-KitsuBackup
+    }
+    Catch {
+        Write-Error "There's unknown error on Kitsu, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://www.mangaupdates.com/members.html"
+        Get-MangaUpdatesBackup
+    }
+    Catch {
+        Write-Error "There's unknown error on Manga Updates, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:MANGADEX_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://mangadex.org"
+        Get-MangaDexBackup
+    }
+    Catch {
+        Write-Error "There's unknown error on MangaDex, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:MAL_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://myanimelist.net/profile/$($Env:MAL_USERNAME)"
+        Get-MyAnimeListBackup
+    }
+    Catch {
+        Write-Error "MyAnimeList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:NOTIFYMOE_NICKNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://notify.moe/+$($Env:NOTIFYMOE_NICKNAME)"
+        Get-NotifyMoeBackup
+    }
+    Catch {
+        Write-Error "Notify Nickname is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:OTAKOTAKU_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://otakotaku.com/user/$($Env:OTAKOTAKU_USERNAME)"
+        Get-OtakotakuBackup
+    }
+    Catch {
+        Write-Error "Otak Otaku username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:SHIKIMORI_KAWAI_SESSION) {
+    Try {
+        Invoke-WebRequest -Uri "https://shikimori.one/$($Env:SHIKIMORI_USERNAME)"
+        Get-ShikimoriBackup
+    }
+    Catch {
+        Write-Error "Shikimori username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:SIMKL_CLIENT_ID) {
+    Try {
+        Invoke-WebRequest -Uri "https://simkl.com/"
+        Get-SimklBackup
+    }
+    Catch {
+        Write-Error "There's unknown error on Simkl, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:TRAKT_USERNAME) {
+    Try {
+        Invoke-WebRequest -Uri "https://trakt.tv/users/$($Env:TRAKT_USERNAME)"
+        Get-TraktBackup
+    }
+    Catch {
+        Write-Error "Trakt username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
+
+If ($Env:VNDB_UID) {
+    Try {
+        Invoke-WebRequest -Uri "https://vndb.org/$($Env:VNDB_UID)"
+        Get-VndbBackup
+    }
+    Catch {
+        Write-Error "VNDB UID is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
+        Write-Error $_.Exception.Message -ErrorAction Continue
+    }
+}
 
 Write-Host "`nFormat JSON files"
 Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
