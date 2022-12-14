@@ -1248,10 +1248,10 @@ $userAgent = $Env:USER_AGENT
 # Check each Environment Variable if filled, if not skip
 If ($Env:ANILIST_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://anilist.co/user/$($Env:ANILIST_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://anilist.co/user/$($Env:ANILIST_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-AniListBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "AniList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1259,10 +1259,10 @@ If ($Env:ANILIST_USERNAME) {
 
 If ($Env:ANIMEPLANET_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://www.anime-planet.com/users/$($Env:ANIMEPLANET_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://www.anime-planet.com/users/$($Env:ANIMEPLANET_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-AnimePlanetBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Anime-Planet username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1270,10 +1270,10 @@ If ($Env:ANIMEPLANET_USERNAME) {
 
 If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) {
     Try {
-        Invoke-WebRequest -Uri "https://annict.jp/"
+        $Status = (Invoke-WebRequest -Uri "https://annict.jp" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-AnnictBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "There's unknown error on Annict, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1281,10 +1281,10 @@ If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) {
 
 If ($Env:BANGUMI_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://bgm.tv/user/$($Env:BANGUMI_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://bgm.tv/user/$($Env:BANGUMI_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-BangumiBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Bangumi username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1292,10 +1292,10 @@ If ($Env:BANGUMI_USERNAME) {
 
 If ($Env:KAIZE_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://kaize.io/user/$($Env:KAIZE_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://kaize.io/user/$($Env:KAIZE_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-KaizeBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Kaize username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1303,10 +1303,10 @@ If ($Env:KAIZE_USERNAME) {
 
 If ($Env:KITSU_EMAIL) {
     Try {
-        Invoke-WebRequest -Uri "https://kitsu.io/"
+        $Status = (Invoke-WebRequest -Uri "https://kitsu.io" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-KitsuBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "There's unknown error on Kitsu, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1314,10 +1314,10 @@ If ($Env:KITSU_EMAIL) {
 
 If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://www.mangaupdates.com/members.html"
+        $Status = (Invoke-WebRequest -Uri "https://www.mangaupdates.com/members.html" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-MangaUpdatesBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "There's unknown error on Manga Updates, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1325,10 +1325,10 @@ If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) {
 
 If ($Env:MANGADEX_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://mangadex.org"
+        $Status = (Invoke-WebRequest -Uri "https://mangadex.org" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-MangaDexBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "There's unknown error on MangaDex, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1336,10 +1336,10 @@ If ($Env:MANGADEX_USERNAME) {
 
 If ($Env:MAL_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://myanimelist.net/profile/$($Env:MAL_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://myanimelist.net/profile/$($Env:MAL_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-MyAnimeListBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "MyAnimeList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1347,10 +1347,10 @@ If ($Env:MAL_USERNAME) {
 
 If ($Env:NOTIFYMOE_NICKNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://notify.moe/+$($Env:NOTIFYMOE_NICKNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://notify.moe/+$($Env:NOTIFYMOE_NICKNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-NotifyMoeBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Notify Nickname is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1358,10 +1358,10 @@ If ($Env:NOTIFYMOE_NICKNAME) {
 
 If ($Env:OTAKOTAKU_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://otakotaku.com/user/$($Env:OTAKOTAKU_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://otakotaku.com/user/$($Env:OTAKOTAKU_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-OtakotakuBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Otak Otaku username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1370,9 +1370,10 @@ If ($Env:OTAKOTAKU_USERNAME) {
 If ($Env:SHIKIMORI_KAWAI_SESSION) {
     Try {
         Invoke-WebRequest -Uri "https://shikimori.one/$($Env:SHIKIMORI_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://shikimori.one/$($Env:SHIKIMORI_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-ShikimoriBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Shikimori username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1380,10 +1381,9 @@ If ($Env:SHIKIMORI_KAWAI_SESSION) {
 
 If ($Env:SIMKL_CLIENT_ID) {
     Try {
-        Invoke-WebRequest -Uri "https://simkl.com/"
         Get-SimklBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "There's unknown error on Simkl, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1391,10 +1391,10 @@ If ($Env:SIMKL_CLIENT_ID) {
 
 If ($Env:TRAKT_USERNAME) {
     Try {
-        Invoke-WebRequest -Uri "https://trakt.tv/users/$($Env:TRAKT_USERNAME)"
+        $Status = (Invoke-WebRequest -Uri "https://trakt.tv/users/$($Env:TRAKT_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-TraktBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "Trakt username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
@@ -1402,10 +1402,10 @@ If ($Env:TRAKT_USERNAME) {
 
 If ($Env:VNDB_UID) {
     Try {
-        Invoke-WebRequest -Uri "https://vndb.org/$($Env:VNDB_UID)"
+        $Status = (Invoke-WebRequest -Uri "https://vndb.org/$($Env:VNDB_UID)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
         Get-VndbBackup
     }
-    Catch {
+    Catch [System.Net.WebException] {
         Write-Error "VNDB UID is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
