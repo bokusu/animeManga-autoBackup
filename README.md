@@ -292,7 +292,14 @@ Your Bangumi username.
 <!-- omit in toc -->
 #### `KAIZE_USERNAME`
 
-Your Kaize.io username.
+Your Kaize.io username, located on the URL of your profile page.
+
+Example:
+
+```text
+https://kaize.io/username
+                 ^^^^^^^^
+```
 
 ### Kitsu
 
