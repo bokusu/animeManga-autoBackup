@@ -152,6 +152,7 @@ If (-Not($isAction)) {
 
 Import-Module "./Modules/Format-Json.psm1"
 Import-Module "./Modules/Convert-AniListXML.psm1"
+Import-Module "./Modules/Convert-KaizeXML.psm1"
 
 ############################
 # FUNCTIONS FOR EACH SITES #
@@ -210,6 +211,9 @@ fragment mediaListEntry on MediaList{
         idMal
         title{romaji native english}
         episodes
+        format
+        countryOfOrigin
+        duration
     }
     score
 }
@@ -264,6 +268,8 @@ fragment mediaListEntry on MediaList{
         title{romaji native english}
         volumes
         chapters
+        format
+        countryOfOrigin
     }
     score
 }
@@ -276,15 +282,7 @@ fragment mediaListEntry on MediaList{
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/animeList.json -Encoding utf8
 
     Write-Host "`nExporting AniList manga list in JSON"
-    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8
-
-    Write-Host "`nExporting AniList anime list in XML"
-
-    Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
-
-    Write-Host "`nExporting AniList manga list in XML"
-    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
-}
+    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8}
 
 Function Get-AnimePlanetBackup {
     Add-Directory -Path ./animePlanet -Name Anime-Planet
@@ -440,12 +438,6 @@ Function Get-KaizeBackup {
         python $scriptPath -u $kaizeUsername -t anime -o "$($kzAnimePath)"
         python $scriptPath -u $kaizeUsername -t manga -o "$($kzMangaPath)"
     }
-
-    # # Import Convert-KaizeXML.psm1 module
-    Import-Module "./Modules/Convert-KaizeXML.psm1"
-
-    # # Convert Kaize anime list to XML
-    Convert-KaizeToMal
 
     Remove-Item $scriptPath
 }
@@ -1255,6 +1247,14 @@ If ($Env:ANILIST_USERNAME) {
         Write-Error "AniList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
+    # To avoid unknown error of converting JSON to XML
+    # Move converter module to this if statement instead inside function.
+    Write-Host "`nExporting AniList anime list in XML"
+
+    Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
+
+    Write-Host "`nExporting AniList manga list in XML"
+    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
 }
 
 If ($Env:ANIMEPLANET_USERNAME) {
@@ -1299,6 +1299,9 @@ If ($Env:KAIZE_USERNAME) {
         Write-Error "Kaize username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
         Write-Error $_.Exception.Message -ErrorAction Continue
     }
+    # To avoid unknown error of converting JSON to XML
+    # Move converter module to this if statement instead inside function.
+    Convert-KaizeToMal -ErrorAction SilentlyContinue | Out-File -FilePath "./kaize/animeList.xml" -Encoding UTF8 -Force
 }
 
 If ($Env:KITSU_EMAIL) {
