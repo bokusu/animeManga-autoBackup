@@ -313,44 +313,39 @@ Function Get-AnnictBackup {
     Write-Host "`nExporting Annict anime list"
 
     $annictUri = "https://api.annict.com/graphql"
-    $annictQuery = '
-    query {
-        viewer {
-            username
-            name
-            id
-            annictId
-            watchingCount
-            watchedCount
-            wannaWatchCount
-            onHoldCount
-            stopWatchingCount
-            recordsCount
-            libraryEntries {
-                edges {
-                    node {
-                        id
-                        status {
-                            state
-                            createdAt
-                        }
-                        work {
-                            title
-                            titleEn
-                            titleKana
-                            titleRo
-                            malAnimeId
-                            annictId
-                            id
-                            seasonYear
-                            seasonName
-                        }
-                    }
+    $annictQuery = @'
+query {
+    viewer {
+        username
+        name
+        annictId
+        watchingCount
+        watchedCount
+        wannaWatchCount
+        onHoldCount
+        stopWatchingCount
+        recordsCount
+        libraryEntries {
+            nodes {
+                work {
+                    id
+                    annictId
+                    title
+                    titleEn
+                    titleKana
+                    titleRo
+                    malAnimeId
+                    syobocalTid
+                    seasonYear
+                    seasonName
+                    episodesCount
+                    viewerStatusState
                 }
             }
         }
     }
-    '
+}
+'@
     $annictHashTable = @{ "Authorization" = "Bearer $($Env:ANNICT_PERSONAL_ACCESS_TOKEN)" }
     Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTable -Raw > ./annict/animeList.json
 }
