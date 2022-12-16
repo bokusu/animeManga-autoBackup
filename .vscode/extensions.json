@@ -1,10 +1,10 @@
 {
-    "recommendations": [
-        "mikestead.dotenv",
-        "ms-vscode.powershell",
-        "streetsidesoftware.code-spell-checker",
-        "redhat.vscode-yaml",
-        "ms-python.python",
-        "Tyriar.sort-lines"
-    ]
+  "recommendations": [
+    "mikestead.dotenv",
+    "ms-vscode.powershell",
+    "streetsidesoftware.code-spell-checker",
+    "redhat.vscode-yaml",
+    "ms-python.python",
+    "Tyriar.sort-lines"
+  ]
 }
