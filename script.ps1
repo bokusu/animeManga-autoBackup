@@ -282,7 +282,8 @@ fragment mediaListEntry on MediaList{
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/animeList.json -Encoding utf8
 
     Write-Host "`nExporting AniList manga list in JSON"
-    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8}
+    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8
+}
 
 Function Get-AnimePlanetBackup {
     Add-Directory -Path ./animePlanet -Name Anime-Planet
@@ -1327,14 +1328,7 @@ If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) {
 }
 
 If ($Env:MANGADEX_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://mangadex.org" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-MangaDexBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "There's unknown error on MangaDex, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
+    Get-MangaDexBackup
 }
 
 If ($Env:MAL_USERNAME) {
