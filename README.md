@@ -65,23 +65,23 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 
 This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works. You can check table below to see the library/list you need to set as public:
 
-|           Sites | Requires public |  Method  | Requires User Agent | Description                                               |
-| --------------: | :-------------: | :------: | :-----------------: | --------------------------------------------------------- |
-|         AniList |     **Yes**     |  `API`   |         No          | Uses limited access public scope with AniList GraphQL API |
-|    Anime-Planet |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
-|          Annict |       No        |  `API`   |         No          | User can generate Personal Access Token from account      |
-|    Baka-Updates |       No        |  `API`   |       **Yes**       | Uses official API for token                               |
-|         Bangumi |     **Yes**     |  `API`   |         No          | Uses official API                                         |
-|           Kaize |     **Yes**     | `SCRAPE` |         No          | Scrapes user's profile page and lists                     |
-|           Kitsu |       No        |  `API`   |         No          | Uses official API                                         |
-|        MangaDex |       No        |  `API`   |         No          | Uses official API                                         |
-| MyAnimeList.net |     **Yes**     |  `3PA`   |       **Yes**       | Uses MAL Exporter from Azure Website                      |
-|      Notify.moe |       No        |  `API`   |         No          | Uses official API                                         |
-|      Otak Otaku |     **Yes**     |  `API`   |       **Yes**       | Uses official API fetch procedure                         |
-|       Shikimori |       No        | `COOKIE` |       **Yes**       | Uses `_kawai_session` cookie saved on browser             |
-|           SIMKL |       No        |  `API`   |         No          | Uses official API.                                        |
-|           Trakt |       No        |  `API`   |         No          | Uses `traktexport` Python package/module                  |
-|            VNDB |       No        | `COOKIE` |       **Yes**       | Uses `vndb_auth` cookie saved on browser                  |
+|           Sites | Requires public |     Method      | Requires User Agent | Description                                                                        |
+| --------------: | :-------------: | :-------------: | :-----------------: | ---------------------------------------------------------------------------------- |
+|         AniList |     **Yes**     |      `API`      |         No          | Uses limited access public scope with AniList GraphQL API                          |
+|    Anime-Planet |     **Yes**     |      `3PA`      |       **Yes**       | Uses MAL Exporter from Azure Website                                               |
+|          Annict |       No        |      `API`      |         No          | User can generate Personal Access Token from account                               |
+|    Baka-Updates |       No        |      `API`      |       **Yes**       | Uses official API for token                                                        |
+|         Bangumi |     **Yes**     |      `API`      |         No          | Uses official API                                                                  |
+|           Kaize |     **Yes**     |    `SCRAPE`     |         No          | Scrapes user's profile page and lists                                              |
+|           Kitsu |       No        |      `API`      |         No          | Uses official API                                                                  |
+|        MangaDex |       No        |      `API`      |         No          | Uses official API                                                                  |
+| MyAnimeList.net |     **Yes**     |      `3PA`      |       **Yes**       | Uses MAL Exporter from Azure Website                                               |
+|      Notify.moe |       No        |      `API`      |         No          | Uses official API                                                                  |
+|      Otak Otaku |     **Yes**     |      `API`      |       **Yes**       | Uses official API fetch procedure                                                  |
+|       Shikimori |       No        |    `COOKIE`     |       **Yes**       | Uses `_kawai_session` cookie saved on browser                                      |
+|           SIMKL |       No        |      `API`      |         No          | Uses official API.                                                                 |
+|           Trakt |       No        |      `API`      |         No          | Uses `traktexport` Python package/module                                           |
+|            VNDB |       No        | `COOKIE`, `API` |       **Yes**       | Uses `vndb_auth` cookie saved on browser for XML, JSON uses official API via Token |
 
 ***Note:***\
 `API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass, `SCRAPE` HTML Scraping
@@ -143,7 +143,7 @@ This project **requires you to set the library/list as public** as most API used
 | Shikimori    | `.json`, **`.xml`**                 | Yes            | Yes                   | You can reimport back to Shikimori or import to MyAnimeList using XML                                                     |
 | SIMKL        | `.json`, `.zip`, `.csv`, **`.xml`** | Yes            | Yes                   | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back. `.csv` can be imported on other sites         |
 | Trakt        | `.json`                             | No             | No                    | There is no official import/export feature                                                                                |
-| VNDB         | `.xml`                              | No             | No                    | There is no official import/export feature                                                                                |
+| VNDB         | `.json`, `.xml`                     | No             | No                    | There is no official import/export feature                                                                                |
 
 * **MALXML** in this table refers to a XML format used by MyAnimeList, and is used by some sites to import/export data.
   * Please to check import feature availability on each site. We can not guarantee if the site supports MALXML format by default.
@@ -457,6 +457,17 @@ Your VNDB user ID. To get it, click on any links that stated with "My" or your u
   ```
 
   `u12345` is your UID.
+
+<!-- omit in toc -->
+#### `VNDB_TOKEN`
+
+Your VNDB token. To grab VNDB Personal Access Token, Go to your profile, click on `Edit` tab, and click on `Application` tab.
+
+Click on `New token` button, set application name, check **Access to my list (including private items)**, and click `Submit` button below.
+
+Copy the token from textbox and paste it below.
+
+The token should be 38 characters long.
 
 ## Configurations
 

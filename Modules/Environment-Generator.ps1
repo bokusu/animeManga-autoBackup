@@ -360,6 +360,13 @@ Function Read-VisualNovelDatabase {
         Get-CookieHelp -Uri "https://vndb.org" -CookiesName "vndb_auth"
         $Global:vnUid = Read-Host -Prompt "`nYour Visual Novel Database User ID"
         $Global:vnAuth = Read-Host -Prompt "vndb_auth value" -MaskInput
+
+        Write-Host @"
+`nTo grab VNDB Personal Access Token, Go to https://vndb.org/$($vnUid)/edit and click on ``Application`` tab.
+Click on ``New token`` button, set application name, check [x] Access to my list (including private items), and click Submit button below.
+Copy the token from textbox and paste it below.
+"@
+        $Global:vnToken = Read-Host -Prompt "Your Token" -MaskInput
     }
 }
 
@@ -495,7 +502,6 @@ MANGADEX_PASSWORD=$($mdPass)
 MANGAUPDATES_USERNAME=$($muUname)
 MANGAUPDATES_PASSWORD=$($muPass)
 
-
 NOTIFYMOE_NICKNAME=$($nmNick)
 
 OTAKOTAKU_USERNAME=$($ooUname)
@@ -514,6 +520,7 @@ TRAKT_OAUTH_TOKEN=$($trToken)
 TRAKT_USERNAME=$($trUname)
 
 VNDB_AUTH=$($vnAuth)
+VNDB_TOKEN=$($vnToken)
 # UID should be started with U as prefix
 # Example: U12345
 VNDB_UID=$($vnUid)

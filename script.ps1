@@ -1223,12 +1223,65 @@ Function Get-VNDBBackup {
 
     Add-Directory -Path ./vndb -Name VNDB
 
-    Write-Host "`nExporting VNDB game list"
+    Write-Host "`nExporting VNDB game list in XML"
     $vndbUid = $Env:VNDB_UID
     $vndbAuth = $Env:VNDB_AUTH
     $vndbUrl = "https://vndb.org/$($vndbUid)/list-export/xml"
 
     curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
+
+    If ($Env:VNDB_TOKEN) {
+        Write-Host "`nExporting VNDB game list in JSON"
+        [string]$Token = $Env:VNDB_TOKEN
+
+        # $user = (Invoke-WebMethod -Uri "https://api.vndb.org/kana/authinfo" -Au "Authorization: Token $Token" -ContentType "application/json" -Method Get).Content
+
+        $user = curl https://api.vndb.org/kana/authinfo --header "Authorization: token $Token" | ConvertFrom-Json
+
+        $userid = $user.id
+
+        $rawRequests = @{
+            user    = $userid
+            fields  = "id, added, voted, lastmod, vote, started, finished, notes, labels.label, vn.id, vn.title, vn.alttitle, vn.olang, vn.platforms, vn.length"
+            results = 100
+            page    = 1
+        }
+
+        $json = @()
+
+        For ($n = 1; $n -gt 0; $n++) {
+            $requests = $rawRequests | ConvertTo-Json -Depth 2
+            $result = curl https://api.vndb.org/kana/ulist --header "Content-Type: application/json; Authorization: token $Token" --data $requests | ConvertFrom-Json
+            ForEach ($item in $result.results) {
+                $order = [Ordered]@{
+                    id           = $item.id
+                    title        = $item.vn.title
+                    altTitle     = $item.vn.alttitle
+                    origin       = $item.vn.olang
+                    # Convert UNIX timestamp to date to RFC 3339 format
+                    dateAdded    = If ($item.added) { Get-Date -UnixTimeSeconds $item.added -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
+                    dateVoted    = If ($item.voted) { Get-Date -UnixTimeSeconds $item.voted -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
+                    lastModified = If ($item.lastmod) { Get-Date -UnixTimeSeconds $item.lastmod -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
+                    score        = $item.vote / 10
+                    started      = $item.started
+                    finished     = $item.finished
+                    notes        = $item.notes
+                    labels       = $item.labels
+                    platforms    = $item.vn.platforms
+                    length       = $item.vn.length
+                }
+                $json += [PSCustomObject]$order
+            }
+            if ($True -eq $result.more) {
+                $requests.page++
+            }
+            else {
+                Break
+            }
+        }
+
+        $json | ConvertTo-Json -Depth 99 | Out-File -FilePath .\vndb\gameList.json
+    }
 }
 
 ##########################
