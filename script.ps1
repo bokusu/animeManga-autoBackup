@@ -283,6 +283,13 @@ fragment mediaListEntry on MediaList{
 
     Write-Host "`nExporting AniList manga list in JSON"
     Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8
+
+    Write-Host "`nExporting AniList anime list in XML"
+
+    Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
+
+    Write-Host "`nExporting AniList manga list in XML"
+    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
 }
 
 Function Get-AnimePlanetBackup {
@@ -461,6 +468,8 @@ Function Get-KitsuBackup {
 
     Write-Host "`nExporting Kitsu manga list"
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
+
+    Convert-KaizeToMal -ErrorAction SilentlyContinue | Out-File -FilePath "./kaize/animeList.xml" -Encoding UTF8 -Force
 }
 
 Function Get-MangaDexBackup {
@@ -1238,175 +1247,21 @@ If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAU
 
 $userAgent = $Env:USER_AGENT
 
-# Check each Environment Variable if filled, if not skip
-If ($Env:ANILIST_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://anilist.co/user/$($Env:ANILIST_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-AniListBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "AniList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-    # To avoid unknown error of converting JSON to XML
-    # Move converter module to this if statement instead inside function.
-    Write-Host "`nExporting AniList anime list in XML"
-
-    Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
-
-    Write-Host "`nExporting AniList manga list in XML"
-    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
-}
-
-If ($Env:ANIMEPLANET_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://www.anime-planet.com/users/$($Env:ANIMEPLANET_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-AnimePlanetBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Anime-Planet username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://annict.jp" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-AnnictBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "There's unknown error on Annict, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:BANGUMI_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://bgm.tv/user/$($Env:BANGUMI_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-BangumiBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Bangumi username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:KAIZE_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://kaize.io/user/$($Env:KAIZE_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-KaizeBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Kaize username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-    # To avoid unknown error of converting JSON to XML
-    # Move converter module to this if statement instead inside function.
-    Convert-KaizeToMal -ErrorAction SilentlyContinue | Out-File -FilePath "./kaize/animeList.xml" -Encoding UTF8 -Force
-}
-
-If ($Env:KITSU_EMAIL) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://kitsu.io" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-KitsuBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "There's unknown error on Kitsu, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://www.mangaupdates.com/members.html" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-MangaUpdatesBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "There's unknown error on Manga Updates, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:MANGADEX_USERNAME) {
-    Get-MangaDexBackup
-}
-
-If ($Env:MAL_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://myanimelist.net/profile/$($Env:MAL_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-MyAnimeListBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "MyAnimeList username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:NOTIFYMOE_NICKNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://notify.moe/+$($Env:NOTIFYMOE_NICKNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-NotifyMoeBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Notify Nickname is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:OTAKOTAKU_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://otakotaku.com/user/$($Env:OTAKOTAKU_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-OtakotakuBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Otak Otaku username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:SHIKIMORI_KAWAI_SESSION) {
-    Try {
-        Invoke-WebRequest -Uri "https://shikimori.one/$($Env:SHIKIMORI_USERNAME)"
-        $Status = (Invoke-WebRequest -Uri "https://shikimori.one/$($Env:SHIKIMORI_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-ShikimoriBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Shikimori username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:SIMKL_CLIENT_ID) {
-    Try {
-        Get-SimklBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "There's unknown error on Simkl, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:TRAKT_USERNAME) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://trakt.tv/users/$($Env:TRAKT_USERNAME)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-TraktBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "Trakt username is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
-
-If ($Env:VNDB_UID) {
-    Try {
-        $Status = (Invoke-WebRequest -Uri "https://vndb.org/$($Env:VNDB_UID)" -UseBasicParsing -Method Head -DisableKeepAlive).StatusCode
-        Get-VndbBackup
-    }
-    Catch [System.Net.WebException] {
-        Write-Error "VNDB UID is invalid or there's unknown error on the site, skipping" -ErrorAction Continue
-        Write-Error $_.Exception.Message -ErrorAction Continue
-    }
-}
+If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
+If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
+If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
+If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup }
+If ($Env:KAIZE_USERNAME) { Get-KaizeBackup }
+If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
+If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) { Get-MangaUpdatesBackup }
+If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }
+If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup }
+If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
+If ($Env:OTAKOTAKU_USERNAME) { Get-OtakOtakuBackup }
+If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
+If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
+If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
+If ($Env:VNDB_UID) { Get-VNDBBackup }
 
 Write-Host "`nFormat JSON files"
 Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
