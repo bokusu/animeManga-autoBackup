@@ -413,7 +413,7 @@ Your Otak Otaku username.
 <!-- omit in toc -->
 #### `SIMKL_ACCESS_TOKEN`
 
-Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](Get-SimklAuth.ps1), then follow the instructions.
+Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](./Modules/Get-SimklAuth.ps1), then follow the instructions.
 
 <!-- omit in toc -->
 #### `SIMKL_CLIENT_ID`
