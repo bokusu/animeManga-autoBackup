@@ -578,6 +578,20 @@ Function Get-MangaDexBackup {
                 volume  = [int]$mdReadVol
                 chapter = [int]$mdReadCh
             }
+            metadata = @{
+                links         = @{
+                    mal          = $manga.attributes.links.mal
+                    aniList      = $manga.attributes.links.al
+                    kitsu        = $manga.attributes.links.kt
+                    animePlanet  = $manga.attributes.links.ap
+                    mangaUpdates = $manga.attributes.links.mu
+                    novelUpdates = $manga.attributes.links.nu
+                }
+                status        = $manga.attributes.status
+                contentRating = $manga.attributes.contentRating
+                releaseYear   = $manga.attributes.year
+                originalLang  = $manga.attributes.originalLanguage
+            }
             rating   = $mdScore
         }
         $mangaData += [PSCustomObject]$rawData
@@ -603,6 +617,9 @@ Function Get-MangaDexBackup {
                 $malStatus = "Plan to Read"
             }
         }
+
+        # Sort MDex Manga Data by Status then by Title
+        $mangaData = $mangaData | Sort-Object -Property status, title
 
         $malCommons = @"
         <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
