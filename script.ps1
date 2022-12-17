@@ -164,7 +164,7 @@ Function Get-AniListBackup {
     $alExpiry = $Env:ANILIST_OAUTH_EXPIRY
     $getCurrentEpoch = (Get-Date -UFormat %s)
 
-    If ($alExpiry -ge $getCurrentEpoch) {
+    If ($alExpiry -le $getCurrentEpoch) {
         Write-Host @"
 Your AniList credential expired, please reinitialize by running:
 ./Modules/Get-AniListAuth.ps1
