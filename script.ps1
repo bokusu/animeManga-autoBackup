@@ -531,7 +531,7 @@ Function Get-MangaDexBackup {
         Write-Host "`rGrabbing your manga follow lists, page ($([Math]::Floor(($i + 100) / 100))/$([Math]::Ceiling($mdFollows.total / 100)))" -NoNewLine
         $mdFollowsQuery = "https://api.mangadex.org/user/follows/manga?limit=100&offset=$($i)"
         $mdFollows = ((Invoke-WebRequest -Uri $mdFollowsQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json)
-        $mdFollowsData += $mdFollows.data
+        [array]$mdFollowsData += $mdFollows.data
     }
 
     # Used for debugging requests
@@ -594,7 +594,7 @@ Function Get-MangaDexBackup {
             }
             rating   = $mdScore
         }
-        $mangaData += [PSCustomObject]$rawData
+        [array]$mangaData += [PSCustomObject]$rawData
         Switch ($mdMangaStatus.$mangaId) {
             "reading" {
                 $malReading++
