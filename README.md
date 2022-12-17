@@ -1,5 +1,5 @@
 <!-- cSpell:words ANILIST ANIMEPLANET Annict Automail Bangumi choco Darek Goodreads Importability kawai Kitsu MALXML MANGAUPDATES Nautiljon NOTIFYMOE Otak Otaku POSIX pwsh Shikimori SIMKL Trakt traktexport USERID USERPROFILE VNDB -->
-<!-- markdownlint-disable MD033 MD034 -->
+<!-- markdownlint-disable MD033 MD034 MD028 -->
 
 <!-- omit in toc -->
 # Anime Manga Auto Backup
@@ -356,6 +356,10 @@ Your Kitsu password used to login.
 > This method (login via <u>raw password</u>) would be deprecated in future!
 > There is no ETA to implement OAuth2 using OpenID.
 > See more regarding to the issue at [MangaDex Announcement Discord Server (#api-changelog)](https://discord.com/channels/833598287574990850/850131706022461440/1050086432011731034).
+
+> **Warning**
+>
+> 2FA-enabled account is not supported!
 
 <!-- omit in toc -->
 #### `MANGADEX_USERNAME`
