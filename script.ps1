@@ -166,7 +166,7 @@ Function Get-AniListBackup {
 
     If ($alExpiry -ge $getCurrentEpoch) {
         Write-Host @"
-Your Trakt credential expired, please reinitialize by running:
+Your AniList credential expired, please reinitialize by running:
 ./Modules/Get-AniListAuth.ps1
 "@ -ForegroundColor Red
         Break
