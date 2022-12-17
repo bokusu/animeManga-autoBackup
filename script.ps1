@@ -676,7 +676,7 @@ In this folder, you will get:
 
     Write-Host "`n`nExporting MangaDex Follow List"
     $mangaData | ConvertTo-Yaml | Out-File -FilePath "./mangaDex/mangaList.yaml" -Encoding UTF8 -Force
-    $mangaData | ConvertTo-Json | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
+    $mangaData | ConvertTo-Json -Depth 99 | Out-File -FilePath "./mangaDex/mangaList.json" -Encoding UTF8 -Force
 
     Write-Host "Converting MangaDex Follow List to MyAnimeList XML format"
     $mdToMalXML = @"
