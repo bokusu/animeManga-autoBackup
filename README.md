@@ -303,6 +303,16 @@ Your Baka-Updates password used to login.
 **Website**: https://bgm.tv
 
 <!-- omit in toc -->
+#### `BANGUMI_PERSONAL_ACCESS_TOKEN`
+
+Your Bangumi Personal Access Token. You can generate one from your account via [Token Generator](https://next.bgm.tv/demo/access-token).
+
+<!-- omit in toc -->
+#### `BANGUMI_PAT_EXPIRY`
+
+Your Bangumi Personal Access Token expiry date in `yyyy-MM-dd` format.
+
+<!-- omit in toc -->
 #### `BANGUMI_USERNAME`
 
 Your Bangumi username.

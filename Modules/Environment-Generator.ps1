@@ -164,10 +164,9 @@ Function Read-Bangumi {
     }
 
     If ($initBangumi -eq "Y") {
-        <#
         $newTokenUri = "https://next.bgm.tv/demo/access-token"
         Write-Host @"
-`nBangumi requires you to use Personal Access Token to be able to get your data from server.
+`nBangumi requires you to use Personal Access Token to be able to get your private data from server.
 You can get PAT via this link (we will also open the website for you): $($newTokenUri)
 
 To generate, click "创建个人令牌" link (or click this URL: $($newTokenUri)/create). In 名称 text input (first input), fill your Backup Repo Name, and select 365天 (365 days, 1 year) in 有效期 dropdown input (second input).
@@ -175,7 +174,8 @@ To generate, click "创建个人令牌" link (or click this URL: $($newTokenUri)
         Write-Host "`nLaunching Bangumi Token portal website" -ForegroundColor Yellow
         Start-Process $newTokenUri
         $Global:bgmPAT = Read-Host -Prompt "`nPlease paste the code genrated from website"
-        #>
+        $expiry = Read-Host -Prompt "`nPlease enter the expiry date of your token (in format: yyyy-MM-dd)"
+        $Global:bgmExpiry = [DateTime]::ParseExact($expiry, "yyyy-MM-dd", $null)
         $Global:bgmUname = Read-Host -Prompt "`nYour Bangumi Username"
     }
 }
@@ -496,12 +496,19 @@ $envData += @"
 # Accounts
 # ========
 ANILIST_USERNAME=$($alUname)
+ANILIST_CLIENT_ID=$($alClientID)
+ANILIST_CLIENT_SECRET=$($alClientSecret)
+ANILIST_REDIRECT_URI=https://anilist.co/api/v2/oauth/pin
+ANILIST_ACCESS_TOKEN=$($alToken)
+ANILIST_OAUTH_REFRESH=$($alOauthRefresh)
+ANILIST_OAUTH_EXPIRY=$($alExpiry)
 
 ANIMEPLANET_USERNAME=$($apUname)
 
 ANNICT_PERSONAL_ACCESS_TOKEN=$($acPAT)
 
-# BANGUMI_PERSONAL_ACCESS_TOKEN=$($bgmPAT)
+BANGUMI_PERSONAL_ACCESS_TOKEN=$($bgmPAT)
+BANGUMI_PAT_EXPIRY=$($bgmExpiry)
 BANGUMI_USERNAME=$($bgmUname)
 
 KAIZE_USERNAME=$($kzUname)
