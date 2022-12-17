@@ -377,7 +377,7 @@ Function Get-BangumiBackup {
     $bgmExpiry = $Env:BANGUMI_PAT_EXPIRY
     $bgmExpiry = [DateTime]::Parse($bgmExpiry)
 
-    If ($bgmExpiry -ge (Get-Date)) {
+    If ($bgmExpiry -le (Get-Date)) {
         Write-Host "`nBangumi Personal Access Token has expired, please refresh it"
         Break
     }
