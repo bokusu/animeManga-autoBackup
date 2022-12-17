@@ -1,4 +1,4 @@
-Function Convert-KaizeToMal {
+﻿Function Convert-KaizeToMal {
     [CmdletBinding()]
     Param(
         [String]$Path = "./kaize/animeList.json",

@@ -1,4 +1,4 @@
-function Format-Json {
+﻿function Format-Json {
     <#
     .SYNOPSIS
         Prettifies JSON output.
@@ -46,7 +46,7 @@ function Format-Json {
 
     $result = $Json -split '\r?\n' |
         ForEach-Object {
-            # If the line contains a ] or } character, 
+            # If the line contains a ] or } character,
             # we need to decrement the indentation level, unless:
             # - it is inside quotes, AND
             # - it does not contain a [ or {
@@ -57,7 +57,7 @@ function Format-Json {
             # Replace all colon-space combinations by ": " unless it is inside quotes.
             $line = (' ' * $indent) + ($_.TrimStart() -replace ":\s+$regexUnlessQuoted", ': ')
 
-            # If the line contains a [ or { character, 
+            # If the line contains a [ or { character,
             # we need to increment the indentation level, unless:
             # - it is inside quotes, AND
             # - it does not contain a ] or }

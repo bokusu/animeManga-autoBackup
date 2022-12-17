@@ -1,4 +1,4 @@
-$version = "0.0.1"
+﻿$version = "0.0.1"
 $isAction = $null -ne $Env:GITHUB_WORKSPACE
 
 # Update Repository from Template Repository

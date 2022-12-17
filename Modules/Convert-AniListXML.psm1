@@ -1,4 +1,4 @@
-Function Convert-AniListXML {
+﻿Function Convert-AniListXML {
     [CmdletBinding()]
     Param (
         [String]$Path = './aniList/animeList.json',

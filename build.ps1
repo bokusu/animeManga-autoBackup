@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 
 If (Get-Command -Name "pipreqs" -ErrorAction SilentlyContinue) {
     Write-Host "pipreqs Python Module is installed"

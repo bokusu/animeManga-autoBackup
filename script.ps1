@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 #Requires -Version 7
 
 # Add -Verbose
@@ -213,6 +213,9 @@ fragment mediaListEntry on MediaList{
         episodes
         format
         countryOfOrigin
+        duration
+        seasonYear
+        season
         duration
     }
     score

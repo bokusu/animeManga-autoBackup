@@ -7,7 +7,7 @@ Param(
     [switch]$NoLaunchBrowser
 )
 
-if (!($simklClientId)) {
+if (!($clientId)) {
     if (!(Get-Package -Name "Set-PsEnv")) {
         Write-Host "Installing Set-PsEnv" -ForegroundColor Red
         Install-Module Set-PsEnv
