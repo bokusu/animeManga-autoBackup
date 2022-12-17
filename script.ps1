@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 #Requires -Version 7
 
 # Add -Verbose
@@ -161,10 +161,21 @@ Import-Module "./Modules/Convert-KaizeXML.psm1"
 Function Get-AniListBackup {
     Add-Directory -Path ./aniList -Name AniList
 
-    Write-Host "`nExporting AniList anime list in JSON"
-    $aniListUsername = $Env:ANILIST_USERNAME
-    $aniListUri = "https://graphql.anilist.co"
-    $alAnimeBody = @'
+    $alExpiry = $Env:ANILIST_OAUTH_EXPIRY
+    $getCurrentEpoch = (Get-Date -UFormat %s)
+
+    If ($alExpiry -ge $getCurrentEpoch) {
+        Write-Host @"
+Your Trakt credential expired, please reinitialize by running:
+./Modules/Get-AniListAuth.ps1
+"@ -ForegroundColor Red
+        Break
+    }
+    Else {
+        Write-Host "`nExporting AniList anime list in JSON"
+        $aniListUsername = $Env:ANILIST_USERNAME
+        $aniListUri = "https://graphql.anilist.co"
+        $alAnimeBody = @'
 query($name: String!){
     MediaListCollection(userName: $name, type: ANIME){
         lists{
@@ -219,10 +230,11 @@ fragment mediaListEntry on MediaList{
         duration
     }
     score
+    private
 }
 '@
 
-    $alMangaBody = @'
+        $alMangaBody = @'
 query($name: String!){
     MediaListCollection(userName: $name, type: MANGA){
         lists{
@@ -275,24 +287,30 @@ fragment mediaListEntry on MediaList{
         countryOfOrigin
     }
     score
+    private
 }
 '@
 
-    $alVariableFix = @{
-        name = $aniListUsername
-    } | ConvertTo-Json
+        $alVariableFix = @{
+            name = $aniListUsername
+        } | ConvertTo-Json
 
-    Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/animeList.json -Encoding utf8
+        $alHead = @{
+            Authorization = "Bearer $($Env:ANILIST_ACCESS_TOKEN)"
+        }
 
-    Write-Host "`nExporting AniList manga list in JSON"
-    Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw | Out-File -Path ./aniList/mangaList.json -Encoding utf8
+        Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw -Headers $alHead | Out-File -Path ./aniList/animeList.json -Encoding utf8
 
-    Write-Host "`nExporting AniList anime list in XML"
+        Write-Host "`nExporting AniList manga list in JSON"
+        Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw -Headers $alHead  | Out-File -Path ./aniList/mangaList.json -Encoding utf8
 
-    Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
+        Write-Host "`nExporting AniList anime list in XML"
 
-    Write-Host "`nExporting AniList manga list in XML"
-    Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
+        Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
+
+        Write-Host "`nExporting AniList manga list in XML"
+        Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
+    }
 }
 
 Function Get-AnimePlanetBackup {
