@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 
 # Ignore Warning from Script Analyzer
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
