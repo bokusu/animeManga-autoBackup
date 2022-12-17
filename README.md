@@ -225,6 +225,28 @@ You also need to fork the repository before cloning the repo to your local machi
 
 Your AniList username.
 
+<!-- omit in toc -->
+#### `ANILIST_CLIENT_ID`
+
+Your AniList Client ID. You can generate one from your account via [Developer Settings](https://anilist.co/settings/developer).
+
+<!-- omit in toc -->
+#### `ANILIST_CLIENT_SECRET`
+
+Your AniList Client Secret. You can generate one from your account via [Developer Settings](https://anilist.co/settings/developer).
+
+<!-- omit in toc -->
+#### `ANILIST_REDIRECT_URI`
+
+Your AniList Redirect URI. Must be `https://anilist.co/api/v2/oauth/pin`.
+
+<!-- omit in toc -->
+#### `ANILIST_ACCESS_TOKEN`, `ANILIST_OAUTH_REFRESH`, `ANILIST_OAUTH_EXPIRES`
+
+Your AniList Access Token, Refresh Token and Expires.
+
+To get them, please fill your `ANILIST_CLIENT_ID`, `ANILIST_CLIENT_SECRET` and `ANILIST_REDIRECT_URI` in your ENV file and init/run [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1), then follow the instructions.
+
 ### Anime-Planet
 
 **Website**: https://anime-planet.com

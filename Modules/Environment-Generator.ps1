@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 
 # Ignore Warning from Script Analyzer
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
@@ -96,6 +96,26 @@ Function Read-AniList {
 
     If ($initAniList -eq "Y") {
         $Global:alUname = Read-Host -Prompt "`nYour AniList Username"
+        Write-Host @"
+`nThis method below will requires you to create new AniList Application.
+You can create new application via this link (we will also open the website for you): https://anilist.co/settings/developer
+
+For redirect URI, use: https://anilist.co/api/v2/oauth/pin
+"@
+        $Global:alClientID = Read-Host -Prompt "`nPlease enter your Application Client ID"
+        $Global:alClientSecret = Read-Host -Prompt "Please enter your Application Client Secret"
+
+        Write-Host "`nLaunching Token Generator" -ForegroundColor Yellow
+
+        .\Modules\Get-AniListAuth.ps1 -ClientId $alClientID -ClientSecret $alClientSecret -JsonTokenResult
+
+        $tokenResult = Read-Host -Prompt "Please paste JSON result from Token Generator"
+
+        $tokenResult = $tokenResult | ConvertFrom-Json
+
+        $Global:alAccessToken = $tokenResult.access_token
+        $Global:alOauthRefresh = $tokenResult.refresh_token
+        $Global:alExpiry = $tokenResult.expires_in
     }
 }
 
