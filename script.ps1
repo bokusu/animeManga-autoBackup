@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#PSScriptInfo
 
 .VERSION 1.0.0
@@ -533,7 +533,7 @@ Function Get-KitsuBackup {
 
     Write-Host "`nExporting Kitsu anime list"
     $kitsuEmail = $Env:KITSU_EMAIL
-    $kitsuPassword = [uri]::EscapeDataString("$Env:KITSU_PASSWORD")
+    $kitsuPassword = [uri]::EscapeDataString($Env:KITSU_PASSWORD)
     $kitsuParameters = @{
         grant_type = "password";
         username   = $kitsuEmail;
@@ -544,11 +544,326 @@ Function Get-KitsuBackup {
 
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=anime" -OutFile ./kitsu/animeList.xml
 
+    $auth = @{
+        Authorization     = "Bearer $($kitsuAccessToken.access_token)"
+        Method            = "POST"
+        Path              = "/api/graphql"
+        'accept-language' = "en-US,en;q=0.5"
+    }
+
+    $gqlUri = "https://kitsu.io/api/graphql"
+
+    $gqlVariables = @{
+        entLim = 100
+    }
+
+    $gqlQueryInit = @'
+query {
+  currentAccount{
+    id
+    profile {
+      slug
+      name
+      library {
+        ... library
+      }
+    }
+  }
+}
+'@
+
+    $gqlMainQuery = @'
+  currentAccount{
+    id
+    sfwFilter
+    titleLanguagePreference
+    timeZone
+    language
+    profile {
+      slug
+      name
+      library {
+        ... library
+      }
+    }
+  }
+}
+
+fragment library on Library {
+'@
+    $gqlFragment = @'
+    nodes {
+      status
+      private
+      nsfw
+      startedAt
+      finishedAt
+      media {
+        id
+        slug
+        titles {
+          canonical
+          romanized
+          original
+          translated
+        }
+        startDate
+        endDate
+        mappings (first: 10) {
+          nodes {
+            externalSite
+            externalId
+          }
+        }
+        originLanguages
+        ageRating
+        sfw
+      }
+      notes
+      reconsuming
+      reconsumeCount
+      rating
+      progress
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+'@
+
+    $gqlQueryInitAnime = @"
+$gqlQueryInit
+
+fragment library on Library {
+  all (mediaType: ANIME, first: 1) {
+    totalCount
+  }
+}
+"@
+
+    $gqlQueryInitManga = @"
+$gqlQueryInit
+
+fragment library on Library {
+    all (mediaType: MANGA, first: 1) {
+        totalCount
+    }
+}
+"@
+
+    $animeLib = Invoke-GraphQLQuery -Uri $gqlUri -Query $gqlQueryInitAnime -Headers $auth
+    $mangaLib = Invoke-GraphQLQuery -Uri $gqlUri -Query $gqlQueryInitManga -Headers $auth
+
+    $animeProfile = $animeLib.data.currentAccount.profile
+    $mangaProfile = $mangaLib.data.currentAccount.profile
+
+    $saveFile = @(); $n = 1
+    # Start loop for anime
+    $gqlVariables.mediaKind = "ANIME"
+    For ($limit = 0; $limit -le $animeProfile.library.all.totalCount; $limit += 100) {
+        $vars = $gqlVariables | ConvertTo-Json -Compress
+        Write-Host "`n[$(($limit / 100) + 1)/$([Math]::Ceiling(($animeProfile.library.all.totalCount - 1) / 100))] Exporting Kitsu anime list to Ryuuganime SaveFile JSON" -ForegroundColor Green
+        $gqlBody = Switch ($gqlVariables.after) {
+            $null { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int) {`n" }
+            default { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int, `$after: String) {`n" }
+        }
+        $gqlBody += $gqlMainQuery
+        $gqlBody += Switch ($gqlVariables.after) {
+            $null { "`n    all (mediaType: `$mediaKind, first: `$entLim) {`n" }
+            default { "`n    all (mediaType: `$mediaKind, first: `$entLim, after: `$after) {`n" }
+        }
+        $gqlBody += $gqlFragment
+        $animeLib = Invoke-GraphQLQuery -Uri $gqlUri -Query $gqlBody -Variables $vars -Headers $auth
+        ForEach ($node in $animeLib.data.currentAccount.profile.library.all.nodes) {
+            # Check if $node is not Null
+            If ($Null -ne $node) {
+                Write-Host "`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
+                $userStatus = Switch ($node.status) {
+                    "CURRENT" { "current" }
+                    "PLANNING" { "planned" }
+                    "COMPLETED" { "completed" }
+                    "ON_HOLD" { "paused" }
+                    "DROPPED" { "stopped" }
+                }
+                $startedProgress = if ($node.startedAt) { $node.startedAt | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $finishedProgress = if ($node.finishedAt) { $node.finishedAt | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $startedPublishing = if ($node.media.startDate) { $node.media.startDate | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                [int]$startedPublishingMonth = $startedPublishing | Get-Date -Format 'MM' -ErrorAction SilentlyContinue
+                $finishedPublishing = if ($node.media.endDate) { $node.media.endDate | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $season = Switch ($startedPublishingMonth) {
+                    1 { "winter" }
+                    2 { "winter" }
+                    3 { "winter" }
+                    4 { "spring" }
+                    5 { "spring" }
+                    6 { "spring" }
+                    7 { "summer" }
+                    8 { "summer" }
+                    9 { "summer" }
+                    10 { "fall" }
+                    11 { "fall" }
+                    12 { "fall" }
+                    Default { $null }
+                }
+                $rawData = ""
+                $rawData = [ordered]@{
+                    <#
+                    CURRENTLY MISSING:
+                    metadata.length
+                    upstream.episodes
+                    metadata.format
+                    metadata.status
+                    #>
+                    id          = $node.media.id
+                    slug        = $node.media.slug
+                    title       = $node.media.titles.canonical
+                    status      = $userStatus
+                    current     = [ordered]@{
+                        episode     = $node.progress
+                        isRepeating = $node.reconsuming
+                    }
+                    date        = [ordered]@{
+                        start  = $startedProgress
+                        finish = $finishedProgress
+                    }
+                    notes       = $node.notes
+                    repeatCount = $node.reconsumeCount
+                    rating      = $node.rating / 2
+                    isPrivate   = $node.private
+                    metadata    = [ordered]@{
+                        date         = [ordered]@{
+                            start  = $startedPublishing
+                            finish = $finishedPublishing
+                        }
+                        originalLang = $node.media.originLanguages[0]
+                        season       = $season
+                        ageRating    = $node.media.ageRating
+                        # Switch SFW boolean to counterpart
+                        isNsfw       = if ($node.media.sfw) { $False } else { $True }
+                    }
+                }
+                $saveFile += [PSCustomObject]$rawData
+            }
+            Else {
+                Write-Host "`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime.... but wait..." -ForegroundColor Cyan
+                Write-Host "No data found, how?" -ForegroundColor Red
+                Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your anime list won't be accurate" -ForegroundColor Red
+            }
+            $n++
+        }
+        # Check if there is more pages
+        Switch ($animeLib.data.currentAccount.profile.library.all.pageInfo.hasNextPage) {
+            $True {
+                [string]$gqlVariables.after = $animeLib.data.currentAccount.profile.library.all.pageInfo.endCursor
+            }
+            $False {
+                Break
+            }
+        }
+    }
+    # Write anime library to file
+    $saveFile | ConvertTo-Json -Depth 10 | Out-File -FilePath "./kitsu/animeList.json" -Encoding UTF8 -Force
+
     Write-Host "`nExporting Kitsu manga list"
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
 
-    
-    
+    # Start loop for manga
+    $gqlVariables = [ordered]@{
+        mediaKind = "MANGA"
+        entLim    = 100
+    }
+    $saveFile = @(); $n = 1
+    For ($limit = 0; $limit -le $mangaProfile.library.all.totalCount; $limit += 100) {
+        $vars = $gqlVariables | ConvertTo-Json -Compress
+        Write-Host "`n[$(($limit / 100) + 1)/$([Math]::Ceiling(($mangaProfile.library.all.totalCount - 1) / 100))] Exporting Kitsu manga list to Ryuuganime SaveFile JSON" -ForegroundColor Green
+        $gqlBody = Switch ($gqlVariables.after) {
+            $null { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int) {`n" }
+            default { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int, `$after: String) {`n" }
+        }
+        $gqlBody += $gqlMainQuery
+        $gqlBody += Switch ($gqlVariables.after) {
+            $null { "`n    all (mediaType: `$mediaKind, first: `$entLim) {`n" }
+            default { "`n    all (mediaType: `$mediaKind, first: `$entLim, after: `$after) {`n" }
+        }
+        $gqlBody += $gqlFragment
+        $mangaLib = Invoke-GraphQLQuery -Uri $gqlUri -Query $gqlBody -Variables $vars -Headers $auth
+        ForEach ($node in $mangaLib.data.currentAccount.profile.library.all.nodes) {
+            # Check if $node is not Null
+            If ($Null -ne $node) {
+                Write-Host "`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
+                $userStatus = Switch ($node.status) {
+                    "CURRENT" { "current" }
+                    "PLANNING" { "planned" }
+                    "COMPLETED" { "completed" }
+                    "ON_HOLD" { "paused" }
+                    "DROPPED" { "stopped" }
+                }
+                $startedProgress = if ($node.startedAt) { $node.startedAt | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $finishedProgress = if ($node.finishedAt) { $node.finishedAt | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $startedPublishing = if ($node.media.startDate) { $node.media.startDate | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $finishedPublishing = if ($node.media.endDate) { $node.media.endDate | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $rawData = ""
+                $rawData = [ordered]@{
+                    <#
+                    CURRENTLY MISSING:
+                    metadata.length
+                    upstream.chapters
+                    upstream.volumes
+                    metadata.format
+                    metadata.status
+                    #>
+                    id          = $node.media.id
+                    slug        = $node.media.slug
+                    title       = $node.media.titles.canonical
+                    status      = $userStatus
+                    current     = [ordered]@{
+                        chapter     = $node.progress
+                        isRepeating = $node.reconsuming
+                    }
+                    date        = [ordered]@{
+                        start  = $startedProgress
+                        finish = $finishedProgress
+                    }
+                    notes       = $node.notes
+                    repeatCount = $node.reconsumeCount
+                    rating      = $node.rating / 2
+                    isPrivate   = $node.private
+                    metadata    = [ordered]@{
+                        date         = [ordered]@{
+                            start  = $startedPublishing
+                            finish = $finishedPublishing
+                        }
+                        originalLang = $node.media.originLanguages[0]
+                        season       = $season
+                        ageRating    = $node.media.ageRating
+                        # Switch SFW boolean to counterpart
+                        isNsfw       = if ($node.media.sfw) { $False } else { $True }
+                    }
+                }
+                $saveFile += [PSCustomObject]$rawData
+            }
+            Else {
+                Write-Host "`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga.... but wait..." -ForegroundColor Cyan
+                Write-Host "No data found, how?" -ForegroundColor Red
+                Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your manga list won't be accurate" -ForegroundColor Red
+            }
+            $n++
+        }
+        # Check if there is more pages
+        Switch ($mangaLib.data.currentAccount.profile.library.all.pageInfo.hasNextPage) {
+            $True {
+                [string]$gqlVariables.after = $mangaLib.data.currentAccount.profile.library.all.pageInfo.endCursor
+            }
+            $False {
+                Break
+            }
+        }
+    }
+    # Write manga library to file
+    $saveFile | ConvertTo-Json -Depth 10 | Out-File -FilePath "./kitsu/mangaList.json" -Encoding UTF8 -Force
 }
 
 Function Get-MangaDexBackup {
