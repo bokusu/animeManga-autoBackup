@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 #Requires -Version 7
 
 # Add -Verbose
@@ -570,16 +570,16 @@ Function Get-MangaDexBackup {
             id       = $mangaId
             title    = [String]$mangaTitle
             status   = $mdMangaStatus.$mangaId
-            upstream = @{
+            upstream = [ordered]@{
                 volume  = [int]$mangaVolumes
                 chapter = [int]$mangaChaptersLogic
             }
-            current  = @{
+            current  = [ordered]@{
                 volume  = [int]$mdReadVol
                 chapter = [int]$mdReadCh
             }
-            metadata = @{
-                links         = @{
+            metadata = [ordered]@{
+                links         = [ordered]@{
                     mal          = $manga.attributes.links.mal
                     aniList      = $manga.attributes.links.al
                     kitsu        = $manga.attributes.links.kt
