@@ -479,6 +479,9 @@ Function Get-KaizeBackup {
     }
 
     Remove-Item $scriptPath
+
+    Write-Host "`nExporting Kaize anime list as MALXML"
+    Convert-KaizeToMal -ErrorAction SilentlyContinue | Out-File -FilePath "./kaize/animeList.xml" -Encoding UTF8 -Force
 }
 
 Function Get-KitsuBackup {
@@ -500,7 +503,8 @@ Function Get-KitsuBackup {
     Write-Host "`nExporting Kitsu manga list"
     Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
 
-    Convert-KaizeToMal -ErrorAction SilentlyContinue | Out-File -FilePath "./kaize/animeList.xml" -Encoding UTF8 -Force
+    
+    
 }
 
 Function Get-MangaDexBackup {
