@@ -1,4 +1,48 @@
 #!/usr/bin/env pwsh
+<#PSScriptInfo
+
+.VERSION 1.0.0
+
+.GUID 77297f4b-cff4-4a80-b1e8-829f059abdb7
+
+.AUTHOR nattadasu
+
+.COMPANYNAME
+
+.COPYRIGHT Copyright (c) 2022 Sultan Iskandar Maulana
+
+.TAGS Anime Manga Games backup automation movies tv shows myanimelist anilist kitsu trakt simkl mangadex annict bangumi notifyme shikimori otakotaku mangaupdates autobackup
+
+.LICENSEURI https://github.com/nattadasu/animeManga-autoBackup/blob/main/LICENSE
+
+.PROJECTURI https://github.com/nattadasu/animeManga-autoBackup
+
+.ICONURI
+
+.EXTERNALMODULEDEPENDENCIES
+
+.REQUIREDSCRIPTS
+
+.EXTERNALSCRIPTDEPENDENCIES
+
+.RELEASENOTES
+
+
+.PRIVATEDATA
+
+#>
+
+#Requires -Module powershell-yaml
+#Requires -Module Set-PsEnv
+#Requires -Module PSGraphQL
+
+<#
+
+.DESCRIPTION
+ Automatically do a backup of your anime, manga, games, tv shows, and movies lists from several tracking services
+
+#>
+
 #Requires -Version 7
 
 # Add -Verbose
