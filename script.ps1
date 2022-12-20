@@ -31,11 +31,6 @@
 .PRIVATEDATA
 
 #>
-
-#Requires -Module powershell-yaml
-#Requires -Module Set-PsEnv
-#Requires -Module PSGraphQL
-
 <#
 
 .DESCRIPTION
