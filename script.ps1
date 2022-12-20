@@ -936,6 +936,10 @@ Function Get-MangaDexBackup {
                 volume  = [int]$mdReadVol
                 chapter = [int]$mdReadCh
             }
+            date    = [ordered]@{
+                start = $Null
+                end   = $Null
+            }
             metadata = [ordered]@{
                 links         = [ordered]@{
                     mal          = $manga.attributes.links.mal
@@ -956,29 +960,36 @@ Function Get-MangaDexBackup {
         Switch ($mdMangaStatus.$mangaId) {
             "reading" {
                 $malReading++
-                $malStatus = "Reading"
             }
             "completed" {
                 $malCompleted++
-                $malStatus = "Completed"
             }
             "on_hold" {
                 $malOnHold++
-                $malStatus = "On-Hold"
             }
             "dropped" {
                 $malDropped++
-                $malStatus = "Dropped"
             }
             "plan_to_read" {
                 $malPlanToRead++
-                $malStatus = "Plan to Read"
             }
         }
 
-        # Sort MDex Manga Data by Status then by Title
-        $mangaData = $mangaData | Sort-Object -Property status, title
+        # Sort MDex Manga Data by Title and then by ID
+        $mangaData = $mangaData | Sort-Object -Property title, id
 
+        $n++
+    }
+
+    # Convert SaveData JSON to MALXML
+    ForEach ($manga in $mangaData) {
+        $malStatus = Switch ($manga.status) {
+            "reading" { "Reading" }
+            "completed" { "Completed" }
+            "on_hold" { "On-Hold" }
+            "dropped" { "Dropped" }
+            "plan_to_read" { "Plan to Read" }
+        }
         $malCommons = @"
         <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
         <manga_volumes>$($mangaVolumes)</manga_volumes>
@@ -1016,7 +1027,6 @@ $($malCommons)
     </manga-->
 "@
         }
-        $n++
     }
 
     $ReadMe = @"
