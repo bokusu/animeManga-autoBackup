@@ -910,8 +910,7 @@ Function Get-MangaDexBackup {
         $mangaId = $manga.id
         $mangaTitle = If (($Null -eq $manga.attributes.title.en) -Or ($manga.attributes.title.en -eq '')) { If (($Null -eq $manga.attributes.title.ja) -Or ($manga.attributes.title.ja -eq '')) { $manga.attributes.title.'ja-ro' } Else { $manga.attributes.title.ja } } Else { $manga.attributes.title.en }
         $mangaVolumes = If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) { 0 } Else { $manga.attributes.lastVolume }
-        $mangaChaptersLogic = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) { 0 } Else { $manga.attributes.lastChapter }
-        $mangaChapters = [Math]::ceiling($mangaChaptersLogic)
+        $mangaChapters = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) { 0 } Else { $manga.attributes.lastChapter }
         Write-Host "`r[$($n)/$($mdFollowsData.Count)] Grabbing rating for $($mangaTitle) ($($mangaId))" -NoNewline
         $mdRatingQuery = "https://api.mangadex.org/rating?manga%5B%5D=$($mangaId)"
         $mdRating = ((Invoke-WebRequest -Uri $mdRatingQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).ratings
@@ -930,7 +929,7 @@ Function Get-MangaDexBackup {
             status   = $mdMangaStatus.$mangaId
             upstream = [ordered]@{
                 volume  = [int]$mangaVolumes
-                chapter = [int]$mangaChaptersLogic
+                chapter = [int]$mangaChapters
             }
             current  = [ordered]@{
                 volume  = [int]$mdReadVol
@@ -991,13 +990,13 @@ Function Get-MangaDexBackup {
             "plan_to_read" { "Plan to Read" }
         }
         $malCommons = @"
-        <manga_title><![CDATA[$($mangaTitle)]]></manga_title>
-        <manga_volumes>$($mangaVolumes)</manga_volumes>
-        <manga_chapters>$($mangaChapters)</manga_chapters>
+        <manga_title><![CDATA[$($manga.title)]]></manga_title>
+        <manga_volumes>$($manga.upcurrent.volume)</manga_volumes>
+        <manga_chapters>$([Math]::ceiling($manga.upcurrent.chapter))</manga_chapters>
         <my_status>$($malStatus)</my_status>
-        <my_score>$($mdScore)</my_score>
-        <my_read_volumes>$($mdReadVol)</my_read_volumes>
-        <my_read_chapters>$($mdReadCh)</my_read_chapters>
+        <my_score>$($manga.score)</my_score>
+        <my_read_volumes>$($manga.current.volume)</my_read_volumes>
+        <my_read_chapters>$([Math]::ceiling($manga.current.chapter))</my_read_chapters>
         <my_times_read>0</my_times_read>
         <my_reread_value>Low</my_reread_value>
         <my_start_date>0000-00-00</my_start_date>
@@ -1009,20 +1008,21 @@ Function Get-MangaDexBackup {
             # Exporting Manga as MyAnimeList format
             $mdToMal += @"
 `n    <manga>
-        <manga_mangadb_id>$($manga.attributes.links.mal)</manga_mangadb_id>
-        <!--mangadex_chapters_read>$($mangaChaptersLogic)</mangadex_chapters_read-->
+        <manga_mangadb_id>$($manga.metadata.links.mal)</manga_mangadb_id>
+        <!--manga_mangadexdb_id>$($manga.id)</manga_mangadexdb_id-->
+        <!--mangadex_chapters_read>$($manga.upcurrent.chapter)</mangadex_chapters_read-->
 $($malCommons)
     </manga>
 "@
         }
         Else {
             $noEntry += @"
-`n        - [$($mangaId)] $($mangaTitle)
+`n        - [$($manga.id)] $($manga.title)
 "@
             $mdToMal += @"
 `n    <!--manga>
-        <manga_mangadexdb_id>$($mangaId)</manga_mangadexdb_id>
-        <mangadex_chapters_read>$($mangaChaptersLogic)</mangadex_chapters_read>
+        <manga_mangadexdb_id>$($manga.id)</manga_mangadexdb_id>
+        <mangadex_chapters_read>$($manga.upcurrent.chapter)</mangadex_chapters_read>
 $($malCommons)
     </manga-->
 "@
