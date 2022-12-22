@@ -50,7 +50,8 @@ Function Remove-RepoTrash {
     $filePath = @(
         "./.github/dependabot.yml",
         "./Modules/Get-AniDBBackup.py",
-        "./mypy.ini"
+        "./mypy.ini",
+        "./build.ps1"
     )
     ForEach ($file in $filePath) {
         Write-Verbose "[$(Get-Date)] Removing $($file)"
