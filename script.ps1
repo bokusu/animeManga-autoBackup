@@ -1004,7 +1004,7 @@ Function Get-MangaDexBackup {
         <update_on_import>1</update_on_import>
 "@
         # Count MyAnimeList stats
-        If ($Null -ne $manga.attributes.links.mal) {
+        If ($Null -ne $manga.metadata.links.mal) {
             # Exporting Manga as MyAnimeList format
             $mdToMal += @"
 `n    <manga>
