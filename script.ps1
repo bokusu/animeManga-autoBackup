@@ -769,7 +769,7 @@ fragment library on Library {
                         mappings     = [ordered]@{
                             aniList = If ($aniList) { [int]$aniList } else { $null }
                             mal     = If ($mal) { [int]$mal } else { $null }
-                            aniDb   = If ($aniDb) { [int]$aniDb } else { $null }
+                            aniDb   = If ($aniDb) { $aniDb } else { $null }
                         }
                     }
                 }
