@@ -444,7 +444,7 @@ Function Get-BangumiBackup {
         $bgmMan = @(); $bgmAni = @(); $bgmGme = @(); $bgmDrm = @();
         # Start loop for manga
         For ($page = 0; $page -lt $bgmManTotal; $page += 50) {
-            Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmManTotal / 50))] Scraping Manga List" -NoNewline
+            Write-Host "`e[2K`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmManTotal / 50))] Scraping Manga List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=1&limit=50&offset=$($page)" -Headers $bgmAuth
             ForEach ($item in $bgmLists.data) {
                 # Remove count from tags
@@ -463,7 +463,7 @@ Function Get-BangumiBackup {
 
         # Start loop for anime
         For ($page = 0; $page -lt $bgmAniTotal; $page += 50) {
-            Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmAniTotal / 50))] Scraping Anime List" -NoNewline
+            Write-Host "`e[2K`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmAniTotal / 50))] Scraping Anime List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=2&limit=50&offset=$($page)" -Headers $bgmAuth
             ForEach ($item in $bgmLists.data) {
                 # Remove count from tags
@@ -482,7 +482,7 @@ Function Get-BangumiBackup {
 
         # Start loop for games
         For ($page = 0; $page -lt $bgmGmeTotal; $page += 50) {
-            Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmGmeTotal / 50))] Scraping Game List" -NoNewline
+            Write-Host "`e[2K`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmGmeTotal / 50))] Scraping Game List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=4&limit=50&offset=$($page)" -Headers $bgmAuth
             ForEach ($item in $bgmLists.data) {
                 # Remove count from tags
@@ -501,7 +501,7 @@ Function Get-BangumiBackup {
 
         # Start loop for drama
         For ($page = 0; $page -lt $bgmDrmTotal; $page += 50) {
-            Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmDrmTotal / 50))] Scraping Drama List" -NoNewline
+            Write-Host "`e[2K`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmDrmTotal / 50))] Scraping Drama List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=6&limit=50&offset=$($page)" -Headers $bgmAuth
             ForEach ($item in $bgmLists.data) {
                 # Remove count from tags
@@ -700,7 +700,7 @@ fragment library on Library {
         ForEach ($node in $animeLib.data.currentAccount.profile.library.all.nodes) {
             # Check if $node is not Null
             If ($Null -ne $node) {
-                Write-Host "`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
+                Write-Host "`e[2K`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
                 $userStatus = Switch ($node.status) {
                     "CURRENT" { "current" }
                     "PLANNED" { "planned" }
@@ -776,7 +776,7 @@ fragment library on Library {
                 $saveFile += [PSCustomObject]$rawData
             }
             Else {
-                Write-Host "`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime.... but wait..." -ForegroundColor Cyan
+                Write-Host "`e[2K`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime.... but wait..." -ForegroundColor Cyan
                 Write-Host "No data found, how?" -ForegroundColor Red
                 Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your anime list won't be accurate" -ForegroundColor Red
             }
@@ -821,7 +821,7 @@ fragment library on Library {
         ForEach ($node in $mangaLib.data.currentAccount.profile.library.all.nodes) {
             # Check if $node is not Null
             If ($Null -ne $node) {
-                Write-Host "`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
+                Write-Host "`e[2K`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
                 $userStatus = Switch ($node.status) {
                     "CURRENT" { "current" }
                     "PLANNED" { "planned" }
@@ -880,7 +880,7 @@ fragment library on Library {
                 $saveFile += [PSCustomObject]$rawData
             }
             Else {
-                Write-Host "`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga.... but wait..." -ForegroundColor Cyan
+                Write-Host "`e[2K`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga.... but wait..." -ForegroundColor Cyan
                 Write-Host "No data found, how?" -ForegroundColor Red
                 Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your manga list won't be accurate" -ForegroundColor Red
             }
@@ -925,7 +925,7 @@ Function Get-MangaDexBackup {
     Write-Host ""
     $mdFollowsData = @()
     For ($i = 0; $i -lt $mdFollows.total; $i += 100) {
-        Write-Host "`rGrabbing your manga follow lists, page ($([Math]::Floor(($i + 100) / 100))/$([Math]::Ceiling($mdFollows.total / 100)))" -NoNewLine
+        Write-Host "`e[2K`rGrabbing your manga follow lists, page ($([Math]::Floor(($i + 100) / 100))/$([Math]::Ceiling($mdFollows.total / 100)))" -NoNewLine
         $mdFollowsQuery = "https://api.mangadex.org/user/follows/manga?limit=100&offset=$($i)"
         $mdFollows = ((Invoke-WebRequest -Uri $mdFollowsQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json)
         [array]$mdFollowsData += $mdFollows.data
@@ -950,7 +950,7 @@ Function Get-MangaDexBackup {
         $mangaTitle = If (($Null -eq $manga.attributes.title.en) -Or ($manga.attributes.title.en -eq '')) { If (($Null -eq $manga.attributes.title.ja) -Or ($manga.attributes.title.ja -eq '')) { $manga.attributes.title.'ja-ro' } Else { $manga.attributes.title.ja } } Else { $manga.attributes.title.en }
         $mangaVolumes = If (($Null -eq $manga.attributes.lastVolume) -Or ($manga.attributes.lastVolume -eq '')) { 0 } Else { $manga.attributes.lastVolume }
         $mangaChapters = If (($Null -eq $manga.attributes.lastChapter) -Or ($manga.attributes.lastChapter -eq '')) { 0 } Else { $manga.attributes.lastChapter }
-        Write-Host "`r[$($n)/$($mdFollowsData.Count)] Grabbing rating for $($mangaTitle) ($($mangaId))" -NoNewline
+        Write-Host "`e[2K`r[$($n)/$($mdFollowsData.Count)] Grabbing rating for $($mangaTitle) ($($mangaId))" -NoNewline
         $mdRatingQuery = "https://api.mangadex.org/rating?manga%5B%5D=$($mangaId)"
         $mdRating = ((Invoke-WebRequest -Uri $mdRatingQuery -Headers $mdHeaders -UseBasicParsing).Content | ConvertFrom-Json).ratings
         $mdScore = If (($Null -eq $mdRating.$mangaId.rating) -Or ($mdRating.$mangaId.rating -eq '')) { "0" } Else { $mdRating.$mangaId.rating }
@@ -1213,7 +1213,7 @@ Function Get-NotifyMoeBackup {
     $finished = 0; $dropped = 0; $current = 0; $planned = 0; $paused = 0; $n = 0
     ForEach ($entry in $animeData.items) {
         $n++
-        Write-Host "`r[$($n)/$($animeData.items.Count)] Geting Data for (https://notify.moe/anime/$($entry.animeId))" -NoNewline
+        Write-Host "`e[2K`r[$($n)/$($animeData.items.Count)] Geting Data for (https://notify.moe/anime/$($entry.animeId))" -NoNewline
         $dbEntry = (Invoke-WebRequest -Method Get -Uri "https://notify.moe/api/anime/$($entry.animeId)").Content | ConvertFrom-Json
         ForEach ($service in $dbEntry.mappings) {
             If ($service.service -eq 'myanimelist/anime') {
@@ -1329,7 +1329,7 @@ Function Get-OtakOtakuBackup {
 
     $animeData = @()
     For ($n = 0; $n -le $totalAnime; $n += 10) {
-        Write-Host "`r[$(($n + 10) / 10)/$([Math]::Ceiling($totalAnime / 10))] Grabbing anime data from Otak Otaku" -NoNewline
+        Write-Host "`e[2K`r[$(($n + 10) / 10)/$([Math]::Ceiling($totalAnime / 10))] Grabbing anime data from Otak Otaku" -NoNewline
         $animeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H "referer: https://otakotaku.com/user/$($otakUsername)"  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=10&index=$($n)" --compressed --silent
         $animeJson = ($animeJson | ConvertFrom-Json).data
         $animeData += $animeJson
@@ -1772,9 +1772,13 @@ If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
 If ($Env:VNDB_UID) { Get-VNDBBackup }
 
 Write-Host "`nFormat JSON files"
-Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
+$n = 1
+# Count total of files
+$files = Get-ChildItem -Path "*" -Filter "*.json" -File -Recurse
+$total = $files.Count
+$files | ForEach-Object {
     $fileToFormat = $_
-    Write-Host "Formatting $($fileToFormat)"
+    Write-Host "`e[2K`r[$n/$total] Formatting $($fileToFormat)" -NoNewline
     Try {
         If ($Env:MINIFY_JSON -eq 'True') {
             Format-Json -Json (Get-Content $fileToFormat -Raw).trim() -Minify -ErrorAction SilentlyContinue | Out-File -FilePath $fileToFormat
@@ -1786,4 +1790,5 @@ Get-ChildItem -Path "*" -Filter "*.json" -File  -Recurse | ForEach-Object {
     Catch {
         Write-Error -Message "Unable to format $($fileToFormat): $($_)" -ErrorAction Continue
     }
+    $n++
 }
