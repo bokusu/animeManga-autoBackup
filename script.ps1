@@ -343,8 +343,9 @@ fragment mediaListEntry on MediaList{
         Write-Host "`nExporting AniList manga list in JSON"
         Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw -Headers $alHead  | Out-File -Path ./aniList/mangaList.json -Encoding utf8
 
-        Write-Host "`nExporting AniList anime list in XML"
+        # Try to sort the list by id
 
+        Write-Host "`nExporting AniList anime list in XML"
         Convert-AniListXML -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/animeList.xml" -Encoding UTF8 -Force
 
         Write-Host "`nExporting AniList manga list in XML"
@@ -445,6 +446,12 @@ Function Get-BangumiBackup {
         For ($page = 0; $page -lt $bgmManTotal; $page += 50) {
             Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmManTotal / 50))] Scraping Manga List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=1&limit=50&offset=$($page)" -Headers $bgmAuth
+            ForEach ($item in $bgmLists.data) {
+                # Remove count from tags
+                $item.subject.tags = $item.subject.tags | Select-Object -Property name
+                # Remove unnecessary data from subject
+                $item.subject = $item.subject | Select-Object -Property date, name, name_cn, tags, type, id, eps, volumes
+            }
             $bgmMan += $bgmLists.data
         }
 
@@ -458,6 +465,12 @@ Function Get-BangumiBackup {
         For ($page = 0; $page -lt $bgmAniTotal; $page += 50) {
             Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmAniTotal / 50))] Scraping Anime List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=2&limit=50&offset=$($page)" -Headers $bgmAuth
+            ForEach ($item in $bgmLists.data) {
+                # Remove count from tags
+                $item.subject.tags = $item.subject.tags | Select-Object -Property name
+                # Remove unnecessary data from subject
+                $item.subject = $item.subject | Select-Object -Property date, name, name_cn, tags, type, id, eps, volumes
+            }
             $bgmAni += $bgmLists.data
         }
 
@@ -471,6 +484,12 @@ Function Get-BangumiBackup {
         For ($page = 0; $page -lt $bgmGmeTotal; $page += 50) {
             Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmGmeTotal / 50))] Scraping Game List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=4&limit=50&offset=$($page)" -Headers $bgmAuth
+            ForEach ($item in $bgmLists.data) {
+                # Remove count from tags
+                $item.subject.tags = $item.subject.tags | Select-Object -Property name
+                # Remove unnecessary data from subject
+                $item.subject = $item.subject | Select-Object -Property date, name, name_cn, tags, type, id, eps, volumes
+            }
             $bgmGme += $bgmLists.data
         }
 
@@ -484,6 +503,12 @@ Function Get-BangumiBackup {
         For ($page = 0; $page -lt $bgmDrmTotal; $page += 50) {
             Write-Host "`r[$(($page / 50) + 1)/$([Math]::Ceiling($bgmDrmTotal / 50))] Scraping Drama List" -NoNewline
             $bgmLists = Invoke-RestMethod -Method Get -Uri "$($bgmApiAddress)?subject_type=6&limit=50&offset=$($page)" -Headers $bgmAuth
+            ForEach ($item in $bgmLists.data) {
+                # Remove count from tags
+                $item.subject.tags = $item.subject.tags | Select-Object -Property name
+                # Remove unnecessary data from subject
+                $item.subject = $item.subject | Select-Object -Property date, name, name_cn, tags, type, id, eps, volumes
+            }
             $bgmDrm += $bgmLists.data
         }
 
