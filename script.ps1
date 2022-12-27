@@ -703,7 +703,7 @@ fragment library on Library {
                 Write-Host "`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
                 $userStatus = Switch ($node.status) {
                     "CURRENT" { "current" }
-                    "PLANNING" { "planned" }
+                    "PLANNED" { "planned" }
                     "COMPLETED" { "completed" }
                     "ON_HOLD" { "paused" }
                     "DROPPED" { "stopped" }
@@ -728,6 +728,9 @@ fragment library on Library {
                     12 { "fall" }
                     Default { $null }
                 }
+                $aniList = $node.media.mappings.nodes | Where-Object { $_.externalSite -eq "ANILIST_ANIME" } | Select-Object -ExpandProperty externalId
+                $mal = $node.media.mappings.nodes | Where-Object { $_.externalSite -eq "MYANIMELIST_ANIME" } | Select-Object -ExpandProperty externalId
+                $aniDb = $node.media.mappings.nodes | Where-Object { $_.externalSite -eq "ANIDB" } | Select-Object -ExpandProperty externalId
                 $rawData = ""
                 $rawData = [ordered]@{
                     <#
@@ -737,7 +740,7 @@ fragment library on Library {
                     metadata.format
                     metadata.status
                     #>
-                    id          = $node.media.id
+                    id          = [int]$node.media.id
                     slug        = $node.media.slug
                     title       = $node.media.titles.canonical
                     status      = $userStatus
@@ -763,6 +766,11 @@ fragment library on Library {
                         ageRating    = $node.media.ageRating
                         # Switch SFW boolean to counterpart
                         isNsfw       = if ($node.media.sfw) { $False } else { $True }
+                        mappings     = [ordered]@{
+                            aniList = If ($aniList) { [int]$aniList } else { $null }
+                            mal     = If ($mal) { [int]$mal } else { $null }
+                            aniDb   = If ($aniDb) { [int]$aniDb } else { $null }
+                        }
                     }
                 }
                 $saveFile += [PSCustomObject]$rawData
@@ -816,7 +824,7 @@ fragment library on Library {
                 Write-Host "`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
                 $userStatus = Switch ($node.status) {
                     "CURRENT" { "current" }
-                    "PLANNING" { "planned" }
+                    "PLANNED" { "planned" }
                     "COMPLETED" { "completed" }
                     "ON_HOLD" { "paused" }
                     "DROPPED" { "stopped" }
@@ -825,6 +833,8 @@ fragment library on Library {
                 $finishedProgress = if ($node.finishedAt) { $node.finishedAt | Get-Date -Format 'yyyy-MM-dd' } else { $null }
                 $startedPublishing = if ($node.media.startDate) { $node.media.startDate | Get-Date -Format 'yyyy-MM-dd' } else { $null }
                 $finishedPublishing = if ($node.media.endDate) { $node.media.endDate | Get-Date -Format 'yyyy-MM-dd' } else { $null }
+                $aniList = $node.media.mappings.nodes | Where-Object { $_.externalSite -eq "ANILIST_MANGA" } | Select-Object -ExpandProperty externalId
+                $mal = $node.media.mappings.nodes | Where-Object { $_.externalSite -eq "MYANIMELIST_MANGA" } | Select-Object -ExpandProperty externalId
                 $rawData = ""
                 $rawData = [ordered]@{
                     <#
@@ -835,7 +845,7 @@ fragment library on Library {
                     metadata.format
                     metadata.status
                     #>
-                    id          = $node.media.id
+                    id          = [int]$node.media.id
                     slug        = $node.media.slug
                     title       = $node.media.titles.canonical
                     status      = $userStatus
@@ -861,6 +871,10 @@ fragment library on Library {
                         ageRating    = $node.media.ageRating
                         # Switch SFW boolean to counterpart
                         isNsfw       = if ($node.media.sfw) { $False } else { $True }
+                        mappings     = [ordered]@{
+                            aniList = If ($aniList) { [int]$aniList } Else { $null }
+                            mal     = If ($mal) { [int]$mal } Else { $null }
+                        }
                     }
                 }
                 $saveFile += [PSCustomObject]$rawData
@@ -960,7 +974,7 @@ Function Get-MangaDexBackup {
                 volume  = [int]$mdReadVol
                 chapter = [int]$mdReadCh
             }
-            date    = [ordered]@{
+            date     = [ordered]@{
                 start = $Null
                 end   = $Null
             }
