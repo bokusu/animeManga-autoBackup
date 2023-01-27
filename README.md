@@ -63,73 +63,72 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 
 "Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, Anime-Planet, Notify.moe, SIMKL, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
 
-This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works. You can check table below to see the library/list you need to set as public:
+This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works.
 
-|           Sites | Requires public |     Method      | Requires User Agent | Description                                                                        |
-| --------------: | :-------------: | :-------------: | :-----------------: | ---------------------------------------------------------------------------------- |
-|         AniList |       No        |      `API`      |         No          |                                                                                    |
-|    Anime-Planet |     **Yes**     |      `3PA`      |       **Yes**       | Uses MAL Exporter from Azure Website                                               |
-|          Annict |       No        |      `API`      |         No          | User can generate Personal Access Token from account                               |
-|    Baka-Updates |       No        |      `API`      |       **Yes**       | Uses official API for token                                                        |
-|         Bangumi |       No        |      `API`      |         No          |                                                                                    |
-|           Kaize |     **Yes**     |    `SCRAPE`     |         No          | Scrapes user's profile page and lists                                              |
-|           Kitsu |       No        |      `API`      |         No          |                                                                                    |
-|        MangaDex |       No        |      `API`      |         No          | Uses legacy API access, 2FA-enabled account and OAuth is not supported             |
-| MyAnimeList.net |     **Yes**     |      `3PA`      |       **Yes**       | Uses MAL Exporter from Azure Website                                               |
-|      Notify.moe |       No        |      `API`      |         No          |                                                                                    |
-|      Otak Otaku |     **Yes**     |      `API`      |       **Yes**       | Uses official API fetch procedure                                                  |
-|       Shikimori |       No        |    `COOKIE`     |       **Yes**       | Uses `_kawai_session` cookie saved on browser                                      |
-|           SIMKL |       No        |      `API`      |         No          |                                                                                    |
-|           Trakt |       No        |      `API`      |         No          | Uses `traktexport` Python package/module                                           |
-|            VNDB |       No        | `COOKIE`, `API` |       **Yes**       | Uses `vndb_auth` cookie saved on browser for XML, JSON uses official API via Token |
+## Supported Sites
 
-***Note:***\
-`API` Official API, `3PA` 3rd Party API, `COOKIE` Cookie Auth Bypass, `SCRAPE` HTML Scraping
+> **Note**
+>
+> For better readability, any sites that is does not have specific requirements are marked with `-` (dash).
 
 > **Warning**
 >
 > I am not responsible and liable for warranty for any damage caused by using this project.
 
-## Features and To Do
+| Site Name                                    | Country of Origin    | Languages                                           | Media Type to Backup         |                         FOSS\*                         | Supported |     Method      | Public? |  UA\*?  | PAT\*?  | Notes                                                                                 |
+| :------------------------------------------- | :------------------- | :-------------------------------------------------- | :--------------------------- | :----------------------------------------------------: | :-------: | :-------------: | :-----: | :-----: | :-----: | :------------------------------------------------------------------------------------ |
+| [AniList](https://anilist.co)                | United Kingdom       | English                                             | Anime, Manga                 |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    |                                                                                       |
+| [Anime-Planet](https://www.anime-planet.com) | United States        | English                                             | Anime, Manga                 |                           -                            |     ✅     |      `3PA`      | **Yes** | **Yes** |    -    | Uses MAL Exporter from Azure Website                                                  |
+| [Annict](https://annict.com)                 | Japan                | Japanese, English                                   | Anime                        |    [**Yes**](https://github.com/kiraka/annict-web)     |     ✅     |      `API`      |    -    |    -    | **Yes** | User can generate Personal Access Token from account                                  |
+| [Baka-Updates](https://www.mangaupdates.com) | United States†       | English                                             | Manga                        |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    | Logging in with API,<br>but CSV/TSV export is undocumented API path                   |
+| [Bangumi](https://bgm.tv)                    | China                | Chinese                                             | Anime, Manga, Games, TV Show |     [**Yes**](https://github.com/bangumi/frontend)     |     ✅     |      `API`      |    -    |    -    | **Yes** |                                                                                       |
+| [Kaize.io](https://kaize.io)                 | Switzerland†         | English                                             | Anime, Manga                 |                           -                            |     ✅     |    `SCRAPE`     | **Yes** |    -    |    -    | Scrapes user's profile page and lists                                                 |
+| [Kitsu](https://kitsu.io)                    | United States        | *Multiple languages*                                | Anime, Manga                 | [**Yes**](https://github.com/hummingbird-me/kitsu-web) |     ✅     |      `API`      |    -    |    -    |    -    |                                                                                       |
+| [MangaDex](https://mangadex.org)             | Vietnam†             | English                                             | Manga                        |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    | Will be deprecated soon,<br>2FA-enabled account and OAuth not supported               |
+| [MyAnimeList](https://myanimelist.net)       | United States, Japan | English                                             | Anime, Manga                 |                           -                            |     ✅     |      `3PA`      | **Yes** | **Yes** |    -    | Uses MAL Exporter from Azure Website                                                  |
+| [Notify.moe](https://notify.moe)             | Korea, Japan         | English                                             | Anime                        | [**Yes**](https://github.com/animenotifier/notify.moe) |     ✅     |      `API`      | **Yes** |    -    |    -    |                                                                                       |
+| [Otak Otaku](https://otakotaku.com)          | Indonesia            | Indonesian, Japanese                                | Anime                        |                           -                            |     ✅     |      `API`      | **Yes** | **Yes** |    -    | Uses official undocumented API endpoint                                               |
+| [Shikimori](https://shikimori.one)           | Russia               | Russian, English                                    | Anime, Manga                 |   [**Yes**](https://github.com/shikimori/shikimori)    |     ✅     |    `COOKIE`     |    -    | **Yes** |    -    | Uses `_kawai_session` cookie saved on browser                                         |
+| [SIMKL](https://simkl.com)                   | United States        | English                                             | TV Show, Movie, Anime        |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    |                                                                                       |
+| [Trakt](https://trakt.tv)                    | United States        | English                                             | TV Show, Movie               |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    | Uses `traktexport` Python package/module                                              |
+| [VNDB](https://vndb.org)                     | The Netherlands†     | English                                             | Visual Novel (Game)          |     [**Yes**](https://code.blicky.net/yorhel/vndb)     |     ✅     | `API`, `SCRAPE` |    -    | **Yes** | **Yes** | Uses `vndb_auth` cookie saved on browser for XML,<br>JSON uses official API via Token |
+|                                              |                      |                                                     |                              |                                                        |           |                 |         |         |         |                                                                                       |
+| [9Anime](https://9anime.to)                  | United States†       | English                                             | Anime                        |                           -                            |     🚫     |    `COOKIE`     |    -    | **Yes** |    -    | Unable to bypass security measures put by dev                                         |
+| [AniDB](https://anidb.net)                   | Germany†             | English                                             | Anime                        |    [**Yes**](https://git.anidb.net/public/projects)    |     💻     |      `API`      |    -    |    -    |    -    | Currently looking on how to fetch user's MyList safely                                |
+| [aniSearch](https://anisearch.com)           | Germany              | German, English, Spanish, French, Italian, Japanese | Anime, Manga, Live Action    |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    | Scrapes user's profile page and lists                                                 |
+| [Goodreads](https://goodreads.com)           | United States        | English                                             | Book                         |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
+| [IMDb](https://imdb.com)                     | United States        | English                                             | Movie, TV Show               |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
+| [LiveChart.me](https://livechart.me)         | United States†       | English                                             | Anime                        |                           -                            |     🚫     |    `SCRAPE`     |    -    |    -    |    -    | Cannot bypass Cloudflare "DDoS protection"/"I'm under attack" mode                    |
+| [MyDramaList](https://mydramalist.com)       | United States†       | English                                             | Drama                        |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
+| [Nautiljon](https://nautiljon.com)           | France               | French                                              | Anime, Manga, Drama          |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
+| [The Movie Database](https://themoviedb.org) | United States        | English                                             | Movie, TV Show               |                           -                            |     🔔     |      `API`      |    -    |    -    |    -    |                                                                                       |s
 
-### Legends
+<!-- omit in toc -->
+### Notes
 
-* ✅ : Available
-* 🚫 : Not Available
-* ⌛ : In Development
-* 💻 : Technical difficulty, usually due to pagination or need to scrape XML/HTML table and does not have capability to do so.
+All column header with `?` in the end means that the site may or may not require it.
 
-### Backup from `x` site
-
-* ✅ [AniList](https://anilist.co)
-* ✅ [Anime-Planet](https://anime-planet.com)
-* ✅ [Annict](https://en.annict.com)
-* ✅ [Baka-Updates Manga (MangaUpdates)](https://www.mangaupdates.com/)
-* ✅ [Bangumi.tv](https://bgm.tv)
-* ✅ [Kaize](https://kaize.io)
-* ✅ [Kitsu](https://kitsu.io)
-* ✅ [MangaDex](https://mangadex.org) &mdash; *Would be deprecated soon, if MangaDex team decided to deprecate raw password API access*
-* ✅ [MyAnimeList](https://myanimelist.net)
-* ✅ [Notify.moe](https://notify.moe)
-* ✅ [Otak Otaku](https://otakotaku.com)
-* ✅ [Shikimori](https://shikimori.one)
-* ✅ [SIMKL](https://simkl.com)
-* ✅ [Trakt](https://trakt.tv)
-* ✅ [Visual Novel Database (VNDB)](https://vndb.org)
-* 🚫 9Anime &mdash; *Can not bypass security*
-* 💻 [AniDB](https://anidb.net) &mdash; *Probably won't integrated as they uses different API method, and very niche site*
-* 🚫 [AniSearch](https://anisearch.com) &mdash; *Failed to bypass cookies, API access limited, requests only*
-* 🚫 [Goodreads](https://goodreads.com) &mdash; *List return HTML than JSON, export feature is not instantaneous, and yet they closed Public API*
-* 🚫 [IMDb](https://imdb.com) &mdash; *Unable to bypass MFA, paid API*
-* 🚫 [LiveChart.me](https://livechart.me) &mdash; *Unable to bypass Cloudflare's "*I'm Under Attack*" mode.*
-* 💻 [Nautiljon](https://nautiljon.com) &mdash; *Unable to parse HTML directly using PowerShell*
-* ⌛ [The Movie Database (TMDB)](https://themoviedb.org)
+* †: Based on IP or ICANN Domain Lookup; as the site did not write contact address on their terms of services and privacy policy, or does not have both.
+* \* FOSS: Free and Open Source Software
+* \* UA: User Agent
+* \* PAT: Personal Access Token
+* `Method` Legends:
+  * `API`: Uses official API from the site; Python/PowerShell module also fall in this category if it uses official endpoint
+  * `3PA`: Uses 3rd party API from other site.
+  * `COOKIE`: Uses official (undocumented) API from the site, and cookie may required to be used as authentication (not to be confused with `PAT`)
+  * `SCRAPE`: Scrapes user's lists directly from HTML if the site does not have API endpoint, uses Python.
+* `Supported` Legends:
+  * ✅ : Available
+  * 🚫 : Not Available
+  * 🔔 : Planned
+  * ⌛ : In Development
+  * 💻 : Technical difficulty, usually due to pagination or need to scrape XML/HTML table and does not have capability to do so.
 
 ## Files Generated and Importability
 
 | Sites Name   | File Saved As                       | MALXML Support | Can Be Imported Back? | Description                                                                                                                    |
 | ------------ | ----------------------------------- | -------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| AniList      | `.json`, **`.xml`**                 | Yes            | Yes                   | You need to use [Automail] to import back to AniList in JSON, or  import to MyAnimeList using XML                              |
+| AniList      | `.json`, **`.xml`**                 | Yes            | Yes                   | You need to use [Automail] to import back to AniList in JSON, or import to MyAnimeList using XML                               |
 | Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                              |
 | Annict       | `.json`                             | No             | No                    | There is no official import/export feature                                                                                     |
 | Baka-Updates | `.tsv`                              | No             | No                    | There is no official import/export feature                                                                                     |
@@ -147,6 +146,18 @@ This project **requires you to set the library/list as public** as most API used
 
 * **MALXML** in this table refers to a XML format used by MyAnimeList, and is used by some sites to import/export data.
   * Please to check import feature availability on each site. We can not guarantee if the site supports MALXML format by default.
+
+## Features
+
+* [x] Cross-compatible for Windows, Linux, and macOS
+* [x] Backup anime/manga list from supported sites
+* [x] Backup anime/manga list as MAL XML format, if supported
+* [x] Built-in Environment file generator if `.env` file is not found
+* [x] Automatically backup by schedule (only for automated method: GitHub Actions)
+* [x] Automatically update the script weekly (only for automated method: GitHub Actions)
+* [x] Configurable backup and update schedule (only for automated method: GitHub Actions)
+* [ ] Global statistic for all sites you have backup
+* [ ] Import backup to other sites
 
 ## Getting Started
 
