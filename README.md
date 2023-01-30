@@ -6,7 +6,7 @@
 
 [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE) [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell) [![Discord](https://img.shields.io/discord/589128995501637655?label=Discord&color=%235865F2&logo=discord&logoColor=%23FFFFFF&style=for-the-badge)](https://discord.gg/UKvMEZvaXc)
 
-Automatically (and also manually) backup your anime and manga libraries from [several anime, manga, TV shows, movies, and books tracking sites](#backup-from-x-site). Made possible with PowerShell Core.
+Automatically (and also manually) backup your anime and manga libraries from [several anime, manga, TV shows, movies, and books tracking sites](#supported-sites). Made possible with PowerShell Core.
 
 > **Warning**
 >
@@ -19,10 +19,9 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 ## Table of Contents
 
 * [About](#about)
-* [Features and To Do](#features-and-to-do)
-  * [Legends](#legends)
-  * [Backup from `x` site](#backup-from-x-site)
+* [Supported Sites](#supported-sites)
 * [Files Generated and Importability](#files-generated-and-importability)
+* [Features](#features)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
     * [Required softwares/packages for locally run the script](#required-softwarespackages-for-locally-run-the-script)
@@ -101,7 +100,7 @@ This project **requires you to set the library/list as public** as most API used
 | [LiveChart.me](https://livechart.me)         | United States†       | English                                             | Anime                        |                           -                            |     🚫     |    `SCRAPE`     |    -    |    -    |    -    | Cannot bypass Cloudflare "DDoS protection"/"I'm under attack" mode                    |
 | [MyDramaList](https://mydramalist.com)       | United States†       | English                                             | Drama                        |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
 | [Nautiljon](https://nautiljon.com)           | France               | French                                              | Anime, Manga, Drama          |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
-| [The Movie Database](https://themoviedb.org) | United States        | English                                             | Movie, TV Show               |                           -                            |     🔔     |      `API`      |    -    |    -    |    -    |                                                                                       |s
+| [The Movie Database](https://themoviedb.org) | United States        | English                                             | Movie, TV Show               |                           -                            |     🔔     |      `API`      |    -    |    -    |    -    |                                                                                       |
 
 <!-- omit in toc -->
 ### Notes
@@ -156,6 +155,7 @@ All column header with `?` in the end means that the site may or may not require
 * [x] Automatically backup by schedule (only for automated method: GitHub Actions)
 * [x] Automatically update the script weekly (only for automated method: GitHub Actions)
 * [x] Configurable backup and update schedule (only for automated method: GitHub Actions)
+* [ ] Save snapshots (profile, lists, statistics) of supported sites using [Wayback Machine](https://archive.org/web/).
 * [ ] Global statistic for all sites you have backup
 * [ ] Import backup to other sites
 
@@ -231,32 +231,19 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://anilist.co
 
-<!-- omit in toc -->
-#### `ANILIST_USERNAME`
+| Variable Name           | Description                                                                                                                                     | Value Type                           | Example                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------ |
+| `ANILIST_USERNAME`      | AniList username                                                                                                                                | String                               | `nattadasu`                                |
+| `ANILIST_CLIENT_ID`     | AniList Client ID for API access.<br>You can generate one from your account via [Developer Settings](https://anilist.co/settings/developer)     | Integer                              | `1234`                                     |
+| `ANILIST_CLIENT_SECRET` | AniList Client Secret for API access.<br>You can generate one from your account via [Developer Settings](https://anilist.co/settings/developer) | String, 40 characters case sensitive | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90` |
+| `ANILIST_REDIRECT_URI`  | AniList Redirect URI for API access.<br>Must be `https://anilist.co/api/v2/oauth/pin`                                                           | String, URI                          | `https://anilist.co/api/v2/oauth/pin`      |
+| `ANILIST_ACCESS_TOKEN`  | AniList Access Token to your account.<br>Must be generated by [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1)                  | String, JWT format                   | `eyJ0...`                                  |
+| `ANILIST_OAUTH_REFRESH` | AniList account refresh token<br>Must be generated by [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1)                          | String                               | `def...`                                   |
+| `ANILIST_OAUTH_EXPIRES` | AniList account refresh token expiration time<br>Must be generated by [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1)          | Integer, Epoch/Unix timestamp        | `1234567890`                               |
 
-Your AniList username.
+* To get `ANILIST_ACCESS_TOKEN`, `ANILIST_OAUTH_REFRESH` and `ANILIST_OAUTH_EXPIRES`, you need to generate them first.
 
-<!-- omit in toc -->
-#### `ANILIST_CLIENT_ID`
-
-Your AniList Client ID. You can generate one from your account via [Developer Settings](https://anilist.co/settings/developer).
-
-<!-- omit in toc -->
-#### `ANILIST_CLIENT_SECRET`
-
-Your AniList Client Secret. You can generate one from your account via [Developer Settings](https://anilist.co/settings/developer).
-
-<!-- omit in toc -->
-#### `ANILIST_REDIRECT_URI`
-
-Your AniList Redirect URI. Must be `https://anilist.co/api/v2/oauth/pin`.
-
-<!-- omit in toc -->
-#### `ANILIST_ACCESS_TOKEN`, `ANILIST_OAUTH_REFRESH`, `ANILIST_OAUTH_EXPIRES`
-
-Your AniList Access Token, Refresh Token and Expires.
-
-To get them, please fill your `ANILIST_CLIENT_ID`, `ANILIST_CLIENT_SECRET` and `ANILIST_REDIRECT_URI` in your ENV file and init/run [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1), then follow the instructions.
+  To generate them, please fill your `ANILIST_CLIENT_ID`, `ANILIST_CLIENT_SECRET` and `ANILIST_REDIRECT_URI` in your ENV file and init/run [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1), then follow the instructions.
 
 ### Anime-Planet
 
@@ -266,10 +253,9 @@ To get them, please fill your `ANILIST_CLIENT_ID`, `ANILIST_CLIENT_SECRET` and `
 >
 > This method requires [# User Agent](#network) configured properly
 
-<!-- omit in toc -->
-#### `ANIMEPLANET_USERNAME`
-
-Your Anime-Planet username.
+| Variable Name          | Description           | Value Type | Example     |
+| ---------------------- | --------------------- | ---------- | ----------- |
+| `ANIMEPLANET_USERNAME` | Anime-Planet username | String     | `nattadasu` |
 
 ### Annict
 
@@ -278,7 +264,9 @@ Your Anime-Planet username.
 <!-- omit in toc -->
 #### `ANNICT_PERSONAL_ACCESS_TOKEN`
 
-Your Annict Personal Access Token. You can generate one from your account via [Application Settings](https://en.annict.com/settings/apps).
+| Variable Name                  | Description                                                                                                   | Value Type | Example                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------- |
+| `ANNICT_PERSONAL_ACCESS_TOKEN` | Annict Personal Access Token<br>Get the token via [Application Settings](https://en.annict.com/settings/apps) | String     | `f0O84r_Ba37h15I50u111yT3xt...` |
 
 ### Baka-Updates' Manga Section (MangaUpdates)
 
@@ -288,75 +276,46 @@ Your Annict Personal Access Token. You can generate one from your account via [A
 >
 > This method requires [# User Agent](#network) configured properly
 
-<!-- omit in toc -->
-#### `MANGAUPDATES_SESSION`
-
-> **Warning**
->
-> This environment variable/secret is deprecated, use [# `MANGAUPDATES_USERNAME`](#mangaupdates_username) and [# `MANGAUPDATES_PASSWORD`](#mangaupdates_password)
-
-Your Baka-Updates session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
-
-Find a name of the cookie that starts with `secure_session` and copy the value.
-
-<!-- omit in toc -->
-#### `MANGAUPDATES_USERNAME`
-
-Your Baka-Updates username used to login.
-
-<!-- omit in toc -->
-#### `MANGAUPDATES_PASSWORD`
-
-Your Baka-Updates password used to login.
+| Variable Name           | Description           | Value Type | Example                  |
+| ----------------------- | --------------------- | ---------- | ------------------------ |
+| `MANGAUPDATES_USERNAME` | Baka-Updates username | String     | `nattadasu`              |
+| `MANGAUPDATES_PASSWORD` | Baka-Updates password | String     | `5up3rS3Cure_-_P@sSwOrd` |
 
 ### Bangumi
 
 **Website**: https://bgm.tv
 
-<!-- omit in toc -->
-#### `BANGUMI_PERSONAL_ACCESS_TOKEN`
-
-Your Bangumi Personal Access Token. You can generate one from your account via [Token Generator](https://next.bgm.tv/demo/access-token).
-
-<!-- omit in toc -->
-#### `BANGUMI_PAT_EXPIRY`
-
-Your Bangumi Personal Access Token expiry date in `yyyy-MM-dd` format.
-
-<!-- omit in toc -->
-#### `BANGUMI_USERNAME`
-
-Your Bangumi username.
+| Variable Name                   | Description                                                                                                                                                                    | Value Type | Example                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------ |
+| `BANGUMI_PERSONAL_ACCESS_TOKEN` | Bangumi Personal Access Token<br>Token must be valid for 1 year (365天) maximum. Generate by [Token Generator](https://next.bgm.tv/demo/access-token) and click “查看所有令牌” | String     | `f0O84rBa37h15I50u111yT3xt...` |
+| `BANGUMI_PAT_EXPIRY`            | Bangumi Personal Access Token expiry date in `yyyy-MM-dd` format                                                                                                               | String     | `2021-12-31`                   |
+| `BANGUMI_USERNAME`              | Bangumi username                                                                                                                                                               | String     | `nattadasu`                    |
 
 ### Kaize.io
 
 **Website**: https://kaize.io
 
-<!-- omit in toc -->
-#### `KAIZE_USERNAME`
+| Variable Name    | Description       | Value Type | Example     |
+| ---------------- | ----------------- | ---------- | ----------- |
+| `KAIZE_USERNAME` | Kaize.io username | String     | `nattadasu` |
 
-Your Kaize.io username, located on the URL of your profile page.
+* Username can be obtained from the URL of your profile page.
 
-Example:
+  Example:
 
-```text
-https://kaize.io/username
-                 ^^^^^^^^
-```
+  ```text
+  https://kaize.io/username
+                   ^^^^^^^^
+  ```
 
 ### Kitsu
 
 **Website**: https://kitsu.io
 
-<!-- omit in toc -->
-#### `KITSU_EMAIL`
-
-Your Kitsu email used to login.
-
-<!-- omit in toc -->
-#### `KITSU_PASSWORD`
-
-Your Kitsu password used to login.
+| Variable Name    | Description    | Value Type | Example                  |
+| ---------------- | -------------- | ---------- | ------------------------ |
+| `KITSU_EMAIL`    | Kitsu email    | String     | `hello@nattadasu.my.id`  |
+| `KITSU_PASSWORD` | Kitsu password | String     | `5up3rS3Cure_-_P@sSwOrd` |
 
 ### MangaDex
 
@@ -372,15 +331,10 @@ Your Kitsu password used to login.
 >
 > 2FA-enabled account is not supported!
 
-<!-- omit in toc -->
-#### `MANGADEX_USERNAME`
-
-Your MangaDex username.
-
-<!-- omit in toc -->
-#### `MANGADEX_PASSWORD`
-
-Your MangaDex password.
+| Variable Name       | Description       | Value Type | Example                  |
+| ------------------- | ----------------- | ---------- | ------------------------ |
+| `MANGADEX_USERNAME` | MangaDex username | String     | `nattadasu`              |
+| `MANGADEX_PASSWORD` | MangaDex password | String     | `5up3rS3Cure_-_P@sSwOrd` |
 
 ### MyAnimeList
 
@@ -390,19 +344,17 @@ Your MangaDex password.
 >
 > This method requires [# User Agent](#network) configured properly
 
-<!-- omit in toc -->
-#### `MAL_USERNAME`
-
-Your MyAnimeList username.
+| Variable Name  | Description          | Value Type | Example     |
+| -------------- | -------------------- | ---------- | ----------- |
+| `MAL_USERNAME` | MyAnimeList username | String     | `nattadasu` |
 
 ### Notify.moe
 
 **Website**: https://notify.moe
 
-<!-- omit in toc -->
-#### `NOTIFYMOE_NICKNAME`
-
-Your Notify.moe nickname/username, string should be `Upper-first case`.
+| Variable Name        | Description                                        | Value Type               | Example     |
+| -------------------- | -------------------------------------------------- | ------------------------ | ----------- |
+| `NOTIFYMOE_NICKNAME` | Notify nickname/username, must be upper-first case | String, Upper-first case | `Nattadasu` |
 
 ### Otak Otaku
 
@@ -412,24 +364,18 @@ Your Notify.moe nickname/username, string should be `Upper-first case`.
 >
 > This method requires [# User Agent](#network) configured properly
 
-<!-- omit in toc -->
-#### `OTAKOTAKU_USERNAME`
-
-Your Otak Otaku username.
+| Variable Name        | Description         | Value Type | Example     |
+| -------------------- | ------------------- | ---------- | ----------- |
+| `OTAKOTAKU_USERNAME` | Otak Otaku username | String     | `nattadasu` |
 
 ### SIMKL
 
 **Website**: https://simkl.com
 
-<!-- omit in toc -->
-#### `SIMKL_ACCESS_TOKEN`
-
-Your SIMKL access token. To get it, please fill your `SIMKL_CLIENT_ID` and init/run [`./Get-SimklAuth.ps1`](./Modules/Get-SimklAuth.ps1), then follow the instructions.
-
-<!-- omit in toc -->
-#### `SIMKL_CLIENT_ID`
-
-Your SIMKL Client ID. To get it, [create new app on SIMKL](https://simkl.com/settings/developer/new/), and set for redirection URI to `urn:ietf:wg:oauth:2.0:oob`.
+| Variable Name        | Description                                                                                                                                      | Value Type            | Example                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ------------------------------------------------------------------ |
+| `SIMKL_CLIENT_ID`    | SIMKL Client ID, get it from [SIMKL Developer Settings](https://simkl.com/settings/developer/), with redirection URI `urn:ietf:wg:oauth:2.0:oob` | String, 64 characters | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
+| `SIMKL_ACCESS_TOKEN` | SIMKL access token, `SIMKL_CLIENT_ID` must be filled, and run [`./Get-SimklAuth.ps1`](./Modules/Get-SimklAuth.ps1) to generate                   | String, 64 characters | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
 
 ### Shikimori
 
@@ -439,42 +385,29 @@ Your SIMKL Client ID. To get it, [create new app on SIMKL](https://simkl.com/set
 >
 > This method requires [# User Agent](#network) configured properly
 
-<!-- omit in toc -->
-#### `SHIKIMORI_KAWAI_SESSION`
-
-Your Shikimori session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
-
-Find a name of the cookie that starts with `_kawai_session` and copy the value.
+| Variable Name             | Description                                           | Value Type          | Example                 |
+| ------------------------- | ----------------------------------------------------- | ------------------- | ----------------------- |
+| `SHIKIMORI_USERNAME`      | Shikimori username                                    | String              | `nattadasu`             |
+| `SHIKIMORI_KAWAI_SESSION` | Shikimori session cookie under `_kawaii_session` name | String, URL encoded | `ABCD%3F51gsj021%20...` |
 
 ### Trakt
 
 **Website**: https://trakt.tv
 
-<!-- omit in toc -->
-#### `TRAKT_CLIENT_ID`
+| Variable Name         | Description                                                                                                                                                               | Value Type                    | Example                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------ |
+| `TRAKT_USERNAME`      | Trakt username                                                                                                                                                            | String                        | `nattadasu`                                                        |
+| `TRAKT_CLIENT_ID`     | Trakt Client ID<br>To generate, go to [Trakt](https://trakt.tv/oauth/applications) and click "Create New Application". Set `urn:ietf:wg:oauth:2.0:oob` as `Redirect URIs` | String, 64 characters         | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
+| `TRAKT_CLIENT_SECRET` | Trakt Client Secret                                                                                                                                                       | String, 64 characters         | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
+| `TRAKT_OAUTH_EXPIRY`  | Trakt OAuth expiry generated by `traktexport` Python module                                                                                                               | Integer, Epoch/Unix timestamp | `1234567890`                                                       |
+| `TRAKT_OAUTH_REFRESH` | Trakt OAuth refresh token generated by `traktexport` Python module                                                                                                        | String, 64 characters         | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
+| `TRAKT_OAUTH_TOKEN`   | Trakt OAuth token generated by `traktexport` Python module                                                                                                                | String, 64 characters         | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
 
-Your Trakt Client ID. To get it, go to [Trakt](https://trakt.tv/oauth/applications) and click "Create New Application". Set `urn:ietf:wg:oauth:2.0:oob` as `Redirect URIs`.
+* To get `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`, run `traktexport init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexport` from terminal.
 
-<!-- omit in toc -->
-#### `TRAKT_CLIENT_SECRET`
+  Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.
 
-Your Trakt Client Secret.
-
-<!-- omit in toc -->
-#### `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`
-
-Your Trakt credential saved by `traktexport` Python module.
-
-To get it, run `traktexport init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexport` from terminal.
-
-Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.
-
-After init done, run `type .traktexport\traktexport.json` in `~`/`%USERPROFILE%` directory on Windows or `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy the credential.
-
-<!-- omit in toc -->
-#### `TRAKT_USERNAME`
-
-Your Trakt username.
+  After init done, run `type .traktexport\traktexport.json` in `%USERPROFILE%`/`~` directory on Windows or `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy the credential.
 
 ### Visual Novel Database (VNDB)
 
@@ -484,17 +417,13 @@ Your Trakt username.
 >
 > This method requires [# User Agent](#network) configured properly
 
-<!-- omit in toc -->
-#### `VNDB_AUTH`
+| Variable Name | Description                             | Value Type                  | Example                                          |
+| ------------- | --------------------------------------- | --------------------------- | ------------------------------------------------ |
+| `VNDB_UID`    | VNDB user ID                            | Integer                     | `u1234`                                          |
+| `VNDB_AUTH`   | VNDB session cookie, used to export XML | String, 40 characters + UID | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90.u1234` |
+| `VNDB_TOKEN`  | VNDB token                              | String, 38 characters       | `abcd-3f9h1-jk1mn-0p9-r5tuv-wxyza-8cd3`          |
 
-Your VNDB session cookie. To get it, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
-
-  Find a name of the cookie that starts with `vndb_auth` and copy the value.
-
-<!-- omit in toc -->
-#### `VNDB_UID`
-
-Your VNDB user ID. To get it, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
+* To get `VNDB_UID`, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
 
   For example:
 
@@ -503,18 +432,17 @@ Your VNDB user ID. To get it, click on any links that stated with "My" or your u
                    ^^^^^^^
   ```
 
-  `u12345` is your UID.
+* To get `VNDB_AUTH`, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
 
-<!-- omit in toc -->
-#### `VNDB_TOKEN`
+  Find a name of the cookie that starts with `vndb_auth` and copy the value.
 
-Your VNDB token. To grab VNDB Personal Access Token, Go to your profile, click on `Edit` tab, and click on `Application` tab.
+* To grab `VNDB_TOKEN`, Go to your profile, click on `Edit` tab, and click on `Application` tab.
 
-Click on `New token` button, set application name, check **Access to my list (including private items)**, and click `Submit` button below.
+  Click on `New token` button, set application name, check **Access to my list (including private items)**, and click `Submit` button below.
 
-Copy the token from textbox and paste it below.
+  Copy the token from textbox and paste it below.
 
-The token should be 38 characters long.
+  The token should be 38 characters long.
 
 ## Configurations
 
@@ -524,57 +452,27 @@ Below are the keys of allowed configurations
 
 ### Network
 
-<!-- omit in toc -->
-#### `USER_AGENT`
-
-> **Warning**
->
-> This key is required for
-> [# Anime-Planet](#anime-planet),
-> [# Baka-Updates' Manga Section (MangaUpdates)](#baka-updates-manga-section-mangaupdates),
-> [# MyAnimeList](#myanimelist),
-> [# Otak Otaku](#otak-otaku),
-> [# Shikimori](#shikimori),
-> [# Visual Novel Database (VNDB)](#visual-novel-database-vndb)
-
-Your user agent. This field is required for some sites. You can get your current user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/)
+| Variable Name | Description                                                                                                                                                | Required for                                                         | Value Type | Example |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------- | ------- |
+| `USER_AGENT`  | Your user agent. <br>You can get your current browser user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/) | Anime-Planet, MangaUpdates, MyAnimeList, Otak Otaku, Shikimori, VNDB | String     | `...`   |
 
 ### Repository
 
-<!-- omit in toc -->
-#### `MINIFY_JSON`
+| Variable Name | Description                                                                  | Required for              | Value Type                | Default | Example   |
+| ------------- | ---------------------------------------------------------------------------- | ------------------------- | ------------------------- | ------- | --------- |
+| `MINIFY_JSON` | Minify all JSON, not intended for use on manual inspection or Git `diff`     | -                         | Boolean (`True`, `False`) | `False` | `False`   |
+| `REPO_PAT`    | GitHub Personal Access Token to update repo automatically via GitHub Actions | Automated: GitHub Actions | String                    | -       | `ghp_...` |
 
-**Default Config**: `False`\
-**Options**: `False`, `True`
+* `REPO_PAT` is your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new?scopes=workflow). Enable `workflow` option and set expiration date more than a month.
 
-Minify a JSON file for less storage space, not recommended if the file was intended to be checked manually or using `git diff`.
-
-<!-- omit in toc -->
-#### `REPO_PAT`
-
-> **Warning**
->
-> Required for GitHub Actions
-
-Your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new). Enable `workflow` option and set expiration date more than a month.
-
-However, you are not needed to add `REPO_PAT` in your Environment File if you run the script locally.
+  However, you are not needed to add `REPO_PAT` in your Environment File if you run the script locally.
 
 ### Schedule
 
-<!-- omit in toc -->
-#### `BACKUP_FREQ`
-
-**Default Config**: `0 0 * * SUN`
-
-Tell GitHub Actions to do backup at the time scheduled, formatted in CRON.
-
-<!-- omit in toc -->
-#### `UPDATE_FREQ`
-
-**Default Config**: `0 0 * * *`
-
-Tell GitHub Actions to check and update scripts and several components, formatted in CRON.
+| Variable Name | Description                                                            | Required for              | Value Type   | Default       | Example       |
+| ------------- | ---------------------------------------------------------------------- | ------------------------- | ------------ | ------------- | ------------- |
+| `BACKUP_FREQ` | Tell GitHub Actions to do backup at the time scheduled                 | Automated: GitHub Actions | String, CRON | `0 0 * * SUN` | `0 0 * * SUN` |
+| `UPDATE_FREQ` | Tell GitHub Actions to check and update scripts and several components | Automated: GitHub Actions | String, CRON | `0 0 * * *`   | `0 0 * * *`   |
 
 ## Usage
 
