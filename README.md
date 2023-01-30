@@ -1,4 +1,5 @@
-<!-- cSpell:words ANILIST ANIMEPLANET Annict Automail Bangumi choco Darek Goodreads Importability kawai Kitsu MALXML MANGAUPDATES Nautiljon NOTIFYMOE Otak Otaku POSIX pwsh Shikimori SIMKL Trakt traktexport USERID USERPROFILE VNDB -->
+<!-- cSpell:words ANILIST ANIMEPLANET Annict Automail baka Bangumi choco Darek Goodreads Importability kawai Kitsu MALXML MANGAUPDATES Nautiljon NOTIFYMOE Otak Otaku POSIX pwsh Shikimori SIMKL Trakt traktexport USERID USERPROFILE VNDB winget kaize foss icann wayback MANGADEX otakotaku kawaii -->
+<!-- cSpell:ignore wxyza -->
 <!-- markdownlint-disable MD033 MD034 MD028 -->
 
 <!-- omit in toc -->
@@ -125,23 +126,27 @@ All column header with `?` in the end means that the site may or may not require
 
 ## Files Generated and Importability
 
-| Sites Name   | File Saved As                       | MALXML Support | Can Be Imported Back? | Description                                                                                                                    |
-| ------------ | ----------------------------------- | -------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| AniList      | `.json`, **`.xml`**                 | Yes            | Yes                   | You need to use [Automail] to import back to AniList in JSON, or import to MyAnimeList using XML                               |
-| Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                              |
-| Annict       | `.json`                             | No             | No                    | There is no official import/export feature                                                                                     |
-| Baka-Updates | `.tsv`                              | No             | No                    | There is no official import/export feature                                                                                     |
-| Bangumi      | `.json`                             | No             | No                    | There is no official import/export feature                                                                                     |
-| Kaize        | `.json`, **`.xml`**                 | Yes            | Yes                   | `.xml` export only available for anime list, `.json` is not importable                                                         |
-| Kitsu        | **`.xml`**, `.json`                 | Yes            | Yes                   | YOnly `.xml` can be imported back to MyAnimeList or other that supports MAL XML                                                |
-| MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | No                    | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML                                                 |
-| MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                           |
-| Notify.moe   | `.json`, `.csv`, `.txt`, **`.xml`** | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other that supports MAL XML. Reimporting requires MAL, Kitsu, or AL account |
-| Otak Otaku   | `.json`, **`.xml`**                 | Yes            | Yes                   | Only `.xml` can be used to import to MyAnimeList and other sites. To reimport back to Otak Otaku, archive `.xml` as `.gz`      |
-| Shikimori    | `.json`, **`.xml`**                 | Yes            | Yes                   | You can reimport back to Shikimori or import to MyAnimeList using XML                                                          |
-| SIMKL        | `.json`, `.zip`, `.csv`, **`.xml`** | Yes            | Yes                   | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back. `.csv` can be imported on other sites              |
-| Trakt        | `.json`                             | No             | No                    | There is no official import/export feature                                                                                     |
-| VNDB         | `.json`, `.xml`                     | No             | No                    | There is no official import/export feature                                                                                     |
+> **Note**
+>
+> For better readability, any sites that is does not have capability are marked with `-` (dash).
+
+| Site Name    | File Saved As                       | MALXML Support | Can Be Imported Back? | Description                                                                                                                 |
+| ------------ | ----------------------------------- | -------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| AniList      | `.json`, **`.xml`**                 | Yes            | Yes                   | You need to use [Automail] to import back to AniList in JSON. XML can be used for AniList, MyAnimeList, or other            |
+| Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                           |
+| Annict       | `.json`                             | -              | -                     | -                                                                                                                           |
+| Baka-Updates | `.tsv`                              | -              | -                     | -                                                                                                                           |
+| Bangumi      | `.json`                             | -              | -                     | -                                                                                                                           |
+| Kaize        | `.json`, **`.xml`**                 | Yes            | Yes                   | `.xml` export only available for anime list, `.json` is not importable                                                      |
+| Kitsu        | **`.xml`**, `.json`                 | Yes            | Yes                   | Only `.xml` can be imported back to MyAnimeList or other                                                                    |
+| MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | -                     | Only `.xml` can be imported back to MyAnimeList or other                                                                    |
+| MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                        |
+| Notify.moe   | `.json`, `.csv`, `.txt`, **`.xml`** | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other. Reimporting requires MAL, Kitsu, or AL account                    |
+| Otak Otaku   | `.json`, **`.xml`**                 | Yes            | Yes                   | To reimport back to Otak Otaku, archive manually `.xml` as `.gz`, plain `.xml` only can be imported to MyAnimeList or other |
+| Shikimori    | `.json`, **`.xml`**                 | Yes            | Yes                   | You can reimport back to Shikimori using both formats or import to MyAnimeList and other sites using XML                    |
+| SIMKL        | `.json`, `.zip`, `.csv`, **`.xml`** | Yes            | Yes                   | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back. `.csv` can be imported on other sites           |
+| Trakt        | `.json`                             | -              | -                     | -                                                                                                                           |
+| VNDB         | `.json`, `.xml`                     | -              | -                     | -                                                                                                                           |
 
 * **MALXML** in this table refers to a XML format used by MyAnimeList, and is used by some sites to import/export data.
   * Please to check import feature availability on each site. We can not guarantee if the site supports MALXML format by default.
