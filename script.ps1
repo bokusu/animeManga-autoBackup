@@ -193,9 +193,32 @@ Import-Module "./Modules/Format-Json.psm1"
 Import-Module "./Modules/Convert-AniListXML.psm1"
 Import-Module "./Modules/Convert-KaizeXML.psm1"
 
+# Vars
+
+$wayback = Switch ($Env:WAYBACK_ENABLE) {
+    "True" { $True }
+    Default { $False }
+}
+
 ############################
 # FUNCTIONS FOR EACH SITES #
 ############################
+
+# create a func for snapshot site page to wayback machine
+Function Send-WaybackSnapshot {
+    Param(
+        [Parameter(Mandatory = $true)]
+        [string]$Uri,
+        [string]$UserAgent = $Env:USER_AGENT
+    )
+
+    If ($IsLinux -or $IsMacOS) {
+        python3 ./Modules/waybackSnapshot.py -u $Uri
+    }
+    Else {
+        python ./Modules/waybackSnapshot.py -u $Uri
+    }
+}
 
 Function Get-AniListBackup {
     Add-Directory -Path ./aniList -Name AniList
@@ -351,6 +374,31 @@ fragment mediaListEntry on MediaList{
         Write-Host "`nExporting AniList manga list in XML"
         Convert-AniListXML -isManga -Path './aniList/mangaList.json' -ErrorAction SilentlyContinue | Out-File -FilePath "./aniList/mangaList.xml" -Encoding UTF8 -Force
     }
+
+    <#If ($wayback) {
+        $pages = @(
+            "user/${Env:ANILIST_USERNAME}/",
+            "user/${Env:ANILIST_USERNAME}/animelist",
+            "user/${Env:ANILIST_USERNAME}/mangalist",
+            "user/${Env:ANILIST_USERNAME}/stats/anime/overview",
+            "user/${Env:ANILIST_USERNAME}/stats/anime/genres",
+            "user/${Env:ANILIST_USERNAME}/stats/anime/tags",
+            "user/${Env:ANILIST_USERNAME}/stats/anime/voiceActors",
+            "user/${Env:ANILIST_USERNAME}/stats/anime/studios",
+            "user/${Env:ANILIST_USERNAME}/stats/anime/staff",
+            "user/${Env:ANILIST_USERNAME}/stats/manga/overview",
+            "user/${Env:ANILIST_USERNAME}/stats/manga/genres",
+            "user/${Env:ANILIST_USERNAME}/stats/manga/tags",
+            "user/${Env:ANILIST_USERNAME}/stats/manga/staff"
+        )
+        $npg = 1
+        ForEach ($pg in $pages) {
+            $uri = "https://anilist.co/$($pg)"
+            Write-Host "`e[2K`r[$npg/$($pages.Count)] Snapshotting $uri to Wayback" -NoNewline
+            Send-WaybackSnapshot -Uri $uri
+            $npg++
+        }
+    }#>
 }
 
 Function Get-AnimePlanetBackup {
@@ -366,6 +414,39 @@ Function Get-AnimePlanetBackup {
 
     Write-Host "`nExporting Anime-Planet manga list"
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$apUsername&listtype=animeplanetmanga&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./animePlanet/mangaList.xml"
+
+    If ($wayback) {
+        $pages = @(
+            "users/$($apUsername)",
+            "users/$($apUsername)/anime/",
+            "users/$($apUsername)/manga/"
+        )
+        $statuses = @(
+            "all",
+            "watching",
+            "watched",
+            "wanttowatch",
+            "stalled",
+            "dropped",
+            "wontwatch"
+        )
+        ForEach ($pg in $pages) {
+            $uri = "https://www.anime-planet.com/"
+            Switch -Regex ($pg) {
+                "^user" {
+                    Send-WaybackSnapshot -Uri "$($uri)$($pg)"
+                }
+                Default {
+                    ForEach ($stat in $statuses) {
+                        If ($pg -match "manga/$") {
+                            $stat = $stat -replace "watch", "read"
+                        }
+                        Send-WaybackSnapshot -Uri "$($uri)$($pg)$($stat)?sort=user_updated&per_page=560&mylist_view=list"
+                    }
+                }
+            }
+        }
+    }
 }
 
 Function Get-AnnictBackup {
@@ -409,6 +490,29 @@ query {
 '@
     $annictHashTable = @{ "Authorization" = "Bearer $($Env:ANNICT_PERSONAL_ACCESS_TOKEN)" }
     Invoke-GraphQLQuery -Uri $annictUri -Query $annictQuery -Headers $annictHashTable -Raw > ./annict/animeList.json
+
+    If ($wayback) {
+        # Import JSON to grab user's username
+        $annictJson = Get-Content ./annict/animeList.json -Raw | ConvertFrom-Json
+        [string]$annictUname = $annictJson.data.viewer.username
+        $pages = @(
+            "@$($annictUname)",
+            "@$($annictUname)/watching",
+            "@$($annictUname)/wanna_watch",
+            "@$($annictUname)/watched",
+            "@$($annictUname)/on_hold",
+            "@$($annictUname)/stop_watching"
+        )
+        $uris = @(
+            "https://annict.com",
+            "https://en.annict.com"
+        )
+        ForEach ($uri in $uris) {
+            ForEach ($pg in $pages) {
+                Send-WaybackSnapshot -Uri "$($uri)/$($pg)"
+            }
+        }
+    }
 }
 
 Function Get-BangumiBackup {
@@ -518,6 +622,36 @@ Function Get-BangumiBackup {
             $bgmDrm | ConvertTo-Json -Depth 10 | Out-File "./bangumi/dramaList.json"
         }
     }
+
+    If ($wayback) {
+        $pages = @(
+            "user/$($bgmUsername)",
+            "anime/list/$($bgmUsername)",
+            "manga/list/$($bgmUsername)",
+            "game/list/$($bgmUsername)",
+            "drama/list/$($bgmUsername)"
+        )
+        $statuses = @(
+            "collect",
+            "wish",
+            "do",
+            "on_hold",
+            "dropped"
+        )
+        $bgmAddress = "https://bgm.tv/"
+        ForEach ($pg in $pages) {
+            Switch -Regex ($pg) {
+                "^user" {
+                    Send-WaybackSnapshot -Uri "$($bgmAddress)$($pg)"
+                }
+                Default {
+                    ForEach ($stat in $statuses) {
+                        Send-WaybackSnapshot -Uri "$($bgmAddress)$($pg)/$($stat)"
+                    }
+                }
+            }
+        }
+    }
 }
 
 Function Get-KaizeBackup {
@@ -546,6 +680,38 @@ Function Get-KaizeBackup {
 
     Write-Host "`nExporting Kaize anime list as MALXML"
     Convert-KaizeToMal -ErrorAction SilentlyContinue | Out-File -FilePath "./kaize/animeList.xml" -Encoding UTF8 -Force
+
+    If ($wayback) {
+        $pages = @(
+            "user/$($kaizeUsername)",
+            "user/$($kaizeUsername)/animes",
+            "user/$($kaizeUsername)/mangas",
+            "user/$($kaizeUsername)/badges",
+            "user/$($kaizeUsername)/reputations",
+            "user/$($kaizeUsername)/stats"
+        )
+        $kaizeAddress = "https://kaize.io/"
+        ForEach ($pg in $pages) {
+            Switch -Regex ($pg) {
+                "(animes|mangas)$" {
+                    $status = @(
+                        "watching",
+                        "completed",
+                        "on-hold",
+                        "dropped",
+                        "plan-to-watch"
+                    )
+                    ForEach ($stat in $status) {
+                        If ($pg -match "manga$") { $stat = $stat -replace "watch", "read" }
+                        Send-WaybackSnapshot -Uri "$($kaizeAddress)$($pg)/$($stat)"
+                    }
+                }
+                Default {
+                    Send-WaybackSnapshot -Uri "$($kaizeAddress)$($pg)"
+                }
+            }
+        }
+    }
 }
 
 Function Get-KitsuBackup {
@@ -898,6 +1064,48 @@ fragment library on Library {
     }
     # Write manga library to file
     $saveFile | ConvertTo-Json -Depth 10 | Out-File -FilePath "./kitsu/mangaList.json" -Encoding UTF8 -Force
+
+    If ($wayback) {
+        $gqlQuery = @'
+query {
+  currentAccount {
+    profile {
+      slug
+    }
+  }
+}
+'@
+        $userprofile = Invoke-GraphQLQuery -Uri $gqlUri -Query $gqlQuery -Headers $auth
+        $slug = $userprofile.data.currentAccount.profile.slug
+
+        $pages = @(
+            "$($slug)",
+            "$($slug)/library?media=anime",
+            "$($slug)/library?media=manga",
+            "$($slug)/reactions"
+        )
+        $uri = "https://kitsu.io/users"
+        ForEach ($pg in $pages) {
+            Switch -Regex ($pg) {
+                "(anime|manga)$" {
+                    Send-WaybackSnapshot -Uri "$($uri)/$($pg)"
+                    $stats = @(
+                        "current",
+                        "planned",
+                        "completed",
+                        "on_hold",
+                        "dropped"
+                    )
+                    ForEach ($st in $stats) {
+                        Send-WaybackSnapshot -Uri "$($uri)/$($pg)&status=$($st)"
+                    }
+                }
+                Default {
+                    Send-WaybackSnapshot -Uri "$($uri)/$($pg)"
+                }
+            }
+        }
+    }
 }
 
 Function Get-MangaDexBackup {
@@ -1180,6 +1388,25 @@ File naming on this folder is following MyAnimeList's naming convention:
 | planToRead.tsv       | Wish            |
 "@
     $readmeValue | Out-File -FilePath ./mangaUpdates/README.txt
+
+    If ($wayback) {
+        $getProfile = Invoke-WebRequest -Method Get -Uri "https://api.mangaupdates.com/v1/account/profile" -Headers @{ Authorization = "Bearer $muToken" }
+        $getProfile = $getProfile.Content | ConvertFrom-Json
+        $muUid = $getProfile.user_id
+        $uri = "https://www.mangaupdates.com/"
+        $muProfile = $getProfile.url -Replace $uri, ""
+        $pages = @(
+            $muProfile,
+            "mylist.html?id=$($muUid)&list=read",
+            "mylist.html?id=$($muUid)&list=hold",
+            "mylist.html?id=$($muUid)&list=unfinished",
+            "mylist.html?id=$($muUid)&list=wish",
+            "mylist.html?id=$($muUid)&list=complete"
+        )
+        ForEach ($pg in $pages) {
+            Send-WaybackSnapshot -Uri "$($uri)$($pg)"
+        }
+    }
 }
 
 Function Get-MyAnimeListBackup {
@@ -1196,6 +1423,31 @@ Function Get-MyAnimeListBackup {
 
     Write-Host "`nExporting MyAnimeList manga list"
     Invoke-WebRequest -Uri "https://malscraper.azurewebsites.net/scrape" -UserAgent $userAgent -Headers $headers -Body "username=$malUsername&listtype=manga&update_on_import=on" -Method Post -ContentType "application/x-www-form-urlencoded" -OutFile "./myAnimeList/mangaList.xml"
+
+    If ($wayback) {
+        $pages = @(
+            "animelist/$($malUsername)",
+            "mangalist/$($malUsername)",
+            "profile/$($malUsername)",
+            "history/$($malUsername)",
+            "history/$($malUsername)/anime",
+            "history/$($malUsername)/manga"
+        )
+        $uri = "https://myanimelist.net/"
+        ForEach ($pg in $pages) {
+            Switch -Regex ($pg) {
+                "^(anime|manga)" {
+                    $status = @(7, 1, 2, 3, 4, 6)
+                    ForEach ($st in $status) {
+                        Send-WaybackSnapshot -Uri "$($uri)$($pg)?status=$($st)"
+                    }
+                }
+                Default {
+                    Send-WaybackSnapshot -Uri "$($uri)$($pg)"
+                }
+            }
+        }
+    }
 }
 
 Function Get-NotifyMoeBackup {
@@ -1312,6 +1564,20 @@ Function Get-NotifyMoeBackup {
 
     $xmlData | Out-File ./notifyMoe/animeList.xml -Encoding utf8 -Force
 
+    If ($wayback) {
+        $pages = @(
+            "+$($notifyNickname)",
+            "+$($notifyNickname)/animelist/watching",
+            "+$($notifyNickname)/animelist/completed",
+            "+$($notifyNickname)/animelist/planned",
+            "+$($notifyNickname)/animelist/hold",
+            "+$($notifyNickname)/animelist/dropped"
+        )
+        $uri = "https://notify.moe/"
+        ForEach ($pg in $pages) {
+            Send-WaybackSnapshot -Uri "$($uri)$($pg)"
+        }
+    }
 }
 
 Function Get-OtakOtakuBackup {
@@ -1407,6 +1673,10 @@ Function Get-OtakOtakuBackup {
 
     # Write XML to file
     $xmlData | Out-File -FilePath "./otakOtaku/animeList.xml" -Encoding utf8 -Force
+
+    If ($wayback) {
+        Send-WaybackSnapshot -Uri "https://otakotaku.com/user/$($otakUsername)"
+    }
 }
 
 Function Get-ShikimoriBackup {
@@ -1424,6 +1694,35 @@ Function Get-ShikimoriBackup {
     Write-Host "`nExporting Shikimori manga list"
     Invoke-WebRequest -Uri "https://shikimori.one/$($shikiUsername)/list_export/mangas.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.json
     Invoke-WebRequest -Uri "https://shikimori.one/$($shikiUsername)/list_export/mangas.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.xml
+
+    If ($wayback) {
+        $pages = @(
+            "history",
+            "list/anime",
+            "list/manga",
+            "achievements"
+        )
+        ForEach ($pg in $pages) {
+            Switch -Regex ($pg) {
+                "(anime|manga)$" {
+                    $status = @(
+                        "watching,rewatching",
+                        "completed",
+                        "on_hold",
+                        "dropped",
+                        "planned"
+                    )
+                    Send-WaybackSnapshot -Uri "https://shikimori.one/$($shikiUsername)/$($pg)"
+                    ForEach ($st in $status) {
+                        Send-WaybackSnapshot -Uri "https://shikimori.one/$($shikiUsername)/$($pg)/mylist/$($st)/order-by/aired_on"
+                    }
+                }
+                Default {
+                    Send-WaybackSnapshot -Uri "https://shikimori.one/$($shikiUsername)/$($pg)"
+                }
+            }
+        }
+    }
 }
 
 Function Get-SimklBackup {
@@ -1433,10 +1732,12 @@ Function Get-SimklBackup {
     $simklClientId = $Env:SIMKL_CLIENT_ID
     $simklAccessToken = $Env:SIMKL_ACCESS_TOKEN
 
-    Invoke-WebRequest -Method Get -ContentType "application/json" -Headers @{
-        "Authorization" = "Bearer $($simklAccessToken)";
-        "simkl-api-key" = $($simklClientId);
-    } -Uri "https://api.simkl.com/sync/all-items/?episode_watched_at=yes" -OutFile "./simkl/data.json"
+    $simklHeaders = @{
+        Authorization = "Bearer $($simklAccessToken)";
+        'simkl-api-key' = $($simklClientId)
+    }
+
+    Invoke-WebRequest -Method Get -ContentType "application/json" -Headers $simklHeaders -Uri "https://api.simkl.com/sync/all-items/?episode_watched_at=yes" -OutFile "./simkl/data.json"
 
     # Create a zip file for SIMKL allows importing it back
     Write-Host "`nCreating SIMKL zip file"
@@ -1607,7 +1908,7 @@ This folder contains your SIMKL backup in various formats.
 * animeList.xml     : MAL-compatible XML format. Use this if you want strictly import only anime list.
 * data.json         : JSON file fetched directly from SIMKL server.
 * SimklBackup.csv   : CSV file format, suitable for importing the list to 3rd party.
-* SimklBackup.zip   : contains JSON file od data.json. This format is expected to be used for reimporting list to SIMKL only.
+* SimklBackup.zip   : contains JSON file of data.json. This format is expected to be used for reimporting list to SIMKL only.
 "@
 
     #Remove legacy README file name
@@ -1615,6 +1916,48 @@ This folder contains your SIMKL backup in various formats.
         Remove-Item -Path ./simkl/README
     }
     $readMe | Out-File -Path ./simkl/README.txt -Encoding utf8 -Force
+
+    If ($wayback) {
+        $getProfile = Invoke-RestMethod -Uri "https://api.simkl.com/users/settings" -Headers $simklHeaders -ContentType "application/json"
+        $userId = $getProfile.account.id
+        $pages = @(
+            "$($userId)/tv/",
+            "$($userId)/movies/",
+            "$($userId)/anime/",
+            "$($userId)/stats/",
+            "$($userId)/"
+        )
+        $uri = "https://simkl.com/"
+        ForEach ($pg in $pages) {
+            $status = @(
+                "plantowatch",
+                "completed",
+                "dropped"
+            )
+            Switch -Regex ($pg) {
+                "movies/$" {
+                    ForEach ($st in $status) {
+                        $url = "$($uri)$($pg)$($st)/"
+                        Send-WaybackSnapshot -Uri $url
+                    }
+                }
+                "(tv|anime)/$" {
+                    $status += @(
+                        "watching",
+                        "onhold"
+                    )
+                    ForEach ($st in $status) {
+                        $url = "$($uri)$($pg)$($st)/"
+                        Send-WaybackSnapshot -Uri $url
+                    }
+                }
+                Default {
+                    $url = "$($uri)$($pg)"
+                    Send-WaybackSnapshot -Uri $url
+                }
+            }
+        }
+    }
 }
 
 Function Get-TraktBackup {
@@ -1670,6 +2013,21 @@ $($pyPath) init $($traktUsername)
         }
     }
 
+    If ($wayback) {
+        $pages = @(
+            "$($traktUsername)",
+            "$($traktUsername)/history",
+            "$($traktUsername)/progress",
+            "$($traktUsername)/collection",
+            "$($traktUsername)/watchlist",
+            "$($traktUsername)/ratings"
+        )
+        $uri = "https://trakt.tv/users/"
+        ForEach ($pg in $pages) {
+            $url = "$($uri)$($pg)"
+            Send-WaybackSnapshot -Uri $url
+        }
+    }
 }
 
 Function Get-VNDBBackup {
@@ -1737,6 +2095,27 @@ Function Get-VNDBBackup {
 
         $json | ConvertTo-Json -Depth 99 | Out-File -FilePath .\vndb\gameList.json
     }
+
+    If ($wayback) {
+        $pages = @(
+            "$($vndbUid)",
+            "$($vndbUid)/ulist?vnlist=1",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=1&s=3q0g",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=2&s=3q0g",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=3&s=3q0g",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=4&s=3q0g",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=5&s=3q0g",
+            "$($vndbUid)/ulist?wishlist=1",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=6&s=3q0g",
+            "$($vndbUid)/ulist?q=&ch=&f=&l=7&s=3q0g",
+            "$($vndbUid)/ulist?votes=1"
+        )
+        $uri = "https://vndb.org/"
+        ForEach ($pg in $pages) {
+            $url = "$($uri)$($pg)"
+            Send-WaybackSnapshot -Uri $url
+        }
+    }
 }
 
 ##########################
@@ -1770,6 +2149,8 @@ If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
 If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
 If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
 If ($Env:VNDB_UID) { Get-VNDBBackup }
+
+If ($Env:WAYBACK_SNAPMAINSITE -eq "True") { ./Modules/SnapAllSupportedSites.ps1 }
 
 Write-Host "`nFormat JSON files"
 $n = 1

@@ -3,3 +3,4 @@ mypy
 python-dotenv
 requests
 traktexport
+waybackpy

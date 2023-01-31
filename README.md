@@ -23,6 +23,7 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 * [Supported Sites](#supported-sites)
 * [Files Generated and Importability](#files-generated-and-importability)
 * [Features](#features)
+  * [Wayback Machine Snapshot](#wayback-machine-snapshot)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
     * [Required softwares/packages for locally run the script](#required-softwarespackages-for-locally-run-the-script)
@@ -53,6 +54,7 @@ Automatically (and also manually) backup your anime and manga libraries from [se
   * [Network](#network)
   * [Repository](#repository)
   * [Schedule](#schedule)
+  * [Wayback Machine Integration](#wayback-machine-integration)
 * [Usage](#usage)
   * [On Local Machine](#on-local-machine)
   * [On GitHub Actions](#on-github-actions)
@@ -131,22 +133,22 @@ All column header with `?` in the end means that the site may or may not require
 > For better readability, any sites that is does not have capability are marked with `-` (dash).
 
 | Site Name    | File Saved As                       | MALXML Support | Can Be Imported Back? | Description                                                                                                                 |
-| ------------ | ----------------------------------- | -------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| AniList      | `.json`, **`.xml`**                 | Yes            | Yes                   | You need to use [Automail] to import back to AniList in JSON. XML can be used for AniList, MyAnimeList, or other            |
-| Anime-Planet | **`.xml`**                          | Yes            | Limited               | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                           |
-| Annict       | `.json`                             | -              | -                     | -                                                                                                                           |
-| Baka-Updates | `.tsv`                              | -              | -                     | -                                                                                                                           |
-| Bangumi      | `.json`                             | -              | -                     | -                                                                                                                           |
-| Kaize        | `.json`, **`.xml`**                 | Yes            | Yes                   | `.xml` export only available for anime list, `.json` is not importable                                                      |
-| Kitsu        | **`.xml`**, `.json`                 | Yes            | Yes                   | Only `.xml` can be imported back to MyAnimeList or other                                                                    |
-| MangaDex     | `.json`, `.yaml`, **`.xml`**        | Yes            | -                     | Only `.xml` can be imported back to MyAnimeList or other                                                                    |
-| MyAnimeList  | **`.xml`**                          | Yes            | Yes                   | You can reimport back to MyAnimeList                                                                                        |
-| Notify.moe   | `.json`, `.csv`, `.txt`, **`.xml`** | Yes            | Limited               | Only `.xml` can be imported back to MyAnimeList or other. Reimporting requires MAL, Kitsu, or AL account                    |
-| Otak Otaku   | `.json`, **`.xml`**                 | Yes            | Yes                   | To reimport back to Otak Otaku, archive manually `.xml` as `.gz`, plain `.xml` only can be imported to MyAnimeList or other |
-| Shikimori    | `.json`, **`.xml`**                 | Yes            | Yes                   | You can reimport back to Shikimori using both formats or import to MyAnimeList and other sites using XML                    |
-| SIMKL        | `.json`, `.zip`, `.csv`, **`.xml`** | Yes            | Yes                   | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back. `.csv` can be imported on other sites           |
-| Trakt        | `.json`                             | -              | -                     | -                                                                                                                           |
-| VNDB         | `.json`, `.xml`                     | -              | -                     | -                                                                                                                           |
+| ------------ | ----------------------------------- | :------------: | :-------------------: | --------------------------------------------------------------------------------------------------------------------------- |
+| AniList      | `.json`, **`.xml`**                 |      Yes       |          Yes          | You need to use [Automail] to import back to AniList in JSON. XML can be used for AniList, MyAnimeList, or other            |
+| Anime-Planet | **`.xml`**                          |      Yes       |        Limited        | Backup file is formatted as MyAnimeList XML, some entry might not restored if MAL did not list it                           |
+| Annict       | `.json`                             |       -        |           -           | -                                                                                                                           |
+| Baka-Updates | `.tsv`                              |       -        |           -           | -                                                                                                                           |
+| Bangumi      | `.json`                             |       -        |           -           | -                                                                                                                           |
+| Kaize        | `.json`, **`.xml`**                 |      Yes       |          Yes          | `.xml` export only available for anime list, `.json` is not importable                                                      |
+| Kitsu        | **`.xml`**, `.json`                 |      Yes       |          Yes          | Only `.xml` can be imported back to MyAnimeList or other                                                                    |
+| MangaDex     | `.json`, `.yaml`, **`.xml`**        |      Yes       |           -           | Only `.xml` can be imported back to MyAnimeList or other                                                                    |
+| MyAnimeList  | **`.xml`**                          |      Yes       |          Yes          | You can reimport back to MyAnimeList                                                                                        |
+| Notify.moe   | `.json`, `.csv`, `.txt`, **`.xml`** |      Yes       |        Limited        | Only `.xml` can be imported back to MyAnimeList or other. Reimporting requires MAL, Kitsu, or AL account                    |
+| Otak Otaku   | `.json`, **`.xml`**                 |      Yes       |          Yes          | To reimport back to Otak Otaku, archive manually `.xml` as `.gz`, plain `.xml` only can be imported to MyAnimeList or other |
+| Shikimori    | `.json`, **`.xml`**                 |      Yes       |          Yes          | You can reimport back to Shikimori using both formats or import to MyAnimeList and other sites using XML                    |
+| SIMKL        | `.json`, `.zip`, `.csv`, **`.xml`** |      Yes       |          Yes          | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back. `.csv` can be imported on other sites           |
+| Trakt        | `.json`                             |       -        |           -           | -                                                                                                                           |
+| VNDB         | `.json`, `.xml`                     |       -        |           -           | -                                                                                                                           |
 
 * **MALXML** in this table refers to a XML format used by MyAnimeList, and is used by some sites to import/export data.
   * Please to check import feature availability on each site. We can not guarantee if the site supports MALXML format by default.
@@ -160,9 +162,35 @@ All column header with `?` in the end means that the site may or may not require
 * [x] Automatically backup by schedule (only for automated method: GitHub Actions)
 * [x] Automatically update the script weekly (only for automated method: GitHub Actions)
 * [x] Configurable backup and update schedule (only for automated method: GitHub Actions)
-* [ ] Save snapshots (profile, lists, statistics) of supported sites using [Wayback Machine](https://archive.org/web/).
+* [x] Save snapshots (profile, lists, statistics) of supported sites using [Wayback Machine](https://archive.org/web/).
 * [ ] Global statistic for all sites you have backup
 * [ ] Import backup to other sites
+
+### Wayback Machine Snapshot
+
+This repo supports snapshotting your profile, lists, and even statistics of your media progress in supported sites using Internet Archive's Wayback Machine, thanks to [waybackpy](https://github.com/akamhy/waybackpy).
+
+By enabling the snapshot support by changing value `WAYBACK_ENABLE` to `True` means your profile from all snapshot-supported sites must be visible to public.
+
+| Site Name    | Supported? | Notes                   | Coverage                                                 |
+| ------------ | :--------: | ----------------------- | -------------------------------------------------------- |
+| AniList      |     -      | Page was returned blank | -                                                        |
+| Anime-Planet |    Yes     | -                       | Profile, anime, manga                                    |
+| Annict       |    Yes     | -                       | Profile, anime                                           |
+| Bangumi      |    Yes     | -                       | Profile, anime, manga, game, drama                       |
+| Kaize        |    Yes     | -                       | Profile, anime, manga, stats, KP, badges                 |
+| Kitsu        |    Yes     | -                       | Profile, anime, manga                                    |
+| MangaDex     |     -      | User profile is private | -                                                        |
+| MangaUpdates |    Yes     | -                       | Profile, manga                                           |
+| MyAnimeList  |    Yes     | -                       | Profile, anime, manga. history                           |
+| Notify.moe   |    Yes     | -                       | Profile, anime                                           |
+| Otak Otaku   |    Yes     | -                       | Profile                                                  |
+| Shikimori    |    Yes     | -                       | Profile, anime, manga, achievements                      |
+| SIMKL        |    Yes     | -                       | Profile, anime, TV, movies, stats                        |
+| Trakt        |    Yes     | -                       | Profile, stats, history, progress, collection, watchlist |
+| VNDB         |    Yes     | -                       | Profile, games, wishlist                                 |
+
+You also can contribute to Internet Archive's Wayback Machine to snapshot homepage of supported sites on this repo by modifying `WAYBACK_SNAPMAINSITE` variable on `.env` file to `True`.
 
 ## Getting Started
 
@@ -309,8 +337,8 @@ You also need to fork the repository before cloning the repo to your local machi
   Example:
 
   ```text
-  https://kaize.io/username
-                   ^^^^^^^^
+  https://kaize.io/user/username
+                        ^^^^^^^^
   ```
 
 ### Kitsu
@@ -457,9 +485,9 @@ Below are the keys of allowed configurations
 
 ### Network
 
-| Variable Name | Description                                                                                                                                                | Required for                                                         | Value Type | Example |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------- | ------- |
-| `USER_AGENT`  | Your user agent. <br>You can get your current browser user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/) | Anime-Planet, MangaUpdates, MyAnimeList, Otak Otaku, Shikimori, VNDB | String     | `...`   |
+| Variable Name | Description                                                                                                                                                | Required for                                                                                                   | Value Type | Example |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------- | ------- |
+| `USER_AGENT`  | Your user agent. <br>You can get your current browser user agent from [WhatIsMyBrowser.com](https://www.whatismybrowser.com/detect/what-is-my-user-agent/) | Anime-Planet, MangaUpdates, MyAnimeList, Otak Otaku, Shikimori, VNDB, `WAYBACK_ENABLE`, `WAYBACK_SNAPMAINSITE` | String     | `...`   |
 
 ### Repository
 
@@ -478,6 +506,13 @@ Below are the keys of allowed configurations
 | ------------- | ---------------------------------------------------------------------- | ------------------------- | ------------ | ------------- | ------------- |
 | `BACKUP_FREQ` | Tell GitHub Actions to do backup at the time scheduled                 | Automated: GitHub Actions | String, CRON | `0 0 * * SUN` | `0 0 * * SUN` |
 | `UPDATE_FREQ` | Tell GitHub Actions to check and update scripts and several components | Automated: GitHub Actions | String, CRON | `0 0 * * *`   | `0 0 * * *`   |
+
+### Wayback Machine Integration
+
+| Variable Name          | Description                                                                                          | Required for | Value Type                | Default | Example |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- | ------------ | ------------------------- | ------- | ------- |
+| `WAYBACK_ENABLE`       | Enable Wayback Machine feature to snapshot the site you're backing up. `USER_AGENT` required         | -            | Boolean (`True`, `False`) | `False` | `False` |
+| `WAYBACK_SNAPMAINSITE` | Contribute Wayback Machine by snapshot the homepage of repo's supported sites. `USER_AGENT` required | -            | Boolean (`True`, `False`) | `False` | `False` |
 
 ## Usage
 
@@ -502,6 +537,8 @@ Below are the keys of allowed configurations
 > **Note**
 >
 > The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
+>
+> You can change this behavior by modifying `BACKUP_FREQ` in environment.
 
 <!-- Links -->
 [Automail]: https://greasyfork.org/en/scripts/370473-automail

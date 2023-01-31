@@ -11,7 +11,6 @@ Param(
     [Switch]$GenerateEnvExample
 )
 
-
 # Check if the script run from GitHub Action
 $isAction = $Null -ne $Env:GITHUB_WORKSPACE
 
@@ -454,6 +453,23 @@ Open [Settings / Developer Settings / Personal Access Tokens](https://github.com
     If ($initUpdateFreq -eq "Y") {
         $Global:schedUpdateFreq = Read-Host -Prompt "Script update frequency (in CRON format)"
     }
+
+    Write-Header -Message "Wayback Machine Snapshot" -ForegroundColor Grey -Separator "-"
+    $initWayback = Read-Host -Prompt "Do you want to enable Wayback Machine snapshot? [y/N]"
+    If (!($initWayback) -or ($initWayback -eq "N")) {
+        $initWayback = "False"
+    } Else {
+        $initWayback = "True"
+    }
+    $Global:wayback = $initWayback
+
+    $initWaybackContribute = Read-Host -Prompt "Do you want to contribute Wayback Machine by snapshot each homepage of supported sites? [y/N]"
+    If (!($initWaybackContribute) -or ($initWaybackContribute -eq "N")) {
+        $initWaybackContribute = "False"
+    } Else {
+        $initWaybackContribute = "True"
+    }
+    $Global:waybackContribute = $initWaybackContribute
 }
 
 # ########################
@@ -559,6 +575,8 @@ MINIFY_JSON=$($jsonMinify)
 REPO_PAT=$($repoPAT)
 UPDATE_FREQ=$($schedUpdateFreq)
 USER_AGENT=$($uAgent)
+WAYBACK_ENABLE=$($wayback)
+WAYBACK_SNAPMAINSITE=$($waybackContribute)
 "@
 
 $envData | Out-File -Path $envPath -Encoding utf8 -Force
