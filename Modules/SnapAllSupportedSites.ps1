@@ -25,6 +25,12 @@ $links = @(
 )
 
 ForEach ($uri in $links) {
+    If ($Global:maxApi -gt 15) {
+        Write-Host "Wayback Machine API limit reached, sleep for 5 minutes and 30 seconds" -ForegroundColor Red
+        Start-Sleep -Seconds 330
+        [int]$Global:maxApi = 0
+    }
+
     Write-Host "Snapshotting $uri"
     If ($IsLinux -or $IsMacOS) {
         python3 ./Modules/waybackSnapshot.py -u $uri
@@ -32,4 +38,6 @@ ForEach ($uri in $links) {
     Else {
         python ./Modules/waybackSnapshot.py -u $uri
     }
+
+    [int]$Global:maxApi += 1
 }

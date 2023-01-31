@@ -212,12 +212,19 @@ Function Send-WaybackSnapshot {
         [string]$UserAgent = $Env:USER_AGENT
     )
 
+    If ($Global:maxApi -gt 15) {
+        Write-Host "Wayback Machine API limit reached, sleep for 5 minutes and 30 seconds" -ForegroundColor Red
+        Start-Sleep -Seconds 330
+        [int]$Global:maxApi = 0
+    }
+
     If ($IsLinux -or $IsMacOS) {
         python3 ./Modules/waybackSnapshot.py -u $Uri
     }
     Else {
         python ./Modules/waybackSnapshot.py -u $Uri
     }
+    [int]$Global:maxApi += 1
 }
 
 Function Get-AniListBackup {
