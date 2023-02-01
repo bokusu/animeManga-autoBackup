@@ -13,13 +13,13 @@ $links = @(
     "https://bgm.tv",
     "https://kaize.io",
     "https://kitsu.io",
-    "https://mangadex.net",
+    "https://mangadex.org",
     "https://mangaupdates.com",
     "https://myanimelist.net",
     "https://otakotaku.com",
     "https://shikimori.one",
     "https://simkl.com",
-    "https://trakt.com",
+    "https://trakt.tv",
     "https://vndb.org",
     "https://www.anime-planet.com"
 )

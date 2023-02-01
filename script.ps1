@@ -634,7 +634,7 @@ Function Get-BangumiBackup {
         $pages = @(
             "user/$($bgmUsername)",
             "anime/list/$($bgmUsername)",
-            "manga/list/$($bgmUsername)",
+            "book/list/$($bgmUsername)",
             "game/list/$($bgmUsername)",
             "drama/list/$($bgmUsername)"
         )
@@ -691,8 +691,8 @@ Function Get-KaizeBackup {
     If ($wayback) {
         $pages = @(
             "user/$($kaizeUsername)",
-            "user/$($kaizeUsername)/animes",
-            "user/$($kaizeUsername)/mangas",
+            "user/$($kaizeUsername)/list/animes",
+            "user/$($kaizeUsername)/list/mangas",
             "user/$($kaizeUsername)/badges",
             "user/$($kaizeUsername)/reputations",
             "user/$($kaizeUsername)/stats"
@@ -1399,16 +1399,11 @@ File naming on this folder is following MyAnimeList's naming convention:
     If ($wayback) {
         $getProfile = Invoke-WebRequest -Method Get -Uri "https://api.mangaupdates.com/v1/account/profile" -Headers @{ Authorization = "Bearer $muToken" }
         $getProfile = $getProfile.Content | ConvertFrom-Json
-        $muUid = $getProfile.user_id
         $uri = "https://www.mangaupdates.com/"
         $muProfile = $getProfile.url -Replace $uri, ""
         $pages = @(
-            $muProfile,
-            "mylist.html?id=$($muUid)&list=read",
-            "mylist.html?id=$($muUid)&list=hold",
-            "mylist.html?id=$($muUid)&list=unfinished",
-            "mylist.html?id=$($muUid)&list=wish",
-            "mylist.html?id=$($muUid)&list=complete"
+            $muProfile
+            # user list must login to snap
         )
         ForEach ($pg in $pages) {
             Send-WaybackSnapshot -Uri "$($uri)$($pg)"

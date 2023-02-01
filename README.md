@@ -168,6 +168,10 @@ All column header with `?` in the end means that the site may or may not require
 
 ### Wayback Machine Snapshot
 
+> **Warning**
+>
+> This method is **very slow** and might take hours to finish. Use with care. Recommended to run this only on your local machine.
+
 This repo supports snapshotting your profile, lists, and even statistics of your media progress in supported sites using Internet Archive's Wayback Machine, thanks to [waybackpy](https://github.com/akamhy/waybackpy).
 
 By enabling the snapshot support by changing value `WAYBACK_ENABLE` to `True` means your profile from all snapshot-supported sites must be visible to public.
@@ -181,7 +185,7 @@ By enabling the snapshot support by changing value `WAYBACK_ENABLE` to `True` me
 | Kaize        |    Yes     | -                       | Profile, anime, manga, stats, KP, badges                 |
 | Kitsu        |    Yes     | -                       | Profile, anime, manga                                    |
 | MangaDex     |     -      | User profile is private | -                                                        |
-| MangaUpdates |    Yes     | -                       | Profile, manga                                           |
+| MangaUpdates |    Yes     | -                       | Profile                                                  |
 | MyAnimeList  |    Yes     | -                       | Profile, anime, manga. history                           |
 | Notify.moe   |    Yes     | -                       | Profile, anime                                           |
 | Otak Otaku   |    Yes     | -                       | Profile                                                  |

@@ -44,7 +44,11 @@ def snapPages():
   save = wb(url, ua)
 
   save.save()
-  print(f'\033[2K\rSaved {url} to {save.archive_url}')
+  archived = save.archive_url
+
+  # Replace HTML encoded characters like &amp; with their actual characters
+  site_string = archived.replace('&amp;', '&')
+  print(f'\033[2K\rSaved {url} to {site_string}')
 
 if __name__ == '__main__':
     main(sys.argv)
