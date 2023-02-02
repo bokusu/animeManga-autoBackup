@@ -218,11 +218,22 @@ Function Send-WaybackSnapshot {
         [int]$Global:maxApi = 0
     }
 
+    Write-Host "`e[2k`r`e[34mSending`e[0m $Uri `e[34mto Wayback Machine`e[0m" -NoNewline
     If ($IsLinux -or $IsMacOS) {
-        python3 ./Modules/waybackSnapshot.py -u $Uri
+        $wbResult = python3 ./Modules/waybackSnapshot.py -u $Uri
     }
     Else {
-        python ./Modules/waybackSnapshot.py -u $Uri
+        $wbResult = python ./Modules/waybackSnapshot.py -u $Uri
+    }
+    Switch -Regex ($wbResult) {
+        "^https?://web.archive.org/web" {
+            Write-Host "`e[2k`r`e[32mSent`e[0m $Uri `e[32mto Wayback Machine as`e[0m $wbResult`e[32m. Continue in 2 seconds" -NoNewline
+            Start-Sleep -Seconds 2
+        }
+        Default {
+            Write-Host "`e[2k`r`e[31mThere's unknown error when we tried to submit`e[0m $Uri `e[31mto Wayback Machine. Continue in 2 seconds" -NoNewline
+            Start-Sleep -Seconds 2
+        }
     }
     [int]$Global:maxApi += 1
 }

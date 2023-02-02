@@ -48,7 +48,7 @@ def snapPages():
 
   # Replace HTML encoded characters like &amp; with their actual characters
   site_string = archived.replace('&amp;', '&')
-  print(f'\033[2K\rSaved {url} to {site_string}')
+  print(site_string)
 
 if __name__ == '__main__':
     main(sys.argv)
