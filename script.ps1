@@ -2051,7 +2051,7 @@ Function Get-VNDBBackup {
 
         # $user = (Invoke-WebMethod -Uri "https://api.vndb.org/kana/authinfo" -Au "Authorization: Token $Token" -ContentType "application/json" -Method Get).Content
 
-        $user = curl https://api.vndb.org/kana/authinfo --header "Authorization: token $Token" | ConvertFrom-Json
+        $user = curl https://api.vndb.org/kana/authinfo --header "Authorization: Token $Token" | ConvertFrom-Json
 
         $userid = $user.id
 
@@ -2066,7 +2066,7 @@ Function Get-VNDBBackup {
 
         For ($n = 1; $n -gt 0; $n++) {
             $requests = $rawRequests | ConvertTo-Json -Depth 2
-            $result = curl https://api.vndb.org/kana/ulist --header "Content-Type: application/json; Authorization: token $Token" --data $requests | ConvertFrom-Json
+            $result = curl https://api.vndb.org/kana/ulist --header "Content-Type: application/json; Authorization: Token $Token" --data $requests | ConvertFrom-Json
             ForEach ($item in $result.results) {
                 $order = [Ordered]@{
                     id           = $item.id
@@ -2150,7 +2150,7 @@ If ($Env:OTAKOTAKU_USERNAME) { Get-OtakOtakuBackup }
 If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
 If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
 If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
-If ($Env:VNDB_UID) { Get-VNDBBackup }
+If ($Env:VNDB_UID -or $Env:VNDB_AUTH -or $Env:VNDB_TOKEN) { Get-VNDBBackup }
 
 If ($Env:WAYBACK_SNAPMAINSITE -eq "True") { ./Modules/SnapAllSupportedSites.ps1 }
 
