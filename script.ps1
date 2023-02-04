@@ -2067,7 +2067,7 @@ Function Get-VNDBBackup {
             Authorization = "Token $Token"
         }
 
-        If (!vndbUid) {
+        If (!$vndbUid) {
             $user = Invoke-RestMethod -Uri https://api.vndb.org/kana/authinfo -Headers $vndbHeaders
             $vndbUid = $user.id
             $vndbReqs++
