@@ -2052,32 +2052,45 @@ Function Get-VNDBBackup {
     Write-Host "`nExporting VNDB game list in XML"
     $vndbUid = $Env:VNDB_UID
     $vndbAuth = $Env:VNDB_AUTH
+    [int]$vndbReqs = 0
     $vndbUrl = "https://vndb.org/$($vndbUid)/list-export/xml"
 
-    curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
+    If ($vndbAuth) {
+        curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
+    }
 
     If ($Env:VNDB_TOKEN) {
         Write-Host "`nExporting VNDB game list in JSON"
         [string]$Token = $Env:VNDB_TOKEN
 
-        # $user = (Invoke-WebMethod -Uri "https://api.vndb.org/kana/authinfo" -Au "Authorization: Token $Token" -ContentType "application/json" -Method Get).Content
+        $vndbHeaders = @{
+            Authorization = "Token $Token"
+        }
 
-        $user = curl https://api.vndb.org/kana/authinfo --header "Authorization: Token $Token" | ConvertFrom-Json
-
-        $userid = $user.id
+        If (!vndbUid) {
+            $user = Invoke-RestMethod -Uri https://api.vndb.org/kana/authinfo -Headers $vndbHeaders
+            $vndbUid = $user.id
+            $vndbReqs++
+        }
 
         $rawRequests = @{
-            user    = $userid
+            user    = $vndbUid
             fields  = "id, added, voted, lastmod, vote, started, finished, notes, labels.label, vn.id, vn.title, vn.alttitle, vn.olang, vn.platforms, vn.length"
-            results = 100
+            results = 20
             page    = 1
         }
 
         $json = @()
 
         For ($n = 1; $n -gt 0; $n++) {
+            # Check if API request limit is reached, if so sleep for ~5 minutes
+            If ($vndbReqs -gt 200) {
+                Write-Host "API request limit reached, sleeping for 5 minutes" -ForegroundColor Yellow
+                Start-Sleep -Seconds 300
+                [int]$vndbReqs = 0
+            }
             $requests = $rawRequests | ConvertTo-Json -Depth 2
-            $result = curl https://api.vndb.org/kana/ulist --header "Content-Type: application/json; Authorization: Token $Token" --data $requests | ConvertFrom-Json
+            $result = Invoke-RestMethod --ContentType "application/json" --Body $resultContent --Method POST --Uri https://api.vndb.org/kana/ulist -Headers $vndbHeaders
             ForEach ($item in $result.results) {
                 $order = [Ordered]@{
                     id           = $item.id
@@ -2098,6 +2111,7 @@ Function Get-VNDBBackup {
                 }
                 $json += [PSCustomObject]$order
             }
+            $vndbReqs++
             if ($True -eq $result.more) {
                 $requests.page++
             }
