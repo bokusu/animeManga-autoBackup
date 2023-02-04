@@ -148,7 +148,7 @@ All column header with `?` in the end means that the site may or may not require
 | Shikimori    | `.json`, **`.xml`**                 |      Yes       |          Yes          | You can reimport back to Shikimori using both formats or import to MyAnimeList and other sites using XML                    |
 | SIMKL        | `.json`, `.zip`, `.csv`, **`.xml`** |      Yes       |          Yes          | Use https://simkl.com/apps/import/json/ and upload ZIP file to import back. `.csv` can be imported on other sites           |
 | Trakt        | `.json`                             |       -        |           -           | -                                                                                                                           |
-| VNDB         | `.json`, `.xml`                     |       -        |           -           | -                                                                                                                           |
+| VNDB         | `.json`, `.xml`                     |       -        |           -           | **Export as `.json` only for manual/local backup**, GitHub Actions can not invoke the request due to unknown error          |
 
 * **MALXML** in this table refers to a XML format used by MyAnimeList, and is used by some sites to import/export data.
   * Please to check import feature availability on each site. We can not guarantee if the site supports MALXML format by default.
@@ -454,11 +454,15 @@ You also need to fork the repository before cloning the repo to your local machi
 >
 > This method requires [# User Agent](#network) configured properly
 
-| Variable Name | Description                             | Value Type                  | Example                                          |
-| ------------- | --------------------------------------- | --------------------------- | ------------------------------------------------ |
-| `VNDB_UID`    | VNDB user ID                            | Integer                     | `u1234`                                          |
-| `VNDB_AUTH`   | VNDB session cookie, used to export XML | String, 40 characters + UID | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90.u1234` |
-| `VNDB_TOKEN`  | VNDB token                              | String, 38 characters       | `abcd-3f9h1-jk1mn-0p9-r5tuv-wxyza-8cd3`          |
+> **Warning**
+>
+> `VNDB_TOKEN`/JSON backup is only work for manual/local backup, not for automatic backup via GitHub Actions due to unknown error.
+
+| Variable Name | Description                                                   | Value Type                  | Example                                          |
+| ------------- | ------------------------------------------------------------- | --------------------------- | ------------------------------------------------ |
+| `VNDB_UID`    | VNDB user ID                                                  | Integer                     | `u1234`                                          |
+| `VNDB_AUTH`   | VNDB session cookie, used to export XML                       | String, 40 characters + UID | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90.u1234` |
+| `VNDB_TOKEN`  | VNDB token for JSON export, only work for manual/local backup | String, 38 characters       | `abcd-3f9h1-jk1mn-0p9-r5tuv-wxyza-8cd3`          |
 
 * To get `VNDB_UID`, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
 

@@ -2059,68 +2059,73 @@ Function Get-VNDBBackup {
         curl -o ./vndb/gameList.xml  -X GET --cookie "vndb_auth=$($vndbAuth)" -A $userAgent $vndbUrl
     }
 
-    If ($Env:VNDB_TOKEN) {
-        Write-Host "`nExporting VNDB game list in JSON"
-        [string]$Token = $Env:VNDB_TOKEN
+    If (!$isAction) {
+        If ($Env:VNDB_TOKEN) {
+            Write-Host "`nExporting VNDB game list in JSON"
+            [string]$Token = $Env:VNDB_TOKEN
 
-        $vndbHeaders = @{
-            Authorization = "Token $Token"
-        }
-
-        If (!$vndbUid) {
-            $user = Invoke-RestMethod -Uri https://api.vndb.org/kana/authinfo -Headers $vndbHeaders
-            $vndbUid = $user.id
-            $vndbReqs++
-        }
-
-        $rawRequests = @{
-            user    = $vndbUid
-            fields  = "id, added, voted, lastmod, vote, started, finished, notes, labels.label, vn.id, vn.title, vn.alttitle, vn.olang, vn.platforms, vn.length"
-            results = 20
-            page    = 1
-        }
-
-        $json = @()
-
-        For ($n = 1; $n -gt 0; $n++) {
-            # Check if API request limit is reached, if so sleep for ~5 minutes
-            If ($vndbReqs -gt 200) {
-                Write-Host "API request limit reached, sleeping for 5 minutes" -ForegroundColor Yellow
-                Start-Sleep -Seconds 300
-                [int]$vndbReqs = 0
+            $vndbHeaders = @{
+                Authorization = "Token $Token"
             }
-            $requests = $rawRequests | ConvertTo-Json -Depth 2
-            $result = Invoke-RestMethod --ContentType "application/json" --Body $resultContent --Method POST --Uri https://api.vndb.org/kana/ulist -Headers $vndbHeaders
-            ForEach ($item in $result.results) {
-                $order = [Ordered]@{
-                    id           = $item.id
-                    title        = $item.vn.title
-                    altTitle     = $item.vn.alttitle
-                    origin       = $item.vn.olang
-                    # Convert UNIX timestamp to date to RFC 3339 format
-                    dateAdded    = If ($item.added) { Get-Date -UnixTimeSeconds $item.added -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
-                    dateVoted    = If ($item.voted) { Get-Date -UnixTimeSeconds $item.voted -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
-                    lastModified = If ($item.lastmod) { Get-Date -UnixTimeSeconds $item.lastmod -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
-                    score        = $item.vote / 10
-                    started      = $item.started
-                    finished     = $item.finished
-                    notes        = $item.notes
-                    labels       = $item.labels
-                    platforms    = $item.vn.platforms
-                    length       = $item.vn.length
+
+            If (!$vndbUid) {
+                $user = Invoke-RestMethod -Uri https://api.vndb.org/kana/authinfo -Headers $vndbHeaders
+                $vndbUid = $user.id
+                $vndbReqs++
+            }
+
+            $rawRequests = @{
+                user    = $vndbUid
+                fields  = "id, added, voted, lastmod, vote, started, finished, notes, labels.label, vn.id, vn.title, vn.alttitle, vn.olang, vn.platforms, vn.length"
+                results = 20
+                page    = 1
+            }
+
+            $json = @()
+
+            For ($n = 1; $n -gt 0; $n++) {
+                # Check if API request limit is reached, if so sleep for ~5 minutes
+                If ($vndbReqs -gt 200) {
+                    Write-Host "API request limit reached, sleeping for 5 minutes" -ForegroundColor Yellow
+                    Start-Sleep -Seconds 300
+                    [int]$vndbReqs = 0
                 }
-                $json += [PSCustomObject]$order
+                $requests = $rawRequests | ConvertTo-Json -Depth 2
+                $result = Invoke-RestMethod --ContentType "application/json" --Body $resultContent --Method POST --Uri https://api.vndb.org/kana/ulist -Headers $vndbHeaders
+                ForEach ($item in $result.results) {
+                    $order = [Ordered]@{
+                        id           = $item.id
+                        title        = $item.vn.title
+                        altTitle     = $item.vn.alttitle
+                        origin       = $item.vn.olang
+                        # Convert UNIX timestamp to date to RFC 3339 format
+                        dateAdded    = If ($item.added) { Get-Date -UnixTimeSeconds $item.added -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
+                        dateVoted    = If ($item.voted) { Get-Date -UnixTimeSeconds $item.voted -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
+                        lastModified = If ($item.lastmod) { Get-Date -UnixTimeSeconds $item.lastmod -UFormat "%Y-%m-%dT%H:%M:%SZ" } Else { $null }
+                        score        = $item.vote / 10
+                        started      = $item.started
+                        finished     = $item.finished
+                        notes        = $item.notes
+                        labels       = $item.labels
+                        platforms    = $item.vn.platforms
+                        length       = $item.vn.length
+                    }
+                    $json += [PSCustomObject]$order
+                }
+                $vndbReqs++
+                if ($True -eq $result.more) {
+                    $requests.page++
+                }
+                else {
+                    Break
+                }
             }
-            $vndbReqs++
-            if ($True -eq $result.more) {
-                $requests.page++
-            }
-            else {
-                Break
-            }
-        }
 
-        $json | ConvertTo-Json -Depth 99 | Out-File -FilePath .\vndb\gameList.json
+            $json | ConvertTo-Json -Depth 99 | Out-File -FilePath .\vndb\gameList.json
+        }
+    }
+    Else {
+        Write-Error -Message "Sorry, exporting VNDB game list in JSON is not supported in GitHub Actions due to unknown reasons" -ErrorAction Continue
     }
 
     If ($wayback) {
