@@ -502,7 +502,7 @@ If ($isAction -or $GenerateEnvExample) {
     $envPath = "./.env.example"
 }
 Else {
-    $envPath = "./.env.test"
+    $envPath = "./.env"
     $envData += "# Generated on $(Get-Date) $((Get-TimeZone).Id)`n`n"
 }
 
