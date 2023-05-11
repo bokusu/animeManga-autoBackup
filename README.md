@@ -1,19 +1,23 @@
-<!-- cSpell:words ANILIST ANIMEPLANET Annict Automail baka Bangumi choco Darek Goodreads Importability kawai Kitsu MALXML MANGAUPDATES Nautiljon NOTIFYMOE Otak Otaku POSIX pwsh Shikimori SIMKL Trakt traktexport USERID USERPROFILE VNDB winget kaize foss icann wayback MANGADEX otakotaku kawaii -->
-<!-- cSpell:ignore wxyza -->
-<!-- markdownlint-disable MD033 MD034 MD028 -->
+<!-- cSpell:disable -->
+<!-- markdownlint-disable MD013 MD033 MD034 MD028 -->
 
 <!-- omit in toc -->
 # Anime Manga Auto Backup
 
-[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE) [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell) [![Discord](https://img.shields.io/discord/589128995501637655?label=Discord&color=%235865F2&logo=discord&logoColor=%23FFFFFF&style=for-the-badge)](https://discord.gg/UKvMEZvaXc)
+[![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE)
+[![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell)
+[![Discord](https://img.shields.io/discord/589128995501637655?label=Discord&color=%235865F2&logo=discord&logoColor=%23FFFFFF&style=for-the-badge)](https://discord.gg/UKvMEZvaXc)
 
-Automatically (and also manually) backup your anime and manga libraries from [several anime, manga, TV shows, movies, and books tracking sites](#supported-sites). Made possible with PowerShell Core.
+Automatically (and also manually) backup your anime and manga libraries from
+[several anime, manga, TV shows, movies, and books tracking sites](#supported-sites).
+Made possible with PowerShell Core.
 
 > **Warning**
 >
 > This project requires PowerShell Core 7 or higher.
 >
-> Please download the latest version from [here](https://github.com/PowerShell/PowerShell/releases), or write this command for Windows 10 and higher on command prompt or Windows PowerShell:\
+> Please download the latest version from [here](https://github.com/PowerShell/PowerShell/releases),
+> or write this command for Windows 10 and higher on command prompt or Windows PowerShell:\
 > `winget install --id Microsoft.PowerShell -e`
 
 <!-- omit in toc -->
@@ -63,19 +67,28 @@ Automatically (and also manually) backup your anime and manga libraries from [se
 
 ## About
 
-"Anime Manga Auto Backup" is my personal take to automate process in back-up your anime and manga libraries, automatically using worker like GitHub Actions or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList, Annict, Baka-Updates Manga, Shikimori, Anime-Planet, Notify.moe, SIMKL, and Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to write the script because it is cross-platform and easy to use.
+"Anime Manga Auto Backup" is my personal take to automate process in back-up
+your anime and manga libraries, automatically using worker like GitHub Actions
+or execute manually from your machine, from MyAnimeList.net, Kitsu, AniList,
+Annict, Baka-Updates Manga, Shikimori, Anime-Planet, Notify.moe, SIMKL, and
+Trakt. I use [PowerShell Core](https://github.com/powershell/powershell) to
+write the script because it is cross-platform and easy to use.
 
-This project **requires you to set the library/list as public** as most API used in this projects are from 3rd party and **User Agent string may required to be filled in environment variable** for the backup progress works.
+This project **requires you to set the library/list as public** as most API used
+in this projects are from 3rd party and **User Agent string may required to be
+filled in environment variable** for the backup progress works.
 
 ## Supported Sites
 
 > **Note**
 >
-> For better readability, any sites that is does not have specific requirements are marked with `-` (dash).
+> For better readability, any sites that is does not have specific requirements
+> are marked with `-` (dash).
 
 > **Warning**
 >
-> I am not responsible and liable for warranty for any damage caused by using this project.
+> I am not responsible and liable for warranty for any damage caused by using
+> this project.
 
 | Site Name                                    | Country of Origin    | Languages                                           | Media Type to Backup         |                         FOSS\*                         | Supported |     Method      | Public? |  UA\*?  | PAT\*?  | Notes                                                                                 |
 | :------------------------------------------- | :------------------- | :-------------------------------------------------- | :--------------------------- | :----------------------------------------------------: | :-------: | :-------------: | :-----: | :-----: | :-----: | :------------------------------------------------------------------------------------ |
@@ -100,37 +113,44 @@ This project **requires you to set the library/list as public** as most API used
 | [aniSearch](https://anisearch.com)           | Germany              | German, English, Spanish, French, Italian, Japanese | Anime, Manga, Live Action    |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    | Scrapes user's profile page and lists                                                 |
 | [Goodreads](https://goodreads.com)           | United States        | English                                             | Book                         |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
 | [IMDb](https://imdb.com)                     | United States        | English                                             | Movie, TV Show               |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
-| [LiveChart.me](https://livechart.me)         | United States†       | English                                             | Anime                        |                           -                            |     🚫     |    `SCRAPE`     |    -    |    -    |    -    | Cannot bypass Cloudflare "DDoS protection"/"I'm under attack" mode                    |
+| [LiveChart.me](https://livechart.me)         | United States†       | English                                             | Anime                        |                           -                            |     🚫     |    `API`     |    -    |    -    |    -    | Cannot bypass Cloudflare "DDoS protection"/"I'm under attack" mode, whatever method is                    |
 | [MyDramaList](https://mydramalist.com)       | United States†       | English                                             | Drama                        |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
-| [Nautiljon](https://nautiljon.com)           | France               | French                                              | Anime, Manga, Drama          |                           -                            |     🔔     |    `SCRAPE`     |    -    |    -    |    -    |                                                                                       |
+| [Nautiljon](https://nautiljon.com)           | France               | French                                              | Anime, Manga, Drama          |                           -                            |     🚫     |    `SCRAPE`     |    -    |    -    |    -    | Cannot bypass Cloudflare "DDoS protection"/"I'm under attack" mode                    |
 | [The Movie Database](https://themoviedb.org) | United States        | English                                             | Movie, TV Show               |                           -                            |     🔔     |      `API`      |    -    |    -    |    -    |                                                                                       |
 
 <!-- omit in toc -->
 ### Notes
 
-All column header with `?` in the end means that the site may or may not require it.
+All column header with `?` in the end means that the site may or may not require
+it.
 
-* †: Based on IP or ICANN Domain Lookup; as the site did not write contact address on their terms of services and privacy policy, or does not have both.
+* †: Based on IP or ICANN Domain Lookup; as the site did not write contact
+  address on their terms of services and privacy policy, or does not have both.
 * \* FOSS: Free and Open Source Software
 * \* UA: User Agent
 * \* PAT: Personal Access Token
 * `Method` Legends:
-  * `API`: Uses official API from the site; Python/PowerShell module also fall in this category if it uses official endpoint
+  * `API`: Uses official API from the site; Python/PowerShell module also fall
+    in this category if it uses official endpoint
   * `3PA`: Uses 3rd party API from other site.
-  * `COOKIE`: Uses official (undocumented) API from the site, and cookie may required to be used as authentication (not to be confused with `PAT`)
-  * `SCRAPE`: Scrapes user's lists directly from HTML if the site does not have API endpoint, uses Python.
+  * `COOKIE`: Uses official (undocumented) API from the site, and cookie may
+    required to be used as authentication (not to be confused with `PAT`)
+  * `SCRAPE`: Scrapes user's lists directly from HTML if the site does not have
+    API endpoint, uses Python.
 * `Supported` Legends:
   * ✅ : Available
   * 🚫 : Not Available
   * 🔔 : Planned
   * ⌛ : In Development
-  * 💻 : Technical difficulty, usually due to pagination or need to scrape XML/HTML table and does not have capability to do so.
+  * 💻 : Technical difficulty, usually due to pagination or need to scrape
+    XML/HTML table and does not have capability to do so.
 
 ## Files Generated and Importability
 
 > **Note**
 >
-> For better readability, any sites that is does not have capability are marked with `-` (dash).
+> For better readability, any sites that is does not have capability are marked
+> with `-` (dash).
 
 | Site Name    | File Saved As                       | MALXML Support | Can Be Imported Back? | Description                                                                                                                 |
 | ------------ | ----------------------------------- | :------------: | :-------------------: | --------------------------------------------------------------------------------------------------------------------------- |
@@ -150,8 +170,10 @@ All column header with `?` in the end means that the site may or may not require
 | Trakt        | `.json`                             |       -        |           -           | -                                                                                                                           |
 | VNDB         | `.json`, `.xml`                     |       -        |           -           | **Export as `.json` only for manual/local backup**, GitHub Actions can not invoke the request due to unknown error          |
 
-* **MALXML** in this table refers to a XML format used by MyAnimeList, and is used by some sites to import/export data.
-  * Please to check import feature availability on each site. We can not guarantee if the site supports MALXML format by default.
+* **MALXML** in this table refers to a XML format used by MyAnimeList, and is
+  used by some sites to import/export data.
+  * Please to check import feature availability on each site. We can not
+    guarantee if the site supports MALXML format by default.
 
 ## Features
 
@@ -161,8 +183,10 @@ All column header with `?` in the end means that the site may or may not require
 * [x] Built-in Environment file generator if `.env` file is not found
 * [x] Automatically backup by schedule (only for automated method: GitHub Actions)
 * [x] Automatically update the script weekly (only for automated method: GitHub Actions)
-* [x] Configurable backup and update schedule (only for automated method: GitHub Actions)
-* [x] Save snapshots (profile, lists, statistics) of supported sites using [Wayback Machine](https://archive.org/web/).
+* [x] Configurable backup and update schedule (only for automated method: GitHub
+  Actions)
+* [x] Save snapshots (profile, lists, statistics) of supported sites using
+  [Wayback Machine](https://archive.org/web/).
 * [ ] Global statistic for all sites you have backup
 * [ ] Import backup to other sites
 
@@ -170,11 +194,15 @@ All column header with `?` in the end means that the site may or may not require
 
 > **Warning**
 >
-> This method is **very slow** and might take hours to finish. Use with care. Recommended to run this only on your local machine.
+> This method is **very slow** and might take hours to finish. Use with care.
+> Recommended to run this only on your local machine.
 
-This repo supports snapshotting your profile, lists, and even statistics of your media progress in supported sites using Internet Archive's Wayback Machine, thanks to [waybackpy](https://github.com/akamhy/waybackpy).
+This repo supports snapshotting your profile, lists, and even statistics of your
+media progress in supported sites using Internet Archive's Wayback Machine,
+thanks to [waybackpy](https://github.com/akamhy/waybackpy).
 
-By enabling the snapshot support by changing value `WAYBACK_ENABLE` to `True` means your profile from all snapshot-supported sites must be visible to public.
+By enabling the snapshot support by changing value `WAYBACK_ENABLE` to `True`
+means your profile from all snapshot-supported sites must be visible to public.
 
 | Site Name    | Supported? | Notes                   | Coverage                                                 |
 | ------------ | :--------: | ----------------------- | -------------------------------------------------------- |
@@ -194,11 +222,14 @@ By enabling the snapshot support by changing value `WAYBACK_ENABLE` to `True` me
 | Trakt        |    Yes     | -                       | Profile, stats, history, progress, collection, watchlist |
 | VNDB         |    Yes     | -                       | Profile, games, wishlist                                 |
 
-You also can contribute to Internet Archive's Wayback Machine to snapshot homepage of supported sites on this repo by modifying `WAYBACK_SNAPMAINSITE` variable on `.env` file to `True`.
+You also can contribute to Internet Archive's Wayback Machine to snapshot
+homepage of supported sites on this repo by modifying `WAYBACK_SNAPMAINSITE`
+variable on `.env` file to `True`.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine or using GitHub Actions.
+These instructions will get you a copy of the project up and running on your
+local machine or using GitHub Actions.
 
 ### Prerequisites
 
@@ -206,7 +237,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 Before starting the script, you need to install the following packages:
 
-* `curl` as fallback for several sites that requires cookies. Native method using `Invoke-WebRequest` sometime failed to append cookies on requests.
+* `curl` as fallback for several sites that requires cookies. Native method
+* using `Invoke-WebRequest` sometime failed to append cookies on requests.
 * `git`
 * PowerShell Core (`pwsh`) version >= 7.0.0
 * `python` version >= 3.7
@@ -215,7 +247,8 @@ You also need to fork the repository before cloning the repo to your local machi
 
 #### Run the script by service worker (GitHub Actions)
 
-* [Fork the repository](https://github.com/nattadasu/animeManga-autoBackup/fork) OR [generate new repository using this repository](https://github.com/nattadasu/animeManga-autoBackup/generate)
+* [Fork the repository](https://github.com/nattadasu/animeManga-autoBackup/fork)
+  OR [generate new repository using this repository](https://github.com/nattadasu/animeManga-autoBackup/generate)
   * Basically the differences are such:
     |                | Forked                     | Generated from Template                                      |
     | -------------- | :------------------------- | :----------------------------------------------------------- |
@@ -227,8 +260,10 @@ You also need to fork the repository before cloning the repo to your local machi
 
   > **Warning**
   >
-  > Do not ever modify [`.env.example`](.env.example) if you did not want your credential revealed by public.
-* Follow instruction on [# On GitHub Actions](#on-github-actions) to initialize/run GitHub Actions.
+  > Do not ever modify [`.env.example`](.env.example) if you did not want your
+  > credential revealed by public.
+* Follow instruction on [# On GitHub Actions](#on-github-actions) to
+  initialize/run GitHub Actions.
 
 ### Setting Environment Variables
 
@@ -238,13 +273,13 @@ You also need to fork the repository before cloning the repo to your local machi
 
 ###### Automated
 
-* Run from working directory:
+* Start `./script.ps1` as the script will run generator automatically if `.env`file can not be found.
+
+* Or, run the generator directly from working directory:
 
   ```ps1
   ./Modules/Environment-Generator.ps1
   ```
-
-* Or, start `./script.ps1`, as the script will run generator automatically if `.env`file can not be found.
 
 ###### Manual
 
@@ -257,8 +292,10 @@ You also need to fork the repository before cloning the repo to your local machi
 1. Open repo settings.
 2. On the left sidebar, find "**Secrets**" and click **Actions**.
 3. Click <kbd>New repository secret</kbd> button.
-4. Follow the instructions in [# Variables Keys](#variable-keys) to set the variables.
-   * The text on `code block` in the instruction mean a name, and Value is the key/cookie.
+4. Follow the instructions in [# Variables Keys](#variable-keys) to set the
+   variables.
+   * The text on `code block` in the instruction mean a name, and Value is
+     the key/cookie.
    * Repeat this step for all the variables listed in the instruction.
    * If you did not registered to some site, leave the value empty.
 
@@ -278,9 +315,13 @@ You also need to fork the repository before cloning the repo to your local machi
 | `ANILIST_OAUTH_REFRESH` | AniList account refresh token<br>Must be generated by [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1)                          | String                               | `def...`                                   |
 | `ANILIST_OAUTH_EXPIRES` | AniList account refresh token expiration time<br>Must be generated by [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1)          | Integer, Epoch/Unix timestamp        | `1234567890`                               |
 
-* To get `ANILIST_ACCESS_TOKEN`, `ANILIST_OAUTH_REFRESH` and `ANILIST_OAUTH_EXPIRES`, you need to generate them first.
+* To get `ANILIST_ACCESS_TOKEN`, `ANILIST_OAUTH_REFRESH` and
+  `ANILIST_OAUTH_EXPIRES`, you need to generate them first.
 
-  To generate them, please fill your `ANILIST_CLIENT_ID`, `ANILIST_CLIENT_SECRET` and `ANILIST_REDIRECT_URI` in your ENV file and init/run [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1), then follow the instructions.
+  To generate them, please fill your `ANILIST_CLIENT_ID`,
+  `ANILIST_CLIENT_SECRET` and `ANILIST_REDIRECT_URI` in your ENV file and
+  init/run [`./Modules/Get-AniListAuth.ps1`](./Modules/Get-AniListAuth.ps1),
+  then follow the instructions.
 
 ### Anime-Planet
 
@@ -297,9 +338,6 @@ You also need to fork the repository before cloning the repo to your local machi
 ### Annict
 
 **Website**: https://annict.com | https://en.annict.com | https://annict.jp
-
-<!-- omit in toc -->
-#### `ANNICT_PERSONAL_ACCESS_TOKEN`
 
 | Variable Name                  | Description                                                                                                   | Value Type | Example                         |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------- |
@@ -440,11 +478,18 @@ You also need to fork the repository before cloning the repo to your local machi
 | `TRAKT_OAUTH_REFRESH` | Trakt OAuth refresh token generated by `traktexport` Python module                                                                                                        | String, 64 characters         | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
 | `TRAKT_OAUTH_TOKEN`   | Trakt OAuth token generated by `traktexport` Python module                                                                                                                | String, 64 characters         | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90UV12wx34YZ56ab78cd90ef12` |
 
-* To get `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`, run `traktexport init <username>` with `<username>` is your Trakt username, if not installed, run `pip install traktexport` from terminal.
+* To get `TRAKT_OAUTH_EXPIRY`, `TRAKT_OAUTH_REFRESH`, `TRAKT_OAUTH_TOKEN`, run
+  `traktexport init <username>` with `<username>` is your Trakt username, if not
+  installed, run `pip install traktexport` from terminal.
 
-  Follow instructions from the module, pasting in your Client ID/Secret from the Trakt dashboard, going to the link and pasting the generated pin back into the terminal.
+  Follow instructions from the module, pasting in your Client ID/Secret from the
+  Trakt dashboard, going to the link and pasting the generated pin back into the
+  terminal.
 
-  After init done, run `type .traktexport\traktexport.json` in `%USERPROFILE%`/`~` directory on Windows or `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy the credential.
+  After init done, run `type .traktexport\traktexport.json` in
+  `%USERPROFILE%`/`~` directory on Windows or
+  `cat ~/.local/share/traktexport.json` on POSIX system (Linux/macOS) to copy
+  the credential.
 
 ### Visual Novel Database (VNDB)
 
@@ -456,7 +501,8 @@ You also need to fork the repository before cloning the repo to your local machi
 
 > **Warning**
 >
-> `VNDB_TOKEN`/JSON backup is only work for manual/local backup, not for automatic backup via GitHub Actions due to unknown error.
+> `VNDB_TOKEN`/JSON backup is only work for manual/local backup, not for
+> automatic backup via GitHub Actions due to unknown error.
 
 | Variable Name | Description                                                   | Value Type                  | Example                                          |
 | ------------- | ------------------------------------------------------------- | --------------------------- | ------------------------------------------------ |
@@ -464,7 +510,9 @@ You also need to fork the repository before cloning the repo to your local machi
 | `VNDB_AUTH`   | VNDB session cookie, used to export XML                       | String, 40 characters + UID | `AB12cd34EF56gh78IJ90kl12MN34op56QR78st90.u1234` |
 | `VNDB_TOKEN`  | VNDB token for JSON export, only work for manual/local backup | String, 38 characters       | `abcd-3f9h1-jk1mn-0p9-r5tuv-wxyza-8cd3`          |
 
-* To get `VNDB_UID`, click on any links that stated with "My" or your username, and copy the fragment of your URL that is started with letter "u" and ID number after it.
+* To get `VNDB_UID`, click on any links that stated with "My" or your username,
+  and copy the fragment of your URL that is started with letter "u" and
+  ID number after it.
 
   For example:
 
@@ -473,13 +521,16 @@ You also need to fork the repository before cloning the repo to your local machi
                    ^^^^^^^
   ```
 
-* To get `VNDB_AUTH`, tap F12 or "Inspect Page" when right-clicking the site, open "Storage" tab, and click "Cookies" of the site.
+* To get `VNDB_AUTH`, tap F12 or "Inspect Page" when right-clicking the site,
+  open "Storage" tab, and click "Cookies" of the site.
 
   Find a name of the cookie that starts with `vndb_auth` and copy the value.
 
-* To grab `VNDB_TOKEN`, Go to your profile, click on `Edit` tab, and click on `Application` tab.
+* To grab `VNDB_TOKEN`, Go to your profile, click on `Edit` tab, and click on
+  `Application` tab.
 
-  Click on `New token` button, set application name, check **Access to my list (including private items)**, and click `Submit` button below.
+  Click on `New token` button, set application name, check **Access to my list
+  (including private items)**, and click `Submit` button below.
 
   Copy the token from textbox and paste it below.
 
@@ -487,7 +538,9 @@ You also need to fork the repository before cloning the repo to your local machi
 
 ## Configurations
 
-The script allows user modify additional configurations. The configurations saved in `.env` file for local, and GitHub's Repository Secrets for automated process using GitHub Actions.
+The script allows user modify additional configurations. The configurations
+saved in `.env` file for local, and GitHub's Repository Secrets for automated
+process using GitHub Actions.
 
 Below are the keys of allowed configurations
 
@@ -504,9 +557,12 @@ Below are the keys of allowed configurations
 | `MINIFY_JSON` | Minify all JSON, not intended for use on manual inspection or Git `diff`     | -                         | Boolean (`True`, `False`) | `False` | `False`   |
 | `REPO_PAT`    | GitHub Personal Access Token to update repo automatically via GitHub Actions | Automated: GitHub Actions | String                    | -       | `ghp_...` |
 
-* `REPO_PAT` is your GitHub Personal Access Token to update repo from [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new?scopes=workflow). Enable `workflow` option and set expiration date more than a month.
+* `REPO_PAT` is your GitHub Personal Access Token to update repo from
+  [Settings / Developer Settings / Personal Access Tokens](https://github.com/settings/tokens/new?scopes=workflow).
+  Enable `workflow` option and set expiration date more than a month.
 
-  However, you are not needed to add `REPO_PAT` in your Environment File if you run the script locally.
+  However, you are not needed to add `REPO_PAT` in your Environment File if you
+  run the script locally.
 
 ### Schedule
 
@@ -544,7 +600,8 @@ Below are the keys of allowed configurations
 
 > **Note**
 >
-> The script will automatically run at 0:00 AM UTC every Sunday, or you can trigger manually from dispatch.
+> The script will automatically run at 0:00 AM UTC every Sunday, or you can
+> trigger manually from dispatch.
 >
 > You can change this behavior by modifying `BACKUP_FREQ` in environment.
 
