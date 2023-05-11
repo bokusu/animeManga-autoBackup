@@ -2166,21 +2166,22 @@ If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAU
 
 $userAgent = $Env:USER_AGENT
 
-If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
-If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup }
-If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup }
-If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup }
-If ($Env:KAIZE_USERNAME) { Get-KaizeBackup }
-If ($Env:KITSU_EMAIL) { Get-KitsuBackup }
-If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) { Get-MangaUpdatesBackup }
-If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup }
-If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup }
-If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup }
-If ($Env:OTAKOTAKU_USERNAME) { Get-OtakOtakuBackup }
-If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup }
-If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup }
-If ($Env:TRAKT_USERNAME) { Get-TraktBackup }
-If ($Env:VNDB_UID -or $Env:VNDB_AUTH -or $Env:VNDB_TOKEN) { Get-VNDBBackup }
+
+Try { If ($Env:ANILIST_USERNAME) { Get-AniListBackup } } Catch { Write-Error "Unable to reach AniList at the moment" -ErrorAction Continue }
+Try { If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup } } Catch { Write-Error "MALScraper unable to contact Anime-Planet at the moment" -ErrorAction Continue }
+Try { If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup } } Catch { Write-Error "Unable to reach Annict at the moment" -ErrorAction Continue }
+Try { If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup } } Catch { Write-Error "Unable to reach Bangumi at the moment" -ErrorAction Continue }
+Try { If ($Env:KAIZE_USERNAME) { Get-KaizeBackup } } Catch { Write-Error "Unable to reach Kaize at the moment" -ErrorAction Continue }
+Try { If ($Env:KITSU_EMAIL) { Get-KitsuBackup } } Catch { Write-Error "Unable to reach Kitsu at the moment" -ErrorAction Continue }
+Try { If ($Env:MANGAUPDATES_SESSION -or $Env:MANGAUPDATES_USERNAME) { Get-MangaUpdatesBackup } } Catch { Write-Error "Unable to reach MangaUpdates at the moment" -ErrorAction Continue }
+Try { If ($Env:MANGADEX_USERNAME) { Get-MangaDexBackup } } Catch { Write-Error "Unable to reach MangaDex at the moment" -ErrorAction Continue }
+Try { If ($Env:MAL_USERNAME) { Get-MyAnimeListBackup } } Catch { Write-Error "MALScraper unable to contact MyAnimeList at the moment" -ErrorAction Continue }
+Try { If ($Env:NOTIFYMOE_NICKNAME) { Get-NotifyMoeBackup } } Catch { Write-Error "Unable to reach Notify.moe at the moment" -ErrorAction Continue }
+Try { If ($Env:OTAKOTAKU_USERNAME) { Get-OtakOtakuBackup } } Catch { Write-Error "Unable to reach Otak Otaku at the moment" -ErrorAction Continue }
+Try { If ($Env:SHIKIMORI_KAWAI_SESSION) { Get-ShikimoriBackup } } Catch { Write-Error "Unable to reach Shikimori at the moment" -ErrorAction Continue }
+Try { If ($Env:SIMKL_CLIENT_ID) { Get-SimklBackup } } Catch { Write-Error "Unable to reach SIMKL at the moment" -ErrorAction Continue }
+Try { If ($Env:TRAKT_USERNAME) { Get-TraktBackup } } Catch { Write-Error "Unable to reach Trakt at the moment" -ErrorAction Continue }
+Try { If ($Env:VNDB_UID  -or $Env:VNDB_AUTH -or $Env:VNDB_TOKEN) { Get-VNDBBackup } } Catch { Write-Error "Unable to reach VNDB at the moment" -ErrorAction Continue }
 
 If ($Env:WAYBACK_SNAPMAINSITE -eq "True") { ./Modules/SnapAllSupportedSites.ps1 }
 
