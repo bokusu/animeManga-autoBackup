@@ -379,10 +379,18 @@ fragment mediaListEntry on MediaList{
             Authorization = "Bearer $($Env:ANILIST_ACCESS_TOKEN)"
         }
 
-        Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw -Headers $alHead | Out-File -Path ./aniList/animeList.json -Encoding utf8
+        Try {
+            Invoke-GraphQLQuery -Uri $aniListUri -Query $alAnimeBody -Variable $alVariableFix -Raw -Headers $alHead | Out-File -Path ./aniList/animeList.json -Encoding utf8
+        } Catch {
+            Write-Error "Unable to fetch Anime list from AniList" -ErrorAction Continue
+        }
 
         Write-Host "`nExporting AniList manga list in JSON"
-        Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw -Headers $alHead  | Out-File -Path ./aniList/mangaList.json -Encoding utf8
+        Try {
+            Invoke-GraphQLQuery -Uri $aniListUri -Query $alMangaBody -Variable $alVariableFix -Raw -Headers $alHead  | Out-File -Path ./aniList/mangaList.json -Encoding utf8
+        } Catch {
+            Write-Error "Unable to fetch Manga list from AniList" -ErrorAction Continue
+        }
 
         # Try to sort the list by id
 
@@ -2167,7 +2175,7 @@ If (($Env:ANIMEPLANET_USERNAME) -or ($Env:MANGAUPDATES_SESSION) -or ($Env:MANGAU
 $userAgent = $Env:USER_AGENT
 
 
-Try { If ($Env:ANILIST_USERNAME) { Get-AniListBackup } } Catch { Write-Error "Unable to reach AniList at the moment" -ErrorAction Continue }
+If ($Env:ANILIST_USERNAME) { Get-AniListBackup }
 Try { If ($Env:ANIMEPLANET_USERNAME) { Get-AnimePlanetBackup } } Catch { Write-Error "MALScraper unable to contact Anime-Planet at the moment" -ErrorAction Continue }
 Try { If ($Env:ANNICT_PERSONAL_ACCESS_TOKEN) { Get-AnnictBackup } } Catch { Write-Error "Unable to reach Annict at the moment" -ErrorAction Continue }
 Try { If ($Env:BANGUMI_USERNAME) { Get-BangumiBackup } } Catch { Write-Error "Unable to reach Bangumi at the moment" -ErrorAction Continue }
