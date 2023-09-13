@@ -9,7 +9,7 @@
 > can install directly with PIP and that is much easier to update.
 >
 > At the time of this writing, the project is under development and does not
-> have a production release date. Have a look at the [`hikaru-aegis`](https://github.com/Animanga-Initiative/animeManga-autoBackup)
+> have a production release date. Have a look at the [`hikaru-aegis`](https://github.com/Animanga-Initiative/hikaru-aegis)
 > repo to see the progress.
 >
 > Once the module is completed, this repository will be archived, won't get
