@@ -1,6 +1,22 @@
 <!-- cSpell:disable -->
 <!-- markdownlint-disable MD013 MD033 MD034 MD028 -->
 
+> <!-- omit in toc -->
+> # Early Deprecation Notice
+>
+> This PowerShell script repository for backing up your data is about to be
+> deprecated in favor of a newly rewritten Python executable module that you
+> can install directly with PIP and that is much easier to update.
+>
+> At the time of this writing, the project is under development and does not
+> have a production release date. Have a look at the [`hikaru-aegis`](https://github.com/Animanga-Initiative/animeManga-autoBackup)
+> repo to see the progress.
+>
+> Once the module is completed, this repository will be archived, won't get
+> updated and supported, and will have a deprecation note in your script's
+> log. We will provide instructions for migrating in this repo and as well
+> in `hikaru-aegis`.
+
 <!-- omit in toc -->
 # Anime Manga Auto Backup
 
