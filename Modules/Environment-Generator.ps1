@@ -434,7 +434,7 @@ Open [Settings / Developer Settings / Personal Access Tokens](https://github.com
         $Global:uAgent = Read-Host -Prompt "Your custom User Agent"
     }
 
-    Write-Header -Message "Backup Frequency" -ForegroundColor Grey -Separator "-"
+    Write-Header -Message "Backup Frequency" -ForegroundColor Gray -Separator "-"
     $initBkupFreq = Read-Host -Prompt "Do you want to change backup frequency from each Sunday, 0:00 AM UTC to else? [Y/n]"
     If (!($initBkupFreq)) {
         $initBkupFreq = "Y"
@@ -444,7 +444,7 @@ Open [Settings / Developer Settings / Personal Access Tokens](https://github.com
         $Global:schedBackupFreq = Read-Host -Prompt "Backup frequency (in CRON format)"
     }
 
-    Write-Header -Message "Script Update Frequency" -ForegroundColor Grey -Separator "-"
+    Write-Header -Message "Script Update Frequency" -ForegroundColor Gray -Separator "-"
     $initUpdateFreq = Read-Host -Prompt "Do you want to change script update frequency from each day, 0:00 AM UTC to else? [Y/n]"
     If (!($initUpdateFreq)) {
         $initUpdateFreq = "Y"
@@ -454,7 +454,7 @@ Open [Settings / Developer Settings / Personal Access Tokens](https://github.com
         $Global:schedUpdateFreq = Read-Host -Prompt "Script update frequency (in CRON format)"
     }
 
-    Write-Header -Message "Wayback Machine Snapshot" -ForegroundColor Grey -Separator "-"
+    Write-Header -Message "Wayback Machine Snapshot" -ForegroundColor Gray -Separator "-"
     $initWayback = Read-Host -Prompt "Do you want to enable Wayback Machine snapshot? [y/N]"
     If (!($initWayback) -or ($initWayback -eq "N")) {
         $initWayback = "False"
