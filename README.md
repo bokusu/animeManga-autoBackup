@@ -23,6 +23,7 @@
 [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=for-the-badge)](LICENSE)
 [![PowerShell](https://img.shields.io/badge/Made_With-PowerShell-blue.svg?style=for-the-badge)](http://github.com/powershell/powershell)
 [![Discord](https://img.shields.io/discord/923830321433149450?label=Discord&color=%235865F2&logo=discord&logoColor=%23FFFFFF&style=for-the-badge)](https://discord.gg/2NXkkrbjMW)
+[![Deploy](https://img.shields.io/badge/github-deploy-gray?style=for-the-badge&logo=github&labelColor=black)](https://github.com/new?template_name=animeManga-autoBackup&template_owner=bokusu)
 
 Automatically (and also manually) backup your anime and manga libraries from
 [several anime, manga, TV shows, movies, and books tracking sites](#supported-sites).
@@ -204,7 +205,6 @@ it.
 * [x] Save snapshots (profile, lists, statistics) of supported sites using
   [Wayback Machine](https://archive.org/web/).
 * [ ] Global statistic for all sites you have backup
-* [ ] Import backup to other sites
 
 ### Wayback Machine Snapshot
 
@@ -263,15 +263,8 @@ You also need to fork the repository before cloning the repo to your local machi
 
 #### Run the script by service worker (GitHub Actions)
 
-* [Fork the repository](https://github.com/nattadasu/animeManga-autoBackup/fork)
-  OR [generate new repository using this repository](https://github.com/nattadasu/animeManga-autoBackup/generate)
-  * Basically the differences are such:
-    |                | Forked                     | Generated from Template                                      |
-    | -------------- | :------------------------- | :----------------------------------------------------------- |
-    | Commit History | Follows upstream (dirty)   | No previous commit history (clean)                           |
-    | GitHub Actions | Disabled by default        | Enabled by default                                           |
-    | Update         | Yes                        | Yes, however user requires to generate personal access token |
-    | Visibility     | You can not set to Private | You can set to Private                                       |
+* Click following badge:
+  [![Deploy](https://img.shields.io/badge/github-deploy-gray?logo=github&labelColor=black)](https://github.com/new?template_name=animeManga-autoBackup&template_owner=bokusu)
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
 
   > **Warning**
@@ -304,6 +297,12 @@ You also need to fork the repository before cloning the repo to your local machi
    * If you did not registered to some site, leave the value empty.
 
 ##### For GitHub Actions
+
+> [!NOTE]
+> We recommend you to follow [# Automated](#automated) guide to ease the process. Then
+> you can simply copy keys and values to your repo Settings > Secrets > Actions.
+>
+> Following steps will assume you know what you're doing and still prefer manual.
 
 1. Open repo settings.
 2. On the left sidebar, find "**Secrets**" and click **Actions**.
