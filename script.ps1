@@ -1512,16 +1512,23 @@ Function Get-NotifyMoeBackup {
 
     [array]$animeCsv = @(); $animeTxt = ""; $animeIndex = ""
     $finished = 0; $dropped = 0; $current = 0; $planned = 0; $paused = 0; $n = 0
+    $animeapi = Get-AnimeApiData -platform notify
     ForEach ($entry in $animeData.items) {
         $n++
-        Write-Host "`e[2K`r[$($n)/$($animeData.items.Count)] Geting Data for (https://notify.moe/anime/$($entry.animeId))" -NoNewline
-        $dbEntry = (Invoke-WebRequest -Method Get -Uri "https://notify.moe/api/anime/$($entry.animeId)").Content | ConvertFrom-Json
-        ForEach ($service in $dbEntry.mappings) {
-            If ($service.service -eq 'myanimelist/anime') {
-                $malId = $service.serviceId
+        $anientry = $animeapi."$($entry.animeId)"
+        if ($Null -eq $anientry) {
+            Write-Host "AnimeAPI does not have notify:$($entry.animeId), requesting directly from Notify Server"
+            $dbEntry = (Invoke-WebRequest -Method Get -Uri "https://notify.moe/api/anime/$($entry.animeId)").Content | ConvertFrom-Json
+            ForEach ($service in $dbEntry.mappings) {
+                If ($service.service -eq 'myanimelist/anime') {
+                    $malId = $service.serviceId
+                }
             }
+            $aniTitle = $dbEntry.title.canonical
+        } Else {
+            $malId = $anientry.myanimelist
+            $aniTitle = $anientry.title
         }
-        $aniTitle = $dbEntry.title.canonical
         $overall = If (!($entry.rating.overall)) { 0 } Else { $entry.rating.overall }
         $story = If (!($entry.rating.story)) { 0 } Else { $entry.rating.story }
         $visual = If (!($entry.rating.visuals)) { 0 } Else { $entry.rating.visual }
