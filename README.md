@@ -9,13 +9,14 @@
 > can install directly with PIP and that is much easier to update.
 >
 > At the time of this writing, the project is under development and does not
-> have a production release date. Have a look at the [`hikaru-aegis`](https://github.com/Animanga-Initiative/hikaru-aegis)
+> have a production release date. Have a look at the [`bokusu`](https://github.com/bokusu/bokusu)
 > repo to see the progress.
 >
 > Once the module is completed, this repository will be archived, won't get
 > updated and supported, and will have a deprecation note in your script's
 > log. We will provide instructions for migrating in this repo and as well
-> in `hikaru-aegis`.
+> in `bokusu`. However, looking at the massive infrastructure gaps, only
+> some of secrets and configurations were copied.
 
 <!-- omit in toc -->
 # Anime Manga Auto Backup
@@ -97,12 +98,12 @@ filled in environment variable** for the backup progress works.
 
 ## Supported Sites
 
-> **Note**
+> [!NOTE]
 >
 > For better readability, any sites that is does not have specific requirements
 > are marked with `-` (dash).
 
-> **Warning**
+> [!WARNING]
 >
 > I am not responsible and liable for warranty for any damage caused by using
 > this project.
@@ -164,7 +165,7 @@ it.
 
 ## Files Generated and Importability
 
-> **Note**
+> [!NOTE]
 >
 > For better readability, any sites that is does not have capability are marked
 > with `-` (dash).
@@ -208,7 +209,7 @@ it.
 
 ### Wayback Machine Snapshot
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method is **very slow** and might take hours to finish. Use with care.
 > Recommended to run this only on your local machine.
@@ -267,10 +268,10 @@ You also need to fork the repository before cloning the repo to your local machi
   [![Deploy](https://img.shields.io/badge/github-deploy-gray?logo=github&labelColor=black)](https://github.com/new?template_name=animeManga-autoBackup&template_owner=bokusu)
 * Follow instructions on [# For GitHub Actions](#for-github-actions) to set the secrets.
 
-  > **Warning**
+  > [!WARNING]
   >
   > Do not ever modify [`.env.example`](.env.example) if you did not want your
-  > credential revealed by public.
+  > password, username, secrets, etc revealed by public.
 * Follow instruction on [# On GitHub Actions](#on-github-actions) to
   initialize/run GitHub Actions.
 
@@ -342,7 +343,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://anime-planet.com
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method requires [# User Agent](#network) configured properly
 
@@ -362,7 +363,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://mangaupdates.com
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method requires [# User Agent](#network) configured properly
 
@@ -411,13 +412,13 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://mangadex.org
 
-> **Warning**
+> [!WARNING]
 >
 > This method (login via <u>raw password</u>) would be deprecated in future!
 > There is no ETA to implement OAuth2 using OpenID.
 > See more regarding to the issue at [MangaDex Announcement Discord Server (#api-changelog)](https://discord.com/channels/833598287574990850/850131706022461440/1050086432011731034).
 
-> **Warning**
+> [!IMPORTANT]
 >
 > 2FA-enabled account is not supported!
 
@@ -430,7 +431,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://myanimelist.net
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method requires [# User Agent](#network) configured properly
 
@@ -450,7 +451,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://otakotaku.com
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method requires [# User Agent](#network) configured properly
 
@@ -471,7 +472,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://shikimori.one
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method requires [# User Agent](#network) configured properly
 
@@ -510,11 +511,11 @@ You also need to fork the repository before cloning the repo to your local machi
 
 **Website**: https://vndb.org
 
-> **Warning**
+> [!IMPORTANT]
 >
 > This method requires [# User Agent](#network) configured properly
 
-> **Warning**
+> [!IMPORTANT]
 >
 > `VNDB_TOKEN`/JSON backup is only work for manual/local backup, not for
 > automatic backup via GitHub Actions due to unknown error.
@@ -613,7 +614,7 @@ Below are the keys of allowed configurations
 
 * Done. Basically, the Action is enabled by default.
 
-> **Note**
+> [!NOTE]
 >
 > The script will automatically run at 0:00 AM UTC every Sunday, or you can
 > trigger manually from dispatch.
