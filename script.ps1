@@ -2090,11 +2090,16 @@ $($pyPath) init $($traktUsername)
             New-Item -Path "$dataDir/traktexport.json" -Force -ItemType File -Value $traktExportJson
         }
 
-        If ($IsLinux -or $IsMacOS) {
-            python3 -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
-        }
-        Else {
-            python -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
+        Try{
+            If ($IsLinux -or $IsMacOS) {
+                python3 -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
+            }
+            Else {
+                python -m traktexport export $traktUsername | Out-File "./trakt/data.json" -Encoding utf8 -Force
+            }
+        } Catch {
+            Write-Error "Seems there's something wrong when processing the request to Trakt. Try to update your Trakt credential by typing `"traktexport init $traktUsername`"" -ErrorAction Continue
+            return
         }
     }
 
