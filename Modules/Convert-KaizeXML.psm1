@@ -10,7 +10,7 @@
     }
 
     Write-Host "`nTrying to map Kaize slug to MAL ID using Natsu's Anime API mappings"
-    $mapper = Invoke-RestMethod -Uri "http://aniapi.nattadasu.my.id/kaize.json"
+    $mapper = Invoke-RestMethod -Uri "http://animeapi.my.id/kaize.json"
     $loadAnime = Get-Content -Path $Path -Raw | ConvertFrom-Json
     $indexer = @()
     ForEach ($entry in $loadAnime) {
