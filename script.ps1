@@ -129,6 +129,34 @@ Function Confirm-UserAgent {
     Write-Host "User agent is set to $Env:USER_AGENT" -ForegroundColor Green
 }
 
+function Extract-VariableValues {
+    param (
+        [string] $content
+    )
+
+    $matches = [regex]::Matches($content, "var (?<name>\w+) = '(.+?)'")
+
+    $variables = @{}
+    foreach ($match in $matches) {
+        $variables[$match.Groups['name'].Value] = $match.Groups[1].Value
+    }
+
+    return $variables
+}
+
+Function Get-AnimeApiData {
+    Param (
+        [Parameter(Position=0)]
+        [ValidateSet(
+            'anidb','anilist','animeplanet','anisearch','annict','kaize',
+            'kitsu','livechart','myanimelist','nautiljon','notify',
+            'otakotaku','shikimori')]
+        [string]$platform
+    )
+    $animeapi = Invoke-RestMethod "https://animeapi.my.id/$platform.json"
+    return $animeapi
+}
+
 # Set output encoding to UTF-8
 Write-Host "Setting output encoding to UTF-8" -ForegroundColor Green
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -1601,24 +1629,54 @@ Function Get-NotifyMoeBackup {
     }
 }
 
+Function Invoke-OtakCurl {
+    Param (
+        [string]$Username,
+        [string]$UserID,
+        [string]$Token,
+        [int]$Limit = 1,
+        [int]$Index = 0
+    )
+
+    $resp = curl "https://otakotaku.com/internal/score/anime_skor" `
+        -H 'accept: */*' `
+        -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8' `
+        -H 'dnt: 1' `
+        -H 'origin: https://otakotaku.com' `
+        -H "referer: https://otakotaku.com/user/$($Username)" `
+        -H "cookie: tknoo=$($Token); lang=id" `
+        -H 'sec-fetch-dest: empty' `
+        -H 'sec-fetch-mode: cors' `
+        -H 'sec-fetch-site: same-origin' `
+        -H 'sec-gpc: 1' `
+        -H 'sec-ch-ua-platform: "Windows"' `
+        -H 'sec-ch-ua-mobile: ?0' `
+        -H "user-agent: $($userAgent)" `
+        -H 'x-requested-with: XMLHttpRequest' `
+        --data-raw "id_user=$($UserID)&order=waktu_simpan+desc&limit=$($Limit)&index=$($Index)&tknoo=$($Token)" --compressed --silent
+
+    return $resp | ConvertFrom-Json
+}
+
 Function Get-OtakOtakuBackup {
     Add-Directory -Path ./otakOtaku -Name "Otak Otaku"
     $otakUsername = $Env:OTAKOTAKU_USERNAME
 
     # Grabbing UID
     $getUserContent = (Invoke-WebRequest -Uri "https://otakotaku.com/user/$($otakUsername)").Content
-    $findIdUser = [Regex]::Match($getUserContent, "var ID_USER = '[\d]+'").Value
-    [int]$otakUid = [Regex]::Match($findIdUser, '[\d]+').Value
+    $extractedValues = Extract-VariableValues -content $getUserContent
+    $otakUid = [int]$extractedValues['ID_USER']
+    $otakTknoo = $extractedValues['OOT']
 
     # Checking total anime
-    $totalAnimeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H "referer: https://otakotaku.com/user/$($otakUsername)"  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=1&index=0" --compressed --silent
-    [int]$totalAnime = ($totalAnimeJson | ConvertFrom-Json).meta.total
+    $totalAnimeJson = Invoke-OtakCurl -Username $otakUsername -UserID $otakUid -Token $otakTknoo
+    [int]$totalAnime = $totalAnimeJson.meta.total
 
     $animeData = @()
     For ($n = 0; $n -le $totalAnime; $n += 10) {
         Write-Host "`e[2K`r[$(($n + 10) / 10)/$([Math]::Ceiling($totalAnime / 10))] Grabbing anime data from Otak Otaku" -NoNewline
-        $animeJson = curl 'https://otakotaku.com/internal/score/anime_skor'  -H 'content-type: application/x-www-form-urlencoded; charset=UTF-8'  -H 'dnt: 1'  -H 'origin: https://otakotaku.com'  -H "referer: https://otakotaku.com/user/$($otakUsername)"  -H 'sec-fetch-dest: empty'  -H 'sec-fetch-mode: cors'  -H 'sec-fetch-site: same-origin'  -H 'sec-gpc: 1'  -H "user-agent: $($userAgent)" -H 'x-requested-with: XMLHttpRequest' --data-raw "id_user=$($otakUid)&order=waktu_simpan+desc&limit=10&index=$($n)" --compressed --silent
-        $animeJson = ($animeJson | ConvertFrom-Json).data
+        $animeJson = Invoke-OtakCurl -Username $otakUsername -UserID $otakUid -Token $otakTknoo -Limit 10 -Index $n
+        $animeJson = $animeJson.data
         $animeData += $animeJson
     }
     $animeRaw = @{
@@ -1631,6 +1689,7 @@ Function Get-OtakOtakuBackup {
 
     # Create MAL compatible XML backup file
     $current = 0; $paused = 0; $dropped = 0; $completed = 0; $planned = 0; $arrItems = ""
+    $aniapi = Get-AnimeApiData -platform otakotaku
     ForEach ($anime in $animeData) {
         $animeTitle = $anime.judul_anime
         $userProgress = $anime.progres
@@ -1644,10 +1703,10 @@ Function Get-OtakOtakuBackup {
         }
         $userNotes = If ($Null -eq $anime.catatan) { '' } Else { $anime.catatan }
         $userTags = If ($Null -eq $anime.tag) { '' } Else { $anime.tag }
-        $userStartedDate = If ($Null -eq $anime.tgl_mulai) { '0000-00-00' } Else { $anime.tanggal_mulai }
-        $userEndedDate = If ($Null -eq $anime.tgl_selesai) { '0000-00-00' } Else { $anime.tanggal_selesai }
-        $malId = $anime.mal_id_anime
+        $userStartedDate = If ($Null -eq $anime.tgl_mulai) { '0000-00-00' } Else { $anime.tgl_mulai }
+        $userEndedDate = If ($Null -eq $anime.tgl_selesai) { '0000-00-00' } Else { $anime.tgl_selesai }
         $otakuId = $anime.id_anime
+        $malId = $aniapi.$otakuId.myanimelist
 
         # Building array item
         $arrItems += @"
