@@ -905,7 +905,7 @@ fragment library on Library {
     $gqlVariables.mediaKind = "ANIME"
     For ($limit = 0; $limit -le $animeProfile.library.all.totalCount; $limit += 100) {
         $vars = $gqlVariables | ConvertTo-Json -Compress
-        Write-Host "`n[$(($limit / 100) + 1)/$([Math]::Ceiling(($animeProfile.library.all.totalCount - 1) / 100))] Exporting Kitsu anime list to Ryuuganime SaveFile JSON" -ForegroundColor Green
+        Write-Host "`e[2K`r[$(($limit / 100) + 1)/$([Math]::Ceiling(($animeProfile.library.all.totalCount - 1) / 100))] Exporting Kitsu anime list to Ryuuganime SaveFile JSON" -ForegroundColor Green -NoNewLine
         $gqlBody = Switch ($gqlVariables.after) {
             $null { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int) {`n" }
             default { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int, `$after: String) {`n" }
@@ -920,7 +920,6 @@ fragment library on Library {
         ForEach ($node in $animeLib.data.currentAccount.profile.library.all.nodes) {
             # Check if $node is not Null
             If ($Null -ne $node) {
-                Write-Host "`e[2K`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
                 $userStatus = Switch ($node.status) {
                     "CURRENT" { "current" }
                     "PLANNED" { "planned" }
@@ -998,7 +997,7 @@ fragment library on Library {
             Else {
                 Write-Host "`e[2K`r[$n/$($animeProfile.library.all.totalCount)] Exporting anime.... but wait..." -ForegroundColor Cyan
                 Write-Host "No data found, how?" -ForegroundColor Red
-                Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your anime list won't be accurate" -ForegroundColor Red
+                Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your anime list won't be accurate`n" -ForegroundColor Red
             }
             $n++
         }
@@ -1026,7 +1025,7 @@ fragment library on Library {
     $saveFile = @(); $n = 1
     For ($limit = 0; $limit -le $mangaProfile.library.all.totalCount; $limit += 100) {
         $vars = $gqlVariables | ConvertTo-Json -Compress
-        Write-Host "`n[$(($limit / 100) + 1)/$([Math]::Ceiling(($mangaProfile.library.all.totalCount - 1) / 100))] Exporting Kitsu manga list to Ryuuganime SaveFile JSON" -ForegroundColor Green
+        Write-Host "`e[2K`r[$(($limit / 100) + 1)/$([Math]::Ceiling(($mangaProfile.library.all.totalCount - 1) / 100))] Exporting Kitsu manga list to Ryuuganime SaveFile JSON" -ForegroundColor Green -NoNewLine
         $gqlBody = Switch ($gqlVariables.after) {
             $null { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int) {`n" }
             default { "query (`$mediaKind: MediaTypeEnum!, `$entLim: Int, `$after: String) {`n" }
@@ -1041,7 +1040,6 @@ fragment library on Library {
         ForEach ($node in $mangaLib.data.currentAccount.profile.library.all.nodes) {
             # Check if $node is not Null
             If ($Null -ne $node) {
-                Write-Host "`e[2K`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga $($node.media.titles.canonical)" -ForegroundColor Cyan -NoNewline
                 $userStatus = Switch ($node.status) {
                     "CURRENT" { "current" }
                     "PLANNED" { "planned" }
@@ -1102,7 +1100,7 @@ fragment library on Library {
             Else {
                 Write-Host "`e[2K`r[$n/$($mangaProfile.library.all.totalCount)] Exporting manga.... but wait..." -ForegroundColor Cyan
                 Write-Host "No data found, how?" -ForegroundColor Red
-                Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your manga list won't be accurate" -ForegroundColor Red
+                Write-Host "Well, it seems it's NSFW media and I guess I'll just skip this one, but as result, your manga list won't be accurate`n" -ForegroundColor Red
             }
             $n++
         }
