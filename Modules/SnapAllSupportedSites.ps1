@@ -12,7 +12,7 @@ $links = @(
     # "https://annict.jp", # .jp tld now redirects to .com instead
     "https://bgm.tv",
     "https://kaize.io",
-    "https://kitsu.io",
+    "https://kitsu.app",
     "https://mangadex.org",
     "https://mangaupdates.com",
     "https://myanimelist.net",

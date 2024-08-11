@@ -116,7 +116,7 @@ filled in environment variable** for the backup progress works.
 | [Baka-Updates](https://www.mangaupdates.com) | United States†       | English                                             | Manga                        |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    | Logging in with API,<br>but CSV/TSV export is undocumented API path                   |
 | [Bangumi](https://bgm.tv)                    | China                | Chinese                                             | Anime, Manga, Games, TV Show |     [**Yes**](https://github.com/bangumi/frontend)     |     ✅     |      `API`      |    -    |    -    | **Yes** |                                                                                       |
 | [Kaize.io](https://kaize.io)                 | Switzerland†         | English                                             | Anime, Manga                 |                           -                            |     ✅     |    `SCRAPE`     | **Yes** |    -    |    -    | Scrapes user's profile page and lists                                                 |
-| [Kitsu](https://kitsu.io)                    | United States        | *Multiple languages*                                | Anime, Manga                 | [**Yes**](https://github.com/hummingbird-me/kitsu-web) |     ✅     |      `API`      |    -    |    -    |    -    |                                                                                       |
+| [Kitsu](https://kitsu.app)                    | United States        | *Multiple languages*                                | Anime, Manga                 | [**Yes**](https://github.com/hummingbird-me/kitsu-web) |     ✅     |      `API`      |    -    |    -    |    -    |                                                                                       |
 | [MangaDex](https://mangadex.org)             | Vietnam†             | English                                             | Manga                        |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    | Will be deprecated soon,<br>2FA-enabled account and OAuth not supported               |
 | [MyAnimeList](https://myanimelist.net)       | United States, Japan | English                                             | Anime, Manga                 |                           -                            |     ✅     |      `3PA`      | **Yes** | **Yes** |    -    | Uses MAL Exporter from Azure Website                                                  |
 | [Notify.moe](https://notify.moe)             | Korea, Japan         | English                                             | Anime                        | [**Yes**](https://github.com/animenotifier/notify.moe) |     ✅     |      `API`      | **Yes** |    -    |    -    |                                                                                       |
@@ -401,7 +401,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 ### Kitsu
 
-**Website**: https://kitsu.io
+**Website**: https://kitsu.app
 
 | Variable Name    | Description    | Value Type | Example                  |
 | ---------------- | -------------- | ---------- | ------------------------ |

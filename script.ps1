@@ -780,9 +780,9 @@ Function Get-KitsuBackup {
         password   = $kitsuPassword;
     }
 
-    $kitsuAccessToken = (Invoke-WebRequest -Method Post -Body $kitsuParameters -Uri https://kitsu.io/api/oauth/token).Content | ConvertFrom-Json
+    $kitsuAccessToken = (Invoke-WebRequest -Method Post -Body $kitsuParameters -Uri https://kitsu.app/api/oauth/token).Content | ConvertFrom-Json
 
-    Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=anime" -OutFile ./kitsu/animeList.xml
+    Invoke-WebRequest -Uri "https://kitsu.app/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=anime" -OutFile ./kitsu/animeList.xml
 
     $auth = @{
         Authorization     = "Bearer $($kitsuAccessToken.access_token)"
@@ -791,7 +791,7 @@ Function Get-KitsuBackup {
         'accept-language' = "en-US,en;q=0.5"
     }
 
-    $gqlUri = "https://kitsu.io/api/graphql"
+    $gqlUri = "https://kitsu.app/api/graphql"
 
     $gqlVariables = @{
         entLim = 100
@@ -1015,7 +1015,7 @@ fragment library on Library {
     $saveFile | ConvertTo-Json -Depth 10 | Out-File -FilePath "./kitsu/animeList.json" -Encoding UTF8 -Force
 
     Write-Host "`nExporting Kitsu manga list"
-    Invoke-WebRequest -Uri "https://kitsu.io/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
+    Invoke-WebRequest -Uri "https://kitsu.app/api/edge/library-entries/_xml?access_token=$($kitsuAccessToken.access_token)&kind=manga" -OutFile ./kitsu/mangaList.xml
 
     # Start loop for manga
     $gqlVariables = [ordered]@{
@@ -1136,7 +1136,7 @@ query {
             "$($slug)/library?media=manga",
             "$($slug)/reactions"
         )
-        $uri = "https://kitsu.io/users"
+        $uri = "https://kitsu.app/users"
         ForEach ($pg in $pages) {
             Switch -Regex ($pg) {
                 "(anime|manga)$" {
