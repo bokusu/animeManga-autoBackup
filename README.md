@@ -121,7 +121,7 @@ filled in environment variable** for the backup progress works.
 | [MyAnimeList](https://myanimelist.net)       | United States, Japan | English                                             | Anime, Manga                 |                           -                            |     ✅     |      `3PA`      | **Yes** | **Yes** |    -    | Uses MAL Exporter from Azure Website                                                  |
 | [Notify.moe](https://notify.moe)             | Korea, Japan         | English                                             | Anime                        | [**Yes**](https://github.com/animenotifier/notify.moe) |     ✅     |      `API`      | **Yes** |    -    |    -    |                                                                                       |
 | [Otak Otaku](https://otakotaku.com)          | Indonesia            | Indonesian, Japanese                                | Anime                        |                           -                            |     ✅     |      `API`      | **Yes** | **Yes** |    -    | Uses official undocumented API endpoint                                               |
-| [Shikimori](https://shikimori.one)           | Russia               | Russian, English                                    | Anime, Manga                 |   [**Yes**](https://github.com/shikimori/shikimori)    |     ✅     |    `COOKIE`     |    -    | **Yes** |    -    | Uses `_kawai_session` cookie saved on browser                                         |
+| [Shikimori](https://shikimori.io)           | Russia               | Russian, English                                    | Anime, Manga                 |   [**Yes**](https://github.com/shikimori/shikimori)    |     ✅     |    `COOKIE`     |    -    | **Yes** |    -    | Uses `_kawai_session` cookie saved on browser                                         |
 | [SIMKL](https://simkl.com)                   | United States        | English                                             | TV Show, Movie, Anime        |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    |                                                                                       |
 | [Trakt](https://trakt.tv)                    | United States        | English                                             | TV Show, Movie               |                           -                            |     ✅     |      `API`      |    -    |    -    |    -    | Uses `traktexport` Python package/module                                              |
 | [VNDB](https://vndb.org)                     | The Netherlands†     | English                                             | Visual Novel (Game)          |     [**Yes**](https://code.blicky.net/yorhel/vndb)     |     ✅     | `API`, `SCRAPE` |    -    | **Yes** | **Yes** | Uses `vndb_auth` cookie saved on browser for XML,<br>JSON uses official API via Token |
@@ -470,7 +470,7 @@ You also need to fork the repository before cloning the repo to your local machi
 
 ### Shikimori
 
-**Website**: https://shikimori.one
+**Website**: https://shikimori.io
 
 > [!IMPORTANT]
 >

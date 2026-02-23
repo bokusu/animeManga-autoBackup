@@ -17,7 +17,7 @@ $links = @(
     "https://mangaupdates.com",
     "https://myanimelist.net",
     "https://otakotaku.com",
-    "https://shikimori.one",
+    "https://shikimori.io",
     "https://simkl.com",
     "https://trakt.tv",
     "https://vndb.org",

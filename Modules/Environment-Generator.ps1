@@ -294,7 +294,7 @@ Function Read-Shikimori {
     }
 
     If ($initShikimori -eq "Y") {
-        Get-CookieHelp -Uri "https://shikimori.one" -CookiesName "__kawai_session"
+        Get-CookieHelp -Uri "https://shikimori.io" -CookiesName "__kawai_session"
         $Global:shUname = Read-Host -Prompt "`nYour Shikimori username"
         $Global:shKawaiSession = Read-Host -Prompt "__kawai_session value" -MaskInput
     }

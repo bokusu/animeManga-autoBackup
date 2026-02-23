@@ -1772,13 +1772,13 @@ Function Get-ShikimoriBackup {
     $shikiUsername = $Env:SHIKIMORI_USERNAME
     $shikiSession = New-WebSession -Cookies @{
         "kawai_session" = $shikiKawaiSession
-    } -For "https://shikimori.one/"
-    Invoke-WebRequest -Uri "https://shikimori.me/$($shikiUsername)/list_export/animes.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/animeList.json
-    Invoke-WebRequest -Uri "https://shikimori.me/$($shikiUsername)/list_export/animes.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/animeList.xml
+    } -For "https://shiki.one/"
+    Invoke-WebRequest -Uri "https://shikimori.io/$($shikiUsername)/list_export/animes.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/animeList.json
+    Invoke-WebRequest -Uri "https://shikimori.io/$($shikiUsername)/list_export/animes.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/animeList.xml
 
     Write-Host "`nExporting Shikimori manga list"
-    Invoke-WebRequest -Uri "https://shikimori.me/$($shikiUsername)/list_export/mangas.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.json
-    Invoke-WebRequest -Uri "https://shikimori.me/$($shikiUsername)/list_export/mangas.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.xml
+    Invoke-WebRequest -Uri "https://shikimori.io/$($shikiUsername)/list_export/mangas.json" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.json
+    Invoke-WebRequest -Uri "https://shikimori.io/$($shikiUsername)/list_export/mangas.xml" -Method Get -UserAgent $userAgent -Session $shikiSession -OutFile ./shikimori/mangaList.xml
 
     If ($wayback) {
         $pages = @(
@@ -1797,13 +1797,13 @@ Function Get-ShikimoriBackup {
                         "dropped",
                         "planned"
                     )
-                    Send-WaybackSnapshot -Uri "https://shikimori.me/$($shikiUsername)/$($pg)"
+                    Send-WaybackSnapshot -Uri "https://shikimori.io/$($shikiUsername)/$($pg)"
                     ForEach ($st in $status) {
-                        Send-WaybackSnapshot -Uri "https://shikimori.me/$($shikiUsername)/$($pg)/mylist/$($st)/order-by/aired_on"
+                        Send-WaybackSnapshot -Uri "https://shikimori.io/$($shikiUsername)/$($pg)/mylist/$($st)/order-by/aired_on"
                     }
                 }
                 Default {
-                    Send-WaybackSnapshot -Uri "https://shikimori.me/$($shikiUsername)/$($pg)"
+                    Send-WaybackSnapshot -Uri "https://shikimori.io/$($shikiUsername)/$($pg)"
                 }
             }
         }
